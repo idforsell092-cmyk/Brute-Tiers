@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BRUTE TIERS</title>
+  <!-- SkinView3D Library for rendering raw Minecraft PNG skins into full 3D bodies -->
+  <script src="https://bslim.github.io/skinview3d/js/skinview3d.bundle.js"></script>
   <style>
     :root {
       --bg: #0b0d12;
@@ -39,7 +41,7 @@
     .rank-container {
       position: relative;
       width: 140px;
-      height: 48px;
+      height: 52px;
       display: flex;
       align-items: center;
     }
@@ -73,15 +75,21 @@
     .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
 
     /* Player Skin Render */
-    .p-skin {
+    .p-skin-wrapper {
       position: absolute;
       right: 12px;
       bottom: -2px;
-      height: 52px;
+      height: 56px;
+      width: 42px;
+      z-index: 3;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .p-skin-wrapper img, .p-skin-wrapper canvas {
+      height: 56px;
       width: auto;
       object-fit: contain;
-      image-rendering: pixelated;
-      z-index: 3;
       filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.5));
     }
 
@@ -92,7 +100,7 @@
     .region-tag { background: #281d1d; color: #ff5555; border: 1px solid #4a2828; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-align: center; width: max-content; }
     .region-tag.EU { background: #1d281e; color: #55ff55; border-color: #284a2b; }
     .region-tag.ME { background: #28261d; color: #ffaa00; border-color: #4a4228; }
-    .region-tag.NA { background: #281d1d; color: #ff5555; border-color: #4a2828; }
+    .region-tag.AS { background: #1d2228; color: #55aaff; border-color: #28384a; }
 
     .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
     .tier-badge { background: #0f121a; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
@@ -105,7 +113,7 @@
     .btn-act { background: #1e293b; border: 1px solid var(--border); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .btn-del { color: var(--danger); border-color: #451a1a; background: #281515; }
 
-    /* Professional Purple Admin Panel UI */
+    /* Purple Admin Panel UI */
     .admin-panel { 
       background: var(--panel-bg); 
       border: 1px solid rgba(168, 85, 247, 0.3); 
@@ -142,11 +150,9 @@
     <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
   </header>
 
-  <!-- Professional Light Purple Admin Panel -->
   <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Admin Control Center</h3>
     
-    <!-- Title Section -->
     <div class="panel-section">
       <div class="form-group">
         <label>Server / Website Name</label>
@@ -157,7 +163,6 @@
       </div>
     </div>
 
-    <!-- Gamemode Section -->
     <div class="panel-section">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);">Gamemode Manager</label>
       <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Sword, Pot)">
@@ -172,7 +177,6 @@
       <div id="gmRemoveList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;"></div>
     </div>
 
-    <!-- Player Management Section -->
     <div class="panel-section">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);" id="formModeTitle">Add / Edit Player</label>
       <input type="hidden" id="editingPlayerId">
@@ -188,12 +192,11 @@
         <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
-      <!-- Upload Custom Skin PNG File -->
       <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
         👕 Tap to Upload Custom Skin (.png)
       </div>
       <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkin(event)">
-      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); font-weight: bold; display: none;">✓ Custom 3D Pose Skin Rendered!</div>
+      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); font-weight: bold; display: none;">✓ Custom Skin Selected!</div>
 
       <div style="display:flex; gap:8px;">
         <select id="pGmSelect" style="flex:1;"></select>
@@ -258,23 +261,13 @@
       });
     }
 
-    // Generate exact 3D body pose matching standard leaderboard format
-    function get3DSkinUrl(username) {
-      return `https://visage.surgeplay.com/full/120/${username}`;
-    }
-
-    // Process Custom Uploaded Minecraft Skin PNG File
     function processCustomSkin(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const base64Skin = e.target.result;
-        // Use 3D render API endpoint for custom textures
-        const render3DPose = `https://visage.surgeplay.com/full/120/${file.name.replace('.png','')}`;
-        
-        document.getElementById('renderedSkinData').value = base64Skin;
+        document.getElementById('renderedSkinData').value = e.target.result;
         document.getElementById('skinUploadStatus').style.display = 'block';
       };
       reader.readAsDataURL(file);
@@ -301,20 +294,16 @@
           }
         }
 
-        // Custom skin render fallback to full 3D body pose URL
-        const skinSrc = (p.customSkin && p.customSkin.startsWith('data:image')) 
-          ? p.customSkin 
-          : get3DSkinUrl(p.name);
-
         const rankNum = idx + 1;
         const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
+        const wrapperId = `skin-wrap-${p.id}`;
 
         container.innerHTML += `
           <div class="player-row">
             <div class="rank-container ${rankClass}">
               <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
-              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">
+              <div class="p-skin-wrapper" id="${wrapperId}"></div>
             </div>
             
             <div class="p-info">
@@ -334,6 +323,37 @@
             </div>
           </div>
         `;
+
+        // Render 3D Canvas pose or standard 3D Visage image
+        setTimeout(() => {
+          const wrap = document.getElementById(wrapperId);
+          if (!wrap) return;
+
+          if (p.customSkin && p.customSkin.startsWith('data:image')) {
+            // Render 3D canvas for custom uploaded skin
+            const canvas = document.createElement('canvas');
+            wrap.appendChild(canvas);
+            
+            try {
+              const viewer = new skinview3d.SkinViewer({
+                canvas: canvas,
+                width: 90,
+                height: 120,
+                skin: p.customSkin
+              });
+              viewer.fov = 30;
+              viewer.zoom = 0.9;
+              viewer.camera.position.set(-15, 12, 50);
+              viewer.playerObject.rotation.y = -0.35;
+              viewer.playerObject.rotation.x = 0.05;
+            } catch (err) {
+              wrap.innerHTML = `<img src="https://visage.surgeplay.com/full/120/${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">`;
+            }
+          } else {
+            // Render standard 3D skin render API for official usernames
+            wrap.innerHTML = `<img src="https://visage.surgeplay.com/full/120/${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">`;
+          }
+        }, 5);
       });
     }
 
