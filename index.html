@@ -409,10 +409,6 @@
                     <input type="text" id="username" placeholder="e.g. AxtherBhaii" required>
                 </div>
                 <div>
-                    <label>Set Custom Rank Position (e.g. 1, 32, 40)</label>
-                    <input type="number" id="customRank" placeholder="Leave empty for auto-last rank" min="1">
-                </div>
-                <div>
                     <label>Custom Title (Optional)</label>
                     <input type="text" id="customTitle" placeholder="e.g. Combat GrandExpert, Godlike">
                 </div>
@@ -436,7 +432,7 @@
             <h3 class="form-section-title">Kit Tiers</h3>
             <div class="tier-inputs" id="tierInputsContainer"></div>
 
-            <button type="submit" class="btn" id="saveBtn" style="width: 100%; margin-top: 10px;">Save Player & Reorder Leaderboard</button>
+            <button type="submit" class="btn" id="saveBtn" style="width: 100%; margin-top: 10px;">Save Player to Global Database</button>
         </form>
 
         <h3 class="form-section-title" style="margin-top: 25px;">Kit Representative Icons Settings</h3>
@@ -507,11 +503,11 @@
                     body: JSON.stringify(appData)
                 });
                 if (!response.ok) throw new Error("Sync failed");
-                if (saveBtn) saveBtn.textContent = "Save Player & Reorder Leaderboard";
+                if (saveBtn) saveBtn.textContent = "Save Player to Global Database";
                 fetchGlobalData();
             } catch (err) {
                 alert("Error saving data to database!");
-                if (saveBtn) saveBtn.textContent = "Save Player & Reorder Leaderboard";
+                if (saveBtn) saveBtn.textContent = "Save Player to Global Database";
             }
         }
 
@@ -615,7 +611,7 @@
                     <div class="rep-inputs-col">
                         <label style="font-size:0.8rem; font-weight:bold;">${kit} Icon</label>
                         <input type="file" accept="image/*" onchange="handleKitIconUpload('${kit}', event)">
-                        <input type="text" placeholder="Or Direct Image URL" value="${appData.kitIcons[kit] && !appData.kitIcons[kit].startsWith('data:') ? appData.kitIcons[kit] : ''}" onchange="updateKitIconUrl('${kit}', this.value)">
+                        <input type="text" placeholder="Or Direct Image URL" value="${appData.kitIcons[kit] && !appData.kitIcon[kit].startsWith('data:') ? appData.kitIcons[kit] : ''}" onchange="updateKitIconUrl('${kit}', this.value)">
                     </div>
                 </div>
             `).join('');
@@ -637,29 +633,9 @@
             return 'Rookie';
         }
 
-        function reorderRanks(targetRank, editIndex = null) {
-            let target = parseInt(targetRank);
-            if (isNaN(target) || target < 1) return;
-
-            appData.playersList.forEach((p, idx) => {
-                if (editIndex !== null && idx === editIndex) return;
-                let currentRank = parseInt(p.customRank);
-                if (!isNaN(currentRank) && currentRank >= target) {
-                    p.customRank = currentRank + 1;
-                }
-            });
-        }
-
         function renderLeaderboard() {
-            // STRICT ASCENDING ORDER SORTING (1, 2, 3 ... 100)
+            // AUTOMATIC SORTING BY TOTAL POINTS (HIGHEST TO LOWEST)
             appData.playersList.sort((a, b) => {
-                const rankA = parseInt(a.customRank);
-                const rankB = parseInt(b.customRank);
-
-                if (!isNaN(rankA) && !isNaN(rankB)) return rankA - rankB;
-                if (!isNaN(rankA)) return -1;
-                if (!isNaN(rankB)) return 1;
-
                 return calculatePoints(b.tiers) - calculatePoints(a.tiers);
             });
 
@@ -673,7 +649,8 @@
                 const points = calculatePoints(player.tiers);
                 const title = (player.customTitle && player.customTitle.trim() !== '') ? player.customTitle : getDefaultTitle(points);
                 
-                const displayRank = player.customRank ? parseInt(player.customRank) : (index + 1);
+                // Rank position dynamically calculated based on points position
+                const displayRank = index + 1;
                 
                 const rankClass = displayRank === 1 ? 'rank-1' : displayRank === 2 ? 'rank-2' : displayRank === 3 ? 'rank-3' : 'rank-default';
                 const regionClass = player.region === 'NA' ? 'na-region' : 'other-region';
@@ -758,7 +735,6 @@
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
             
             const username = document.getElementById('username').value.trim();
-            let customRank = document.getElementById('customRank').value.trim();
             const customTitle = document.getElementById('customTitle').value.trim();
             const region = document.getElementById('region').value.trim() || 'IND';
             const customSkin = document.getElementById('customSkinBase64').value;
@@ -768,15 +744,7 @@
                 tiers[kit] = document.getElementById(`tier-${kit}`).value;
             });
 
-            if (customRank !== "") {
-                reorderRanks(customRank, editIndex);
-            } else {
-                if (editIndex === null) {
-                    customRank = appData.playersList.length + 1;
-                }
-            }
-
-            const playerData = { username, customRank: customRank ? parseInt(customRank) : "", customTitle, region, customSkin, tiers };
+            const playerData = { username, customTitle, region, customSkin, tiers };
 
             if (editIndex !== null) {
                 appData.playersList[editIndex] = playerData;
@@ -799,7 +767,6 @@
 
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
-            document.getElementById('customRank').value = player.customRank || '';
             document.getElementById('customTitle').value = player.customTitle || '';
             document.getElementById('region').value = player.region || 'IND';
             document.getElementById('customSkinBase64').value = player.customSkin || '';
