@@ -15,7 +15,7 @@
       --danger: #ff4545;
     }
     body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    header { display: flex; justify-space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
     h1 { margin: 0; font-size: 22px; font-weight: 800; }
     h1 span { color: var(--accent); }
     
@@ -93,7 +93,7 @@
       <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Pot)">
       <input type="text" id="newGmIcon" placeholder="Icon Image URL (or upload image below)">
       
-      <!-- Image Drop / File Picker Area -->
+      <!-- Image Drop Area -->
       <div class="drop-zone" onclick="document.getElementById('gmFileInput').click()">
         📁 Tap to Select/Upload Gamemode Image
       </div>
@@ -109,14 +109,17 @@
       <input type="hidden" id="editingPlayerId">
       
       <div style="display:flex; gap:6px;">
+        <input type="number" id="pRank" placeholder="Rank # (e.g. 1, 36)" style="width: 110px;" min="1">
         <input type="text" id="pName" placeholder="Minecraft Username" style="flex:1;">
+      </div>
+
+      <div style="display:flex; gap:6px;">
         <input type="text" id="pRegion" placeholder="Region (NA, EU, ME)" style="flex:1;">
+        <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
       <!-- Custom Skin URL Input -->
-      <input type="text" id="pSkinUrl" placeholder="Custom Skin URL (SkinsRestorer link / Imgur / Leave blank for default skin)">
-
-      <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)">
+      <input type="text" id="pSkinUrl" placeholder="Custom Skin URL (SkinsRestorer link / Leave blank for default)">
 
       <div style="display:flex; gap:6px;">
         <select id="pGmSelect" style="flex:1;"></select>
@@ -207,7 +210,6 @@
           }
         }
 
-        // Use custom skin URL if provided, otherwise default to mc-heads
         const skinSrc = (p.skinUrl && p.skinUrl.trim() !== '') ? p.skinUrl : `https://mc-heads.net/body/${p.name}/40`;
 
         container.innerHTML += `
@@ -293,6 +295,7 @@
 
     function savePlayer() {
       const editId = document.getElementById('editingPlayerId').value;
+      const rankInput = document.getElementById('pRank').value.trim();
       const name = document.getElementById('pName').value.trim();
       const skinUrl = document.getElementById('pSkinUrl').value.trim();
       const region = document.getElementById('pRegion').value.trim().toUpperCase();
@@ -302,26 +305,27 @@
 
       if (!name) return alert('Enter Minecraft Username!');
 
+      // Target Rank Calculation
+      let targetIndex = rankInput ? parseInt(rankInput) - 1 : players.length;
+      if (targetIndex < 0) targetIndex = 0;
+
+      let playerObj;
+
       if (editId) {
-        // Edit Existing
-        const p = players.find(x => x.id === editId);
-        if (p) {
-          p.name = name;
-          p.skinUrl = skinUrl;
-          p.region = region;
-          p.sub = sub;
-          if (tierVal) p.tiers[gmId] = tierVal;
+        // Remove existing player from array first to re-insert at new position
+        const currentIndex = players.findIndex(x => x.id === editId);
+        if (currentIndex !== -1) {
+          playerObj = players.splice(currentIndex, 1)[0];
         }
-      } else {
-        // Add New
-        const existing = players.find(x => x.name.toLowerCase() === name.toLowerCase());
-        if (existing) {
-          existing.skinUrl = skinUrl;
-          existing.region = region;
-          existing.sub = sub;
-          if (tierVal) existing.tiers[gmId] = tierVal;
+      }
+
+      if (!playerObj) {
+        // Check if player exists by name
+        const existingIndex = players.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
+        if (existingIndex !== -1) {
+          playerObj = players.splice(existingIndex, 1)[0];
         } else {
-          const newP = {
+          playerObj = {
             id: Date.now().toString(),
             name,
             skinUrl,
@@ -329,9 +333,21 @@
             sub,
             tiers: {}
           };
-          if (tierVal) newP.tiers[gmId] = tierVal;
-          players.push(newP);
         }
+      }
+
+      // Update fields
+      playerObj.name = name;
+      playerObj.skinUrl = skinUrl;
+      playerObj.region = region;
+      playerObj.sub = sub;
+      if (tierVal) playerObj.tiers[gmId] = tierVal;
+
+      // Insert player into target position (shifts players at/below target rank down by 1)
+      if (targetIndex >= players.length) {
+        players.push(playerObj);
+      } else {
+        players.splice(targetIndex, 0, playerObj);
       }
 
       localStorage.setItem('mct_players', JSON.stringify(players));
@@ -340,9 +356,12 @@
     }
 
     function editPlayer(id) {
-      const p = players.find(x => x.id === id);
-      if (!p) return;
+      const index = players.findIndex(x => x.id === id);
+      if (index === -1) return;
+      
+      const p = players[index];
       document.getElementById('editingPlayerId').value = p.id;
+      document.getElementById('pRank').value = index + 1;
       document.getElementById('pName').value = p.name;
       document.getElementById('pSkinUrl').value = p.skinUrl || '';
       document.getElementById('pRegion').value = p.region || '';
@@ -358,6 +377,7 @@
 
     function resetPlayerForm() {
       document.getElementById('editingPlayerId').value = '';
+      document.getElementById('pRank').value = '';
       document.getElementById('pName').value = '';
       document.getElementById('pSkinUrl').value = '';
       document.getElementById('pRegion').value = '';
