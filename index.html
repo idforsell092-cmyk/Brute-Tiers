@@ -134,7 +134,7 @@
 
         .representatives-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -156,6 +156,19 @@
             background: #000;
             object-fit: cover;
             border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .rep-inputs-col {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-grow: 1;
+        }
+
+        .rep-inputs-col input {
+            padding: 5px 8px;
+            font-size: 0.75rem;
         }
 
         .kit-bar {
@@ -404,7 +417,7 @@
                     </select>
                 </div>
                 <div class="file-upload-wrapper">
-                    <label>Player Custom Skin Image (Optional Upload)</label>
+                    <label>Player Custom Skin Image (File Upload)</label>
                     <input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)">
                     <input type="hidden" id="customSkinBase64">
                 </div>
@@ -530,18 +543,37 @@
             }
         }
 
+        // Reduced Image Resolution to prevent JSONBin Overflow
         async function handleKitIconUpload(kit, event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = async function(e) {
-                    appData.kitIcons[kit] = e.target.result;
-                    renderKitBar();
-                    renderKitRepsManager();
-                    renderLeaderboard();
-                    await saveGlobalData();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 64;
+                        canvas.height = 64;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 64, 64);
+                        appData.kitIcons[kit] = canvas.toDataURL('image/png');
+                        renderKitBar();
+                        renderKitRepsManager();
+                        renderLeaderboard();
+                        await saveGlobalData();
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            }
+        }
+
+        async function updateKitIconUrl(kit, url) {
+            if(url.trim() !== "") {
+                appData.kitIcons[kit] = url.trim();
+                renderKitBar();
+                renderLeaderboard();
+                await saveGlobalData();
             }
         }
 
@@ -569,9 +601,10 @@
             document.getElementById('representativesManager').innerHTML = KITS.map(kit => `
                 <div class="rep-card-input">
                     <img src="${appData.kitIcons[kit] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
-                    <div style="flex-grow: 1;">
-                        <label style="font-size:0.8rem; font-weight:bold; display:block;">${kit} Icon</label>
+                    <div class="rep-inputs-col">
+                        <label style="font-size:0.8rem; font-weight:bold;">${kit} Icon</label>
                         <input type="file" accept="image/*" onchange="handleKitIconUpload('${kit}', event)">
+                        <input type="text" placeholder="Or paste Image URL" value="${appData.kitIcons[kit] || ''}" onchange="updateKitIconUrl('${kit}', this.value)">
                     </div>
                 </div>
             `).join('');
@@ -741,7 +774,7 @@
         buildTierInputs();
         fetchGlobalData();
 
-        // Auto Refresh Every 10 Seconds for Real-Time Syncing across devices
+        // Auto Refresh Every 10 Seconds
         setInterval(fetchGlobalData, 10000);
     </script>
 </body>
