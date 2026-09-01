@@ -6,24 +6,21 @@
     <title>BRUTE TIERS</title>
     <style>
         :root {
-            --bg-main: #0b0c10;
-            --bg-card: #14161f;
-            --bg-input: #1d1f2b;
+            --bg-main: #0c0e14;
+            --bg-card: #151821;
+            --bg-input: #1c202d;
             --accent: #a855f7;
             --accent-hover: #9333ea;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border: #2a2d3d;
-            --gold: #f59e0b;
-            --silver: #9ca3af;
-            --bronze: #d97706;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border: #232736;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
@@ -37,7 +34,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto 20px auto;
         }
 
@@ -72,7 +69,7 @@
         }
 
         .admin-panel {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto 20px auto;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -162,7 +159,7 @@
         }
 
         .kit-bar {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto 20px auto;
             display: flex;
             flex-wrap: wrap;
@@ -193,27 +190,27 @@
         }
 
         .leaderboard {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .player-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 18px;
+            border-radius: 8px;
+            padding: 8px 16px;
             display: grid;
-            grid-template-columns: 180px 1fr 70px 2fr auto;
+            grid-template-columns: 190px 1fr 65px 2fr auto;
             align-items: center;
             gap: 16px;
         }
 
         @media (max-width: 768px) {
             .player-card {
-                grid-template-columns: 160px 1fr auto;
+                grid-template-columns: 180px 1fr auto;
                 grid-template-areas: 
                     "rank-badge info region"
                     "badges badges actions";
@@ -226,27 +223,26 @@
             .actions { grid-area: actions; }
         }
 
-        /* MCTiers Parallel Banner Shape */
+        /* Exact MCTiers Slanted Banner */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
-            height: 65px;
-            width: 165px;
-            background: #252836;
-            transform: skewX(-15deg);
-            overflow: hidden;
+            height: 60px;
+            width: 180px;
+            background: #252a38;
+            transform: skewX(-20deg);
             border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            overflow: hidden;
             position: relative;
         }
 
         .rank-number-box {
-            width: 55px;
+            width: 75px;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 900;
             font-style: italic;
             color: #ffffff;
@@ -254,16 +250,16 @@
         }
 
         .rank-number-box span {
-            transform: skewX(15deg);
+            transform: skewX(20deg);
         }
 
-        .rank-number-box.rank-1 { background: var(--gold); color: #000; }
-        .rank-number-box.rank-2 { background: var(--silver); color: #000; }
-        .rank-number-box.rank-3 { background: var(--bronze); color: #000; }
-        .rank-number-box.rank-default { background: #34384a; color: #fff; }
+        .rank-number-box.rank-1 { background: #eab308; color: #000; }
+        .rank-number-box.rank-2 { background: #94a3b8; color: #000; }
+        .rank-number-box.rank-3 { background: #c2410c; color: #fff; }
+        .rank-number-box.rank-default { background: #2e3344; color: #fff; }
 
         .skin-holder {
-            width: 110px;
+            width: 105px;
             height: 100%;
             display: flex;
             align-items: center;
@@ -273,7 +269,7 @@
         }
 
         .skin-unskew {
-            transform: skewX(15deg);
+            transform: skewX(20deg);
             width: 100%;
             height: 100%;
             display: flex;
@@ -281,28 +277,38 @@
             justify-content: center;
         }
 
-        .skin-canvas, .skin-img {
-            max-width: 100%;
-            max-height: 120%;
+        /* Fixed Skin Image & Canvas Display Size */
+        .skin-canvas {
+            width: 54px;
+            height: 54px;
             object-fit: contain;
             image-rendering: pixelated;
         }
 
+        .skin-img {
+            height: 90px;
+            width: auto;
+            object-fit: contain;
+            image-rendering: pixelated;
+            margin-top: 15px;
+        }
+
         .player-info h3 {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
         }
 
         .player-info p {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            margin-top: 2px;
         }
 
-        /* Dynamic Border colors for NA vs Other Regions */
         .region-badge {
             background: var(--bg-input);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
             font-weight: 700;
             text-align: center;
             border: 2px solid var(--border);
@@ -327,18 +333,18 @@
         .badge {
             background: var(--bg-input);
             border: 1px solid var(--border);
-            padding: 5px 9px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .badge img {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
         }
 
@@ -453,9 +459,7 @@
             { username: "sufrrlol", region: "NA", customSkin: "", tiers: { Sword: "LT3" } },
             { username: "RealElite_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
             { username: "nexloft_playz", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
-            { username: "RaiKOuu_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
-            { username: "EzLoad__", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
-            { username: "ItzDoomsdayy", region: "NA", customSkin: "", tiers: { Sword: "LT5" } }
+            { username: "RaiKOuu_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } }
         ];
 
         let players = JSON.parse(localStorage.getItem('brute_tiers_data')) || defaultPlayers;
@@ -552,7 +556,6 @@
         }
 
         function getTitle(points) {
-            if (points >= 800) return 'Combat Grandmaster';
             if (points >= 500) return 'Combat GrandExpert';
             if (points >= 300) return 'Combat Expert';
             if (points >= 100) return 'Combat Specialist';
@@ -615,21 +618,19 @@
             if (customSkin && customSkin.trim() !== '') {
                 const canvas = document.createElement('canvas');
                 canvas.width = 16;
-                canvas.height = 32;
+                canvas.height = 16;
                 canvas.className = 'skin-canvas';
                 const ctx = canvas.getContext('2d');
                 ctx.imageSmoothingEnabled = false;
 
                 const img = new Image();
                 img.onload = () => {
-                    ctx.clearRect(0, 0, 16, 32);
+                    ctx.clearRect(0, 0, 16, 16);
                     ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
                     ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-                    ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
-                    ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
-                    ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
-                    ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
-                    ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
+                    ctx.drawImage(img, 20, 20, 8, 8, 4, 8, 8, 8);
+                    ctx.drawImage(img, 44, 20, 4, 8, 0, 8, 4, 8);
+                    ctx.drawImage(img, 36, 52, 4, 8, 12, 8, 4, 8);
                 };
                 img.src = customSkin;
                 container.innerHTML = '';
