@@ -206,42 +206,66 @@
             border-radius: 10px;
             padding: 12px 18px;
             display: grid;
-            grid-template-columns: 40px 70px 1fr 70px 2fr auto;
+            grid-template-columns: 140px 1fr 70px 2fr auto;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         @media (max-width: 768px) {
             .player-card {
-                grid-template-columns: 30px 60px 1fr auto;
+                grid-template-columns: 130px 1fr auto;
                 grid-template-areas: 
-                    "rank skin info region"
-                    "badges badges badges actions";
+                    "rank-badge info region"
+                    "badges badges actions";
                 gap: 10px;
             }
-            .rank { grid-area: rank; }
-            .skin-render-box { grid-area: skin; }
+            .rank-skin-container { grid-area: rank-badge; }
             .player-info { grid-area: info; }
             .region-badge { grid-area: region; }
             .tier-badges { grid-area: badges; }
             .actions { grid-area: actions; }
         }
 
-        .rank {
-            font-size: 1.3rem;
-            font-weight: 800;
+        /* MCTiers-Style Slanted Rank & Skin Container */
+        .rank-skin-container {
+            display: flex;
+            align-items: center;
+            background: #232533;
+            border-radius: 6px;
+            transform: skewX(-10deg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            padding-right: 6px;
         }
 
-        .rank-1 { color: var(--gold); }
-        .rank-2 { color: var(--silver); }
-        .rank-3 { color: var(--bronze); }
+        .rank-skin-container * {
+            transform: skewX(10deg);
+        }
 
-        .skin-render-box {
-            width: 60px;
-            height: 90px;
+        .rank-badge-box {
+            padding: 10px 14px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #ffffff;
+            font-style: italic;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 45px;
+        }
+
+        .rank-badge-box.rank-1 { background: var(--gold); color: #000; }
+        .rank-badge-box.rank-2 { background: var(--silver); color: #000; }
+        .rank-badge-box.rank-3 { background: var(--bronze); color: #000; }
+        .rank-badge-box.rank-default { background: #2f3245; }
+
+        .skin-render-box {
+            width: 50px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
         }
 
         .skin-canvas, .skin-img {
@@ -262,12 +286,22 @@
 
         .region-badge {
             background: var(--bg-input);
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+        }
+
+        .region-badge.na-region {
+            border-color: #ef4444;
+            color: #f87171;
+        }
+
+        .region-badge.other-region {
+            border-color: #84cc16;
+            color: #a3e635;
         }
 
         .tier-badges {
@@ -519,17 +553,20 @@
             container.innerHTML = players.map((player, index) => {
                 const points = calculatePoints(player.tiers);
                 const title = getTitle(points);
-                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-default';
+                const regionClass = player.region === 'NA' ? 'na-region' : 'other-region';
 
                 return `
                     <div class="player-card">
-                        <div class="rank ${rankClass}">${index + 1}.</div>
-                        <div class="skin-render-box" id="skin-box-${index}"></div>
+                        <div class="rank-skin-container">
+                            <div class="rank-badge-box ${rankClass}">${index + 1}.</div>
+                            <div class="skin-render-box" id="skin-box-${index}"></div>
+                        </div>
                         <div class="player-info">
                             <h3>${player.username}</h3>
                             <p>✦ ${title} (${points} Points)</p>
                         </div>
-                        <div class="region-badge">${player.region}</div>
+                        <div class="region-badge ${regionClass}">${player.region}</div>
                         <div class="tier-badges">
                             ${KITS.map(kit => {
                                 const tier = player.tiers[kit];
