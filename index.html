@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BRUTE TIERS</title>
-  <!-- SkinView3D Library for rendering raw Minecraft PNG skins into full 3D bodies -->
-  <script src="https://bslim.github.io/skinview3d/js/skinview3d.bundle.js"></script>
   <style>
     :root {
       --bg: #0b0d12;
@@ -79,17 +77,18 @@
       position: absolute;
       right: 12px;
       bottom: -2px;
-      height: 56px;
-      width: 42px;
+      height: 54px;
+      width: auto;
       z-index: 3;
       display: flex;
       align-items: flex-end;
       justify-content: center;
     }
-    .p-skin-wrapper img, .p-skin-wrapper canvas {
-      height: 56px;
+    .p-skin-wrapper img {
+      height: 54px;
       width: auto;
       object-fit: contain;
+      image-rendering: pixelated;
       filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.5));
     }
 
@@ -113,7 +112,7 @@
     .btn-act { background: #1e293b; border: 1px solid var(--border); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .btn-del { color: var(--danger); border-color: #451a1a; background: #281515; }
 
-    /* Purple Admin Panel UI */
+    /* Light Purple Admin Panel UI */
     .admin-panel { 
       background: var(--panel-bg); 
       border: 1px solid rgba(168, 85, 247, 0.3); 
@@ -196,14 +195,17 @@
         👕 Tap to Upload Custom Skin (.png)
       </div>
       <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkin(event)">
-      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); font-weight: bold; display: none;">✓ Custom Skin Selected!</div>
+      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); font-weight: bold; display: none;">✓ Custom Skin Attached!</div>
 
       <div style="display:flex; gap:8px;">
         <select id="pGmSelect" style="flex:1;"></select>
         <input type="text" id="pTierVal" placeholder="Tier (e.g. HT1, LT2)" style="flex:1;">
       </div>
 
-      <button class="btn-main" onclick="savePlayer()" style="margin-top:4px;">Save Player to Leaderboard</button>
+      <div style="display:flex; gap:8px; margin-top:4px;">
+        <button class="btn-main" onclick="savePlayer()" style="flex:1;">Save Player</button>
+        <button class="btn-main" onclick="resetPlayerForm()" style="background:#334155;">Clear Form</button>
+      </div>
     </div>
   </div>
 
@@ -261,14 +263,46 @@
       });
     }
 
+    // Process custom skin upload via 2D canvas assembly to create 3D front body render
     function processCustomSkin(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        document.getElementById('renderedSkinData').value = e.target.result;
-        document.getElementById('skinUploadStatus').style.display = 'block';
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = 16;
+          canvas.height = 32;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = false;
+
+          // Draw Head
+          ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
+          // Draw Head Outer Layer
+          ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
+
+          // Draw Body
+          ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
+          // Draw Body Outer Layer
+          ctx.drawImage(img, 20, 36, 8, 12, 4, 8, 8, 12);
+
+          // Draw Right Arm
+          ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
+          // Draw Left Arm
+          ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
+
+          // Draw Right Leg
+          ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
+          // Draw Left Leg
+          ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
+
+          const compiledRender = canvas.toDataURL('image/png');
+          document.getElementById('renderedSkinData').value = compiledRender;
+          document.getElementById('skinUploadStatus').style.display = 'block';
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -296,14 +330,20 @@
 
         const rankNum = idx + 1;
         const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
-        const wrapperId = `skin-wrap-${p.id}`;
+        
+        // Custom uploaded skin vs standard 3D Visage API
+        const skinSrc = (p.customSkin && p.customSkin.startsWith('data:image')) 
+          ? p.customSkin 
+          : `https://visage.surgeplay.com/full/120/${p.name}`;
 
         container.innerHTML += `
           <div class="player-row">
             <div class="rank-container ${rankClass}">
               <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
-              <div class="p-skin-wrapper" id="${wrapperId}"></div>
+              <div class="p-skin-wrapper">
+                <img src="${skinSrc}" alt="${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">
+              </div>
             </div>
             
             <div class="p-info">
@@ -323,37 +363,6 @@
             </div>
           </div>
         `;
-
-        // Render 3D Canvas pose or standard 3D Visage image
-        setTimeout(() => {
-          const wrap = document.getElementById(wrapperId);
-          if (!wrap) return;
-
-          if (p.customSkin && p.customSkin.startsWith('data:image')) {
-            // Render 3D canvas for custom uploaded skin
-            const canvas = document.createElement('canvas');
-            wrap.appendChild(canvas);
-            
-            try {
-              const viewer = new skinview3d.SkinViewer({
-                canvas: canvas,
-                width: 90,
-                height: 120,
-                skin: p.customSkin
-              });
-              viewer.fov = 30;
-              viewer.zoom = 0.9;
-              viewer.camera.position.set(-15, 12, 50);
-              viewer.playerObject.rotation.y = -0.35;
-              viewer.playerObject.rotation.x = 0.05;
-            } catch (err) {
-              wrap.innerHTML = `<img src="https://visage.surgeplay.com/full/120/${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">`;
-            }
-          } else {
-            // Render standard 3D skin render API for official usernames
-            wrap.innerHTML = `<img src="https://visage.surgeplay.com/full/120/${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">`;
-          }
-        }, 5);
       });
     }
 
@@ -446,7 +455,7 @@
           playerObj = {
             id: Date.now().toString(),
             name,
-            customSkin,
+            customSkin: '',
             region,
             sub,
             tiers: {}
@@ -455,7 +464,9 @@
       }
 
       playerObj.name = name;
-      if (customSkin) playerObj.customSkin = customSkin;
+      if (customSkin) {
+        playerObj.customSkin = customSkin;
+      }
       playerObj.region = region;
       playerObj.sub = sub;
       if (tierVal) playerObj.tiers[gmId] = tierVal;
@@ -470,7 +481,6 @@
       resetPlayerForm();
       renderLeaderboard();
     }
-
     function editPlayer(id) {
       const index = players.findIndex(x => x.id === id);
       if (index === -1) return;
