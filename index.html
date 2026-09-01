@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCTiers Leaderboard</title>
-  <script src="https://unpkg.com/skinview3d@3.0.0/bundles/skinview3d.bundle.js"></script>
+  <title>BRUTE TIERS</title>
   <style>
     :root {
       --bg: #0b0d12;
@@ -69,12 +68,12 @@
     }
     .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
 
-    /* 3D Player Skin */
+    /* Player Skin */
     .p-skin {
       position: absolute;
       right: 12px;
       bottom: -2px;
-      height: 56px;
+      height: 52px;
       width: auto;
       object-fit: contain;
       image-rendering: pixelated;
@@ -89,6 +88,7 @@
     .region-tag { background: #281d1d; color: #ff5555; border: 1px solid #4a2828; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-align: center; width: max-content; }
     .region-tag.EU { background: #1d281e; color: #55ff55; border-color: #284a2b; }
     .region-tag.ME { background: #28261d; color: #ffaa00; border-color: #4a4228; }
+    .region-tag.NA { background: #281d1d; color: #ff5555; border-color: #4a2828; }
 
     .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
     .tier-badge { background: #0f121a; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; }
@@ -109,7 +109,7 @@
     .form-group input, .form-group select { background: #0b0c10; border: 1px solid var(--border); color: #fff; padding: 7px; border-radius: 4px; font-size: 12px; }
     .btn-main { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 8px; border-radius: 4px; cursor: pointer; }
 
-    .drop-zone { border: 2px dashed var(--border); border-radius: 6px; padding: 10px; text-align: center; font-size: 11px; color: var(--subtext); cursor: pointer; background: #0b0c10; transition: border 0.2s; }
+    .drop-zone { border: 2px dashed var(--border); border-radius: 6px; padding: 10px; text-align: center; font-size: 11px; color: var(--subtext); cursor: pointer; background: #0b0c10; margin-top: 4px; }
     .drop-zone:hover { border-color: var(--accent); }
     .file-input { display: none; }
   </style>
@@ -121,10 +121,7 @@
     <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
   </header>
 
-  <div id="renderCanvasContainer" style="position: absolute; left: -9999px; top: -9999px;">
-    <canvas id="skinCanvas" width="150" height="200"></canvas>
-  </div>
-
+  <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Admin Control Center</h3>
     
@@ -156,7 +153,7 @@
       <input type="hidden" id="renderedSkinData">
       
       <div style="display:flex; gap:6px;">
-        <input type="number" id="pRank" placeholder="Rank # (e.g. 1, 36)" style="width: 110px;" min="1">
+        <input type="number" id="pRank" placeholder="Rank # (e.g. 1)" style="width: 110px;" min="1">
         <input type="text" id="pName" placeholder="Minecraft Username" style="flex:1;">
       </div>
 
@@ -165,11 +162,12 @@
         <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
+      <!-- Upload Custom Skin PNG File -->
       <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
         👕 Tap to Upload Custom Skin File (.png)
       </div>
-      <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkinFile(event)">
-      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); display: none;">✓ Converting skin into 3D Model...</div>
+      <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkin(event)">
+      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); display: none;">✓ Custom Skin Loaded!</div>
 
       <div style="display:flex; gap:6px; margin-top: 4px;">
         <select id="pGmSelect" style="flex:1;"></select>
@@ -191,20 +189,20 @@
 
   <div class="lb-container" id="lbContainer"></div>
 
+  <canvas id="cropCanvas" width="16" height="16" style="display:none;"></canvas>
+
   <script>
     const ADMIN_PASS = "98909890";
 
     const defaultGamemodes = [
       { id: 'sword', name: 'Sword', icon: 'https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png' },
-      { id: 'vanilla', name: 'Vanilla', icon: 'https://minecraft.wiki/images/Netherite_Crystal_JE2.png' },
-      { id: 'pot', name: 'Pot', icon: 'https://minecraft.wiki/images/Splashing_Healing_Potion_JE2_BE2.png' }
+      { id: 'nethpot', name: 'NethPot', icon: 'https://minecraft.wiki/images/Splashing_Healing_Potion_JE2_BE2.png' }
     ];
 
     const defaultPlayers = [
-      { id: '1', name: 'ItsNotWh1te', customSkin3D: '', region: 'AS', sub: 'Combat Grandmaster', tiers: { sword: 'HT3' } },
-      { id: '2', name: 'Marlowww', customSkin3D: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
-      { id: '3', name: 'ItzRealMe', customSkin3D: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
-      { id: '4', name: 'coldified', customSkin3D: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
+      { id: '1', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', nethpot: 'HT1' } },
+      { id: '2', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3' } },
+      { id: '3', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
     ];
 
     let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
@@ -235,52 +233,34 @@
       });
     }
 
-    function get3DSkinUrl(username) {
+    function getSkinUrl(username) {
       return `https://mc-heads.net/body/${username}/100`;
     }
 
-    function handleSkinError(img, username) {
-      if (!img.dataset.fallback) {
-        img.dataset.fallback = "true";
-        img.src = `https://crafatar.com/renders/body/8667ba71-b82d-4077-9299-52fc30896072?scale=4&overlay=true`;
-      }
-    }
-
-    // Process custom uploaded skin file & convert to 3D Snapshot
-    function processCustomSkinFile(event) {
+    // Process Custom Uploaded Minecraft Skin PNG File
+    function processCustomSkin(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const status = document.getElementById('skinUploadStatus');
-      status.style.display = 'block';
-      status.innerText = "⏳ Converting Skin to 3D Model...";
-
       const reader = new FileReader();
       reader.onload = function(e) {
-        const dataUrl = e.target.result;
-        
-        // Render skin in 3D using skinview3d
-        const canvas = document.getElementById('skinCanvas');
-        const skinViewer = new skinview3d.SkinViewer({
-          canvas: canvas,
-          width: 150,
-          height: 200,
-          skin: dataUrl
-        });
-
-        // Match exact camera angle & pose of other players
-        skinViewer.fov = 70;
-        skinViewer.zoom = 0.90;
-        skinViewer.rotation.y = -0.45;
-        skinViewer.rotation.x = 0.08;
-
-        setTimeout(() => {
-          skinViewer.render();
-          const snapshot3D = canvas.toDataURL('image/png');
-          document.getElementById('renderedSkinData').value = snapshot3D;
-          status.innerText = "✓ Custom 3D Skin Generated Successfully!";
-          skinViewer.dispose();
-        }, 300);
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.getElementById('cropCanvas');
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, 16, 16);
+          // Draw head front
+          ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
+          // Draw head helm layer if present
+          ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
+          // Draw body front
+          ctx.drawImage(img, 20, 20, 8, 8, 4, 8, 8, 8);
+          
+          const croppedData = canvas.toDataURL();
+          document.getElementById('renderedSkinData').value = croppedData;
+          document.getElementById('skinUploadStatus').style.display = 'block';
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -306,8 +286,7 @@
           }
         }
 
-        // Use custom generated 3D skin model or fallback to 3D API render
-        const skinSrc = (p.customSkin3D && p.customSkin3D.length > 50) ? p.customSkin3D : get3DSkinUrl(p.name);
+        const skinSrc = p.customSkin ? p.customSkin : getSkinUrl(p.name);
         const rankNum = idx + 1;
         const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
 
@@ -316,7 +295,7 @@
             <div class="rank-container ${rankClass}">
               <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
-              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="handleSkinError(this, '${p.name}')">
+              <img class="p-skin" src="${skinSrc}" alt="${p.name}">
             </div>
             
             <div class="p-info">
@@ -400,7 +379,7 @@
       const editId = document.getElementById('editingPlayerId').value;
       const rankInput = document.getElementById('pRank').value.trim();
       const name = document.getElementById('pName').value.trim();
-      const customSkin3D = document.getElementById('renderedSkinData').value;
+      const customSkin = document.getElementById('renderedSkinData').value;
       const region = document.getElementById('pRegion').value.trim().toUpperCase();
       const sub = document.getElementById('pSub').value.trim();
       const gmId = document.getElementById('pGmSelect').value;
@@ -428,7 +407,7 @@
           playerObj = {
             id: Date.now().toString(),
             name,
-            customSkin3D,
+            customSkin,
             region,
             sub,
             tiers: {}
@@ -437,7 +416,7 @@
       }
 
       playerObj.name = name;
-      if (customSkin3D) playerObj.customSkin3D = customSkin3D;
+      if (customSkin) playerObj.customSkin = customSkin;
       playerObj.region = region;
       playerObj.sub = sub;
       if (tierVal) playerObj.tiers[gmId] = tierVal;
@@ -461,7 +440,7 @@
       document.getElementById('editingPlayerId').value = p.id;
       document.getElementById('pRank').value = index + 1;
       document.getElementById('pName').value = p.name;
-      document.getElementById('renderedSkinData').value = p.customSkin3D || '';
+      document.getElementById('renderedSkinData').value = p.customSkin || '';
       document.getElementById('pRegion').value = p.region || '';
       document.getElementById('pSub').value = p.sub || '';
       document.getElementById('formModeTitle').innerText = 'Editing Player: ' + p.name;
@@ -479,4 +458,15 @@
       document.getElementById('pName').value = '';
       document.getElementById('renderedSkinData').value = '';
       document.getElementById('pRegion').value = '';
-      document.getElem
+      document.getElementById('pSub').value = '';
+      document.getElementById('pTierVal').value = '';
+      document.getElementById('skinFileInput').value = '';
+      document.getElementById('skinUploadStatus').style.display = 'none';
+      document.getElementById('formModeTitle').innerText = 'Add / Edit Player';
+    }
+
+    renderAll();
+  </script>
+</body>
+  </html>
+  
