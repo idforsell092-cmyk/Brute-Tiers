@@ -641,7 +641,6 @@
             let target = parseInt(targetRank);
             if (isNaN(target) || target < 1) return;
 
-            // Shift ranks for existing players equal or below the target position
             appData.playersList.forEach((p, idx) => {
                 if (editIndex !== null && idx === editIndex) return;
                 let currentRank = parseInt(p.customRank);
@@ -652,7 +651,7 @@
         }
 
         function renderLeaderboard() {
-            // Sort array strictly by customRank, fallback to Points calculation
+            // STRICT ASCENDING ORDER SORTING (1, 2, 3 ... 100)
             appData.playersList.sort((a, b) => {
                 const rankA = parseInt(a.customRank);
                 const rankB = parseInt(b.customRank);
@@ -674,7 +673,6 @@
                 const points = calculatePoints(player.tiers);
                 const title = (player.customTitle && player.customTitle.trim() !== '') ? player.customTitle : getDefaultTitle(points);
                 
-                // Final displayed rank number
                 const displayRank = player.customRank ? parseInt(player.customRank) : (index + 1);
                 
                 const rankClass = displayRank === 1 ? 'rank-1' : displayRank === 2 ? 'rank-2' : displayRank === 3 ? 'rank-3' : 'rank-default';
@@ -770,11 +768,9 @@
                 tiers[kit] = document.getElementById(`tier-${kit}`).value;
             });
 
-            // Handle Dynamic Automatic Re-ordering
             if (customRank !== "") {
                 reorderRanks(customRank, editIndex);
             } else {
-                // If left empty, set rank position to end of list
                 if (editIndex === null) {
                     customRank = appData.playersList.length + 1;
                 }
