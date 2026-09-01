@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCTiers Leaderboard</title>
+  <script src="https://unpkg.com/skinview3d@3.0.0/bundles/skinview3d.bundle.js"></script>
   <style>
     :root {
       --bg: #0b0d12;
@@ -120,7 +121,10 @@
     <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
   </header>
 
-  <!-- Admin Panel -->
+  <div id="renderCanvasContainer" style="position: absolute; left: -9999px; top: -9999px;">
+    <canvas id="skinCanvas" width="150" height="200"></canvas>
+  </div>
+
   <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Admin Control Center</h3>
     
@@ -161,6 +165,12 @@
         <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
+      <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
+        👕 Tap to Upload Custom Skin File (.png)
+      </div>
+      <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkinFile(event)">
+      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); display: none;">✓ Converting skin into 3D Model...</div>
+
       <div style="display:flex; gap:6px; margin-top: 4px;">
         <select id="pGmSelect" style="flex:1;"></select>
         <input type="text" id="pTierVal" placeholder="Tier Text (e.g. HT1, LT2)" style="flex:1;">
@@ -191,10 +201,10 @@
     ];
 
     const defaultPlayers = [
-      { id: '1', name: 'ItsNotWh1te', customSkin: '', region: 'AS', sub: 'Combat Grandmaster', tiers: { sword: 'HT3' } },
-      { id: '2', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
-      { id: '3', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
-      { id: '4', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
+      { id: '1', name: 'ItsNotWh1te', customSkin3D: '', region: 'AS', sub: 'Combat Grandmaster', tiers: { sword: 'HT3' } },
+      { id: '2', name: 'Marlowww', customSkin3D: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
+      { id: '3', name: 'ItzRealMe', customSkin3D: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
+      { id: '4', name: 'coldified', customSkin3D: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
     ];
 
     let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
@@ -225,17 +235,54 @@
       });
     }
 
-    // Always render Minecraft player as 3D Model
     function get3DSkinUrl(username) {
       return `https://mc-heads.net/body/${username}/100`;
     }
 
     function handleSkinError(img, username) {
-      // Fallback 3D API if primary renderer fails
-      if (!img.dataset.fallbackTried) {
-        img.dataset.fallbackTried = "true";
+      if (!img.dataset.fallback) {
+        img.dataset.fallback = "true";
         img.src = `https://crafatar.com/renders/body/8667ba71-b82d-4077-9299-52fc30896072?scale=4&overlay=true`;
       }
+    }
+
+    // Process custom uploaded skin file & convert to 3D Snapshot
+    function processCustomSkinFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const status = document.getElementById('skinUploadStatus');
+      status.style.display = 'block';
+      status.innerText = "⏳ Converting Skin to 3D Model...";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        
+        // Render skin in 3D using skinview3d
+        const canvas = document.getElementById('skinCanvas');
+        const skinViewer = new skinview3d.SkinViewer({
+          canvas: canvas,
+          width: 150,
+          height: 200,
+          skin: dataUrl
+        });
+
+        // Match exact camera angle & pose of other players
+        skinViewer.fov = 70;
+        skinViewer.zoom = 0.90;
+        skinViewer.rotation.y = -0.45;
+        skinViewer.rotation.x = 0.08;
+
+        setTimeout(() => {
+          skinViewer.render();
+          const snapshot3D = canvas.toDataURL('image/png');
+          document.getElementById('renderedSkinData').value = snapshot3D;
+          status.innerText = "✓ Custom 3D Skin Generated Successfully!";
+          skinViewer.dispose();
+        }, 300);
+      };
+      reader.readAsDataURL(file);
     }
 
     function renderLeaderboard() {
@@ -259,8 +306,8 @@
           }
         }
 
-        // Always force 3D rendered skin format
-        const skinSrc = get3DSkinUrl(p.name);
+        // Use custom generated 3D skin model or fallback to 3D API render
+        const skinSrc = (p.customSkin3D && p.customSkin3D.length > 50) ? p.customSkin3D : get3DSkinUrl(p.name);
         const rankNum = idx + 1;
         const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
 
@@ -353,6 +400,7 @@
       const editId = document.getElementById('editingPlayerId').value;
       const rankInput = document.getElementById('pRank').value.trim();
       const name = document.getElementById('pName').value.trim();
+      const customSkin3D = document.getElementById('renderedSkinData').value;
       const region = document.getElementById('pRegion').value.trim().toUpperCase();
       const sub = document.getElementById('pSub').value.trim();
       const gmId = document.getElementById('pGmSelect').value;
@@ -380,6 +428,7 @@
           playerObj = {
             id: Date.now().toString(),
             name,
+            customSkin3D,
             region,
             sub,
             tiers: {}
@@ -388,6 +437,7 @@
       }
 
       playerObj.name = name;
+      if (customSkin3D) playerObj.customSkin3D = customSkin3D;
       playerObj.region = region;
       playerObj.sub = sub;
       if (tierVal) playerObj.tiers[gmId] = tierVal;
@@ -411,6 +461,7 @@
       document.getElementById('editingPlayerId').value = p.id;
       document.getElementById('pRank').value = index + 1;
       document.getElementById('pName').value = p.name;
+      document.getElementById('renderedSkinData').value = p.customSkin3D || '';
       document.getElementById('pRegion').value = p.region || '';
       document.getElementById('pSub').value = p.sub || '';
       document.getElementById('formModeTitle').innerText = 'Editing Player: ' + p.name;
@@ -426,23 +477,6 @@
       document.getElementById('editingPlayerId').value = '';
       document.getElementById('pRank').value = '';
       document.getElementById('pName').value = '';
+      document.getElementById('renderedSkinData').value = '';
       document.getElementById('pRegion').value = '';
-      document.getElementById('pSub').value = '';
-      document.getElementById('pTierVal').value = '';
-      document.getElementById('formModeTitle').innerText = 'Add / Edit Player';
-    }
-
-    // Clean old corrupted local storage data if any
-    try {
-      let stored = JSON.parse(localStorage.getItem('mct_players'));
-      if (stored) {
-        stored.forEach(p => { delete p.customSkin; });
-        localStorage.setItem('mct_players', JSON.stringify(stored));
-        players = stored;
-      }
-    } catch(e){}
-
-    renderAll();
-  </script>
-</body>
-</html>
+      document.getElem
