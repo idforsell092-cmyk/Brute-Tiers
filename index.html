@@ -15,7 +15,7 @@
       --danger: #ff4545;
     }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    header { display: flex; justify-space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
     h1 { margin: 0; font-size: 22px; font-weight: 800; }
     h1 span { color: var(--accent); }
     
@@ -31,42 +31,54 @@
     .lb-container { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
     .player-row { display: grid; grid-template-columns: 160px 1fr 60px 1.2fr; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; position: relative; }
     
-    /* MCTiers Slanted Badge System */
-    .badge-wrapper {
+    /* Rank Container with overlapping elements */
+    .rank-container {
       position: relative;
       width: 140px;
       height: 48px;
       display: flex;
       align-items: center;
+    }
+
+    /* Slanted Badge Background */
+    .badge-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 110px;
+      height: 100%;
       background: linear-gradient(135deg, #2a3245 0%, #171c28 100%);
-      clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+      clip-path: polygon(0 0, 100% 0, 75% 100%, 0 100%);
       border-radius: 4px 0 0 4px;
-      overflow: hidden;
     }
     
-    .badge-wrapper.rank-1 { background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%); color: #000; }
-    .badge-wrapper.rank-2 { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); color: #000; }
-    .badge-wrapper.rank-3 { background: linear-gradient(135deg, #f97316 0%, #9a3412 100%); color: #fff; }
+    .badge-bg.rank-1 { background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%); }
+    .badge-bg.rank-2 { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); }
+    .badge-bg.rank-3 { background: linear-gradient(135deg, #f97316 0%, #9a3412 100%); }
 
     .rank-num {
+      position: relative;
+      z-index: 2;
       font-weight: 900;
       font-style: italic;
       font-size: 22px;
       padding-left: 14px;
-      z-index: 2;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
     }
+    .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
 
-    .badge-wrapper .p-skin {
+    /* Fixed Uncropped Player Skin Display */
+    .p-skin {
       position: absolute;
-      right: 4px;
-      bottom: -6px;
-      height: 60px;
+      right: 12px;
+      bottom: -2px;
+      height: 56px;
       width: auto;
       object-fit: contain;
       image-rendering: pixelated;
-      filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.4));
-      z-index: 1;
+      z-index: 3;
+      filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.5));
     }
 
     .p-info { display: flex; flex-direction: column; justify-content: center; padding-left: 10px; }
@@ -82,13 +94,12 @@
     .tier-badge img { width: 14px; height: 14px; object-fit: contain; }
     .tier-val { color: #ffaa00; }
 
-    /* Admin Action Controls */
+    /* Admin Controls */
     .action-btns { display: none; gap: 4px; position: absolute; right: 8px; top: 8px; }
     .admin-active .action-btns { display: flex; }
     .btn-act { background: #222; border: 1px solid #444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; cursor: pointer; }
     .btn-del { color: var(--danger); border-color: var(--danger); }
 
-    /* Admin Panel Styling */
     .admin-panel { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 8px; display: none; flex-direction: column; gap: 12px; margin-bottom: 15px; }
     .admin-panel.active { display: flex; }
     .admin-panel h3 { margin: 0; color: var(--accent); font-size: 15px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
@@ -97,7 +108,6 @@
     .form-group input, .form-group select { background: #0b0c10; border: 1px solid var(--border); color: #fff; padding: 7px; border-radius: 4px; font-size: 12px; }
     .btn-main { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 8px; border-radius: 4px; cursor: pointer; }
 
-    /* Image Drop Zone Styling */
     .drop-zone { border: 2px dashed var(--border); border-radius: 6px; padding: 10px; text-align: center; font-size: 11px; color: var(--subtext); cursor: pointer; background: #0b0c10; transition: border 0.2s; }
     .drop-zone:hover { border-color: var(--accent); }
     .file-input { display: none; }
@@ -114,7 +124,6 @@
   <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Admin Control Center</h3>
     
-    <!-- Title Edit -->
     <div class="form-group">
       <label>Server/Website Name</label>
       <div style="display:flex; gap: 6px;">
@@ -123,13 +132,11 @@
       </div>
     </div>
 
-    <!-- Gamemode Add/Remove -->
     <div style="border-top:1px solid var(--border); padding-top:10px;" class="form-group">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);">Gamemode Manager</label>
       <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Pot)">
       <input type="text" id="newGmIcon" placeholder="Icon Image URL (or upload image below)">
       
-      <!-- Image Drop Area -->
       <div class="drop-zone" onclick="document.getElementById('gmFileInput').click()">
         📁 Tap to Select/Upload Gamemode Image
       </div>
@@ -139,7 +146,6 @@
       <div id="gmRemoveList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
     </div>
 
-    <!-- Add/Edit Player -->
     <div style="border-top:1px solid var(--border); padding-top:10px;" class="form-group">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);" id="formModeTitle">Add / Edit Player</label>
       <input type="hidden" id="editingPlayerId">
@@ -155,7 +161,6 @@
         <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
-      <!-- Upload Raw Skin Image File -->
       <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
         👕 Upload Player Skin PNG (Auto-Converts)
       </div>
@@ -171,10 +176,8 @@
     </div>
   </div>
 
-  <!-- Gamemodes Bar -->
   <div class="gm-bar" id="gmBar"></div>
 
-  <!-- Table Header -->
   <div class="table-header">
     <div>RANK</div>
     <div>PLAYER</div>
@@ -182,7 +185,6 @@
     <div>TIERS</div>
   </div>
 
-  <!-- Leaderboard Output -->
   <div class="lb-container" id="lbContainer"></div>
 
   <script>
@@ -255,7 +257,8 @@
 
         container.innerHTML += `
           <div class="player-row">
-            <div class="badge-wrapper ${rankClass}">
+            <div class="rank-container ${rankClass}">
+              <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
               <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://mc-heads.net/body/Steve/100'">
             </div>
@@ -317,7 +320,6 @@
       reader.readAsDataURL(file);
     }
 
-    // Auto-crop & assemble skin to 3D front view
     function handleSkinUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
