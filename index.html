@@ -130,7 +130,6 @@
             margin-bottom: 4px;
         }
 
-        /* Kit Representatives Manager Grid */
         .representatives-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -157,7 +156,6 @@
             border: 1px solid var(--border);
         }
 
-        /* Kit Icons Bar Top */
         .kit-bar {
             max-width: 1200px;
             margin: 0 auto 20px auto;
@@ -189,7 +187,6 @@
             object-fit: contain;
         }
 
-        /* Leaderboard styling */
         .leaderboard {
             max-width: 1200px;
             margin: 0 auto;
@@ -204,7 +201,7 @@
             border-radius: 10px;
             padding: 12px 18px;
             display: grid;
-            grid-template-columns: 40px 80px 1fr 70px 2fr auto;
+            grid-template-columns: 40px 70px 1fr 70px 2fr auto;
             align-items: center;
             gap: 12px;
         }
@@ -218,7 +215,7 @@
                 gap: 10px;
             }
             .rank { grid-area: rank; }
-            .full-body-skin { grid-area: skin; }
+            .skin-render-box { grid-area: skin; }
             .player-info { grid-area: info; }
             .region-badge { grid-area: region; }
             .tier-badges { grid-area: badges; }
@@ -234,9 +231,17 @@
         .rank-2 { color: var(--silver); }
         .rank-3 { color: var(--bronze); }
 
-        .full-body-skin {
+        .skin-render-box {
             width: 60px;
             height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .skin-canvas, .skin-img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
             image-rendering: pixelated;
         }
@@ -338,7 +343,7 @@
                     </select>
                 </div>
                 <div class="file-upload-wrapper">
-                    <label>Player Skin (Upload Image)</label>
+                    <label>Player Skin (Upload Image File)</label>
                     <input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)">
                     <input type="hidden" id="customSkinBase64">
                 </div>
@@ -366,10 +371,8 @@
             'NA': 0
         };
 
-        // Default Kit Icons
         let kitIcons = JSON.parse(localStorage.getItem('brute_kit_icons')) || {};
 
-        // Default Global Players Data
         const defaultPlayers = [
             {
                 username: "AxtherBhaii",
@@ -400,11 +403,9 @@
         let players = JSON.parse(localStorage.getItem('brute_tiers_data')) || defaultPlayers;
 
         function toggleAdmin() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('active');
+            document.getElementById('adminPanel').classList.toggle('active');
         }
 
-        // Handle Player Skin Image File Upload
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -416,7 +417,6 @@
             }
         }
 
-        // Handle Kit Icon File Upload
         function handleKitIconUpload(kit, event) {
             const file = event.target.files[0];
             if (file) {
@@ -433,8 +433,7 @@
         }
 
         function buildTierInputs() {
-            const container = document.getElementById('tierInputsContainer');
-            container.innerHTML = KITS.map(kit => `
+            document.getElementById('tierInputsContainer').innerHTML = KITS.map(kit => `
                 <div class="tier-input-group">
                     <label>${kit}</label>
                     <select id="tier-${kit}">
@@ -445,8 +444,7 @@
         }
 
         function renderKitBar() {
-            const bar = document.getElementById('kitBar');
-            bar.innerHTML = KITS.map(kit => `
+            document.getElementById('kitBar').innerHTML = KITS.map(kit => `
                 <div class="kit-pill">
                     ${kitIcons[kit] ? `<img src="${kitIcons[kit]}" alt="${kit}">` : ''}
                     <span>${kit}</span>
@@ -455,8 +453,7 @@
         }
 
         function renderKitRepsManager() {
-            const container = document.getElementById('representativesManager');
-            container.innerHTML = KITS.map(kit => `
+            document.getElementById('representativesManager').innerHTML = KITS.map(kit => `
                 <div class="rep-card-input">
                     <img src="${kitIcons[kit] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
                     <div style="flex-grow: 1;">
@@ -470,8 +467,7 @@
         function calculatePoints(playerTiers) {
             let total = 0;
             KITS.forEach(kit => {
-                const tier = playerTiers[kit] || 'NA';
-                total += TIER_SCORES[tier] || 0;
+                total += TIER_SCORES[playerTiers[kit] || 'NA'] || 0;
             });
             return total;
         }
@@ -484,14 +480,6 @@
             return 'Rookie';
         }
 
-        function getFullSkinUrl(username, customSkin) {
-            if (customSkin && customSkin.trim() !== '') {
-                return customSkin;
-            }
-            // Full Body Render API for Minecraft
-            return `https://mc-heads.net/body/${username}/right`;
-        }
-
         function renderLeaderboard() {
             players.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
             localStorage.setItem('brute_tiers_data', JSON.stringify(players));
@@ -501,12 +489,11 @@
                 const points = calculatePoints(player.tiers);
                 const title = getTitle(points);
                 const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
-                const skinUrl = getFullSkinUrl(player.username, player.customSkin);
 
                 return `
                     <div class="player-card">
                         <div class="rank ${rankClass}">${index + 1}.</div>
-                        <img src="${skinUrl}" class="full-body-skin" alt="${player.username}" onerror="this.src='https://mc-heads.net/body/Steve/right'">
+                        <div class="skin-render-box" id="skin-box-${index}"></div>
                         <div class="player-info">
                             <h3>${player.username}</h3>
                             <p>✦ ${title} (${points} Points)</p>
@@ -530,6 +517,54 @@
                     </div>
                 `;
             }).join('');
+
+            players.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
+        }
+
+        // Automatic 2D/3D Body Skin Rendering for local PNGs and Username APIs
+        function renderSkin(index, username, customSkin) {
+            const container = document.getElementById(`skin-box-${index}`);
+            if (!container) return;
+
+            if (customSkin && customSkin.trim() !== '') {
+                // If custom PNG uploaded, draw assembled front body onto HTML5 Canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 32;
+                canvas.className = 'skin-canvas';
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = false;
+
+                const img = new Image();
+                img.onload = () => {
+                    ctx.clearRect(0, 0, 16, 32);
+                    // Head
+                    ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
+                    // Head Overlay
+                    ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
+                    // Torso
+                    ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
+                    // Right Arm
+                    ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
+                    // Left Arm
+                    ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
+                    // Right Leg
+                    ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
+                    // Left Leg
+                    ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
+                };
+                img.src = customSkin;
+                container.innerHTML = '';
+                container.appendChild(canvas);
+            } else {
+                // Fetch full-body 3D render model for usernames
+                const img = document.createElement('img');
+                img.className = 'skin-img';
+                img.src = `https://mc-heads.net/body/${username}/right`;
+                img.onerror = () => { img.src = 'https://mc-heads.net/body/Steve/right'; };
+                container.innerHTML = '';
+                container.appendChild(img);
+            }
         }
 
         document.getElementById('playerForm').addEventListener('submit', (e) => {
