@@ -15,7 +15,7 @@
       --danger: #ff4545;
     }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-    header { display: flex; justify-space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
     h1 { margin: 0; font-size: 22px; font-weight: 800; }
     h1 span { color: var(--accent); }
     
@@ -68,7 +68,7 @@
     }
     .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
 
-    /* Fixed Uncropped Player Skin Display */
+    /* Fixed Uncropped 3D Player Skin Display */
     .p-skin {
       position: absolute;
       right: 12px;
@@ -162,7 +162,7 @@
       </div>
 
       <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
-        👕 Upload Player Skin PNG (Auto-Converts)
+        👕 Upload Custom Player Skin PNG (Optional)
       </div>
       <input type="file" id="skinFileInput" class="file-input" accept="image/png,image/jpeg" onchange="handleSkinUpload(event)">
       <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); display: none;">✓ Custom skin loaded!</div>
@@ -197,9 +197,10 @@
     ];
 
     const defaultPlayers = [
-      { id: '1', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
-      { id: '2', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
-      { id: '3', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
+      { id: '1', name: 'ItsNotWh1te', customSkin: '', region: 'AS', sub: 'Combat Grandmaster', tiers: { sword: 'HT3' } },
+      { id: '2', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
+      { id: '3', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
+      { id: '4', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
     ];
 
     let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
@@ -230,6 +231,11 @@
       });
     }
 
+    // Returns isometric 3D render pose API matching MCTiers
+    function get3DSkinUrl(username) {
+      return `https://visage.surge.playit.gg/full/512/${username}`;
+    }
+
     function renderLeaderboard() {
       const container = document.getElementById('lbContainer');
       container.innerHTML = '';
@@ -251,7 +257,7 @@
           }
         }
 
-        const skinSrc = p.customSkin ? p.customSkin : `https://mc-heads.net/body/${p.name}/100`;
+        const skinSrc = p.customSkin ? p.customSkin : get3DSkinUrl(p.name);
         const rankNum = idx + 1;
         const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
 
@@ -260,7 +266,7 @@
             <div class="rank-container ${rankClass}">
               <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
-              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://mc-heads.net/body/Steve/100'">
+              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://visage.surge.playit.gg/full/512/Steve'">
             </div>
             
             <div class="p-info">
@@ -326,46 +332,8 @@
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          canvas.width = 16;
-          canvas.height = 32;
-          const ctx = canvas.getContext('2d');
-          ctx.imageSmoothingEnabled = false;
-
-          // Head Front
-          ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
-          // Head Outer Overlay
-          ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-
-          // Body Front
-          ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
-
-          // Right Arm
-          ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
-
-          // Left Arm
-          if (img.height >= 64) {
-            ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
-          } else {
-            ctx.drawImage(img, 44, 20, 4, 12, 12, 8, 4, 12);
-          }
-
-          // Right Leg
-          ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
-
-          // Left Leg
-          if (img.height >= 64) {
-            ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
-          } else {
-            ctx.drawImage(img, 4, 20, 4, 12, 8, 20, 4, 12);
-          }
-
-          document.getElementById('renderedSkinData').value = canvas.toDataURL();
-          document.getElementById('skinUploadStatus').style.display = 'block';
-        };
-        img.src = e.target.result;
+        document.getElementById('renderedSkinData').value = e.target.result;
+        document.getElementById('skinUploadStatus').style.display = 'block';
       };
       reader.readAsDataURL(file);
     }
@@ -431,7 +399,7 @@
       }
 
       playerObj.name = name;
-      if (customSkin) playerObj.customSkin = customSkin;
+      playerObj.customSkin = customSkin || playerObj.customSkin || '';
       playerObj.region = region;
       playerObj.sub = sub;
       if (tierVal) playerObj.tiers[gmId] = tierVal;
