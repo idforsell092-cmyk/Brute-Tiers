@@ -29,7 +29,7 @@
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
-            padding: 20px;
+            padding: 15px;
             min-height: 100vh;
         }
 
@@ -80,11 +80,19 @@
             display: block;
         }
 
+        .form-section-title {
+            margin: 15px 0 10px 0;
+            font-size: 1.1rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         input, select {
@@ -97,11 +105,22 @@
             outline: none;
         }
 
+        .file-upload-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+
         .tier-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .tier-input-group label {
@@ -111,27 +130,103 @@
             margin-bottom: 4px;
         }
 
+        /* Kit Representatives Manager Grid */
+        .representatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .rep-card-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rep-icon-preview {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #000;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        /* Kit Icons Bar Top */
+        .kit-bar {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            justify-content: center;
+        }
+
+        .kit-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-input);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .kit-pill img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        /* Leaderboard styling */
         .leaderboard {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .player-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 12px 20px;
+            padding: 12px 18px;
             display: grid;
-            grid-template-columns: 50px 70px 1fr 80px 2fr auto;
+            grid-template-columns: 40px 80px 1fr 70px 2fr auto;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .player-card {
+                grid-template-columns: 30px 60px 1fr auto;
+                grid-template-areas: 
+                    "rank skin info region"
+                    "badges badges badges actions";
+                gap: 10px;
+            }
+            .rank { grid-area: rank; }
+            .full-body-skin { grid-area: skin; }
+            .player-info { grid-area: info; }
+            .region-badge { grid-area: region; }
+            .tier-badges { grid-area: badges; }
+            .actions { grid-area: actions; }
         }
 
         .rank {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
         }
 
@@ -139,14 +234,10 @@
         .rank-2 { color: var(--silver); }
         .rank-3 { color: var(--bronze); }
 
-        .avatar-container {
-            width: 50px;
-            height: 50px;
-        }
-
-        .avatar-canvas {
-            width: 100%;
-            height: 100%;
+        .full-body-skin {
+            width: 60px;
+            height: 90px;
+            object-fit: contain;
             image-rendering: pixelated;
         }
 
@@ -182,6 +273,15 @@
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
         }
 
         .badge.HT1, .badge.HT2 { color: #f43f5e; border-color: #f43f5e44; }
@@ -191,7 +291,7 @@
 
         .actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-sm {
@@ -214,10 +314,15 @@
         <button class="btn" onclick="toggleAdmin()">⚙ Admin Panel</button>
     </header>
 
+    <div class="kit-bar" id="kitBar"></div>
+
     <div class="admin-panel" id="adminPanel">
-        <h2 style="margin-bottom: 15px;">Add / Edit Player</h2>
+        <h2>Admin Management Panel</h2>
+        
         <form id="playerForm">
+            <h3 class="form-section-title">Add / Edit Player</h3>
             <input type="hidden" id="editIndex">
+            
             <div class="form-grid">
                 <div>
                     <label>Minecraft Username</label>
@@ -232,17 +337,21 @@
                         <option value="ASIA">ASIA</option>
                     </select>
                 </div>
-                <div>
-                    <label>Custom Skin PNG URL (Optional)</label>
-                    <input type="url" id="customSkin" placeholder="https://i.imgur.com/...">
+                <div class="file-upload-wrapper">
+                    <label>Player Skin (Upload Image)</label>
+                    <input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)">
+                    <input type="hidden" id="customSkinBase64">
                 </div>
             </div>
 
-            <label style="display:block; margin-bottom: 10px; font-weight:600;">Kit Tiers</label>
+            <h3 class="form-section-title">Kit Tiers</h3>
             <div class="tier-inputs" id="tierInputsContainer"></div>
 
-            <button type="submit" class="btn" style="width: 100%;">Save Player to Global Leaderboard</button>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Player to Global Leaderboard</button>
         </form>
+
+        <h3 class="form-section-title" style="margin-top: 25px;">Kit Representatives & Icons Settings</h3>
+        <div class="representatives-grid" id="representativesManager"></div>
     </div>
 
     <div class="leaderboard" id="leaderboard"></div>
@@ -257,7 +366,10 @@
             'NA': 0
         };
 
-        // GLOBAL DEFAULT DATA - SHARED AMONG ALL VISITORS
+        // Default Kit Icons
+        let kitIcons = JSON.parse(localStorage.getItem('brute_kit_icons')) || {};
+
+        // Default Global Players Data
         const defaultPlayers = [
             {
                 username: "AxtherBhaii",
@@ -292,6 +404,34 @@
             panel.classList.toggle('active');
         }
 
+        // Handle Player Skin Image File Upload
+        function handleSkinUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('customSkinBase64').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle Kit Icon File Upload
+        function handleKitIconUpload(kit, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    kitIcons[kit] = e.target.result;
+                    localStorage.setItem('brute_kit_icons', JSON.stringify(kitIcons));
+                    renderKitBar();
+                    renderKitRepsManager();
+                    renderLeaderboard();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function buildTierInputs() {
             const container = document.getElementById('tierInputsContainer');
             container.innerHTML = KITS.map(kit => `
@@ -300,6 +440,29 @@
                     <select id="tier-${kit}">
                         ${TIERS.map(t => `<option value="${t}">${t}</option>`).join('')}
                     </select>
+                </div>
+            `).join('');
+        }
+
+        function renderKitBar() {
+            const bar = document.getElementById('kitBar');
+            bar.innerHTML = KITS.map(kit => `
+                <div class="kit-pill">
+                    ${kitIcons[kit] ? `<img src="${kitIcons[kit]}" alt="${kit}">` : ''}
+                    <span>${kit}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderKitRepsManager() {
+            const container = document.getElementById('representativesManager');
+            container.innerHTML = KITS.map(kit => `
+                <div class="rep-card-input">
+                    <img src="${kitIcons[kit] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
+                    <div style="flex-grow: 1;">
+                        <label style="font-size:0.8rem; font-weight:bold; display:block;">${kit} Icon</label>
+                        <input type="file" accept="image/*" onchange="handleKitIconUpload('${kit}', event)">
+                    </div>
                 </div>
             `).join('');
         }
@@ -321,6 +484,14 @@
             return 'Rookie';
         }
 
+        function getFullSkinUrl(username, customSkin) {
+            if (customSkin && customSkin.trim() !== '') {
+                return customSkin;
+            }
+            // Full Body Render API for Minecraft
+            return `https://mc-heads.net/body/${username}/right`;
+        }
+
         function renderLeaderboard() {
             players.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
             localStorage.setItem('brute_tiers_data', JSON.stringify(players));
@@ -330,13 +501,12 @@
                 const points = calculatePoints(player.tiers);
                 const title = getTitle(points);
                 const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                const skinUrl = getFullSkinUrl(player.username, player.customSkin);
 
                 return `
                     <div class="player-card">
                         <div class="rank ${rankClass}">${index + 1}.</div>
-                        <div class="avatar-container">
-                            <canvas id="avatar-${index}" class="avatar-canvas" width="64" height="64"></canvas>
-                        </div>
+                        <img src="${skinUrl}" class="full-body-skin" alt="${player.username}" onerror="this.src='https://mc-heads.net/body/Steve/right'">
                         <div class="player-info">
                             <h3>${player.username}</h3>
                             <p>✦ ${title} (${points} Points)</p>
@@ -345,7 +515,12 @@
                         <div class="tier-badges">
                             ${KITS.map(kit => {
                                 const tier = player.tiers[kit];
-                                return tier && tier !== 'NA' ? `<span class="badge ${tier}">${kit}: ${tier}</span>` : '';
+                                const icon = kitIcons[kit];
+                                return tier && tier !== 'NA' ? `
+                                    <span class="badge ${tier}">
+                                        ${icon ? `<img src="${icon}">` : ''}
+                                        ${kit}: ${tier}
+                                    </span>` : '';
                             }).join('')}
                         </div>
                         <div class="actions">
@@ -355,23 +530,6 @@
                     </div>
                 `;
             }).join('');
-
-            players.forEach((player, index) => draw3DSkin(index, player.username, player.customSkin));
-        }
-
-        function draw3DSkin(index, username, customSkin) {
-            const canvas = document.getElementById(`avatar-${index}`);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = customSkin || `https://mc-heads.net/avatar/${username}/64`;
-
-            img.onload = () => {
-                ctx.clearRect(0, 0, 64, 64);
-                ctx.imageSmoothingEnabled = false;
-                ctx.drawImage(img, 0, 0, 64, 64);
-            };
         }
 
         document.getElementById('playerForm').addEventListener('submit', (e) => {
@@ -379,7 +537,7 @@
             const index = document.getElementById('editIndex').value;
             const username = document.getElementById('username').value.trim();
             const region = document.getElementById('region').value;
-            const customSkin = document.getElementById('customSkin').value.trim();
+            const customSkin = document.getElementById('customSkinBase64').value;
 
             const tiers = {};
             KITS.forEach(kit => {
@@ -396,6 +554,7 @@
 
             document.getElementById('playerForm').reset();
             document.getElementById('editIndex').value = '';
+            document.getElementById('customSkinBase64').value = '';
             toggleAdmin();
             renderLeaderboard();
         });
@@ -405,7 +564,7 @@
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
             document.getElementById('region').value = player.region;
-            document.getElementById('customSkin').value = player.customSkin || '';
+            document.getElementById('customSkinBase64').value = player.customSkin || '';
 
             KITS.forEach(kit => {
                 document.getElementById(`tier-${kit}`).value = player.tiers[kit] || 'NA';
@@ -424,6 +583,8 @@
         }
 
         buildTierInputs();
+        renderKitBar();
+        renderKitRepsManager();
         renderLeaderboard();
     </script>
 </body>
