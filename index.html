@@ -3,239 +3,337 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community MCTiers</title>
+  <title>MCTiers Leaderboard</title>
   <style>
     :root {
-      --bg: #0e0e11;
-      --card-bg: #18181c;
+      --bg: #0b0c10;
+      --card-bg: #14161d;
       --accent: #55ff55;
       --text: #efeff1;
-      --subtext: #adadb8;
+      --subtext: #8e8e9e;
+      --border: #232631;
       --danger: #ff4545;
-      --t1: #ff4545; --t2: #ffaa00; --t3: #ffff55; --t4: #55ff55; --t5: #55ffff;
     }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-    header { text-align: center; padding: 20px 0; border-bottom: 1px solid #2a2a30; position: relative; }
-    h1 { margin: 0; color: #fff; font-size: 26px; text-transform: uppercase; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
     h1 span { color: var(--accent); }
-    .subtitle { color: var(--subtext); font-size: 13px; margin-top: 5px; }
     
-    /* Navigation Tabs */
-    .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
-    .tab-btn { background: var(--card-bg); border: 1px solid #2a2a30; color: var(--subtext); padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .tab-btn.active { border-color: var(--accent); color: #fff; background: #222228; }
-    
-    /* Tier Cards */
-    .tier-container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-    .tier-card { background: var(--card-bg); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 5px solid #fff; }
-    .tier-card.t1 { border-color: var(--t1); } .tier-card.t2 { border-color: var(--t2); }
-    .tier-card.t3 { border-color: var(--t3); } .tier-card.t4 { border-color: var(--t4); }
-    .tier-title { font-weight: bold; font-size: 16px; text-transform: uppercase; }
-    .player-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .player-tag { background: #222228; padding: 5px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; font-size: 14px; position: relative; }
-    .player-tag img { width: 18px; height: 18px; border-radius: 2px; }
-    .remove-btn { display: none; color: var(--danger); font-weight: bold; margin-left: 4px; cursor: pointer; border: none; background: transparent; font-size: 14px; }
-    .admin-active .remove-btn { display: inline; }
+    .admin-toggle-btn { background: #1f2330; border: 1px solid var(--border); color: var(--subtext); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
 
-    /* Admin Settings Panel */
-    .admin-toggle-btn { position: absolute; right: 10px; top: 10px; background: #222228; border: 1px solid #333; color: var(--subtext); padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
-    .admin-panel { max-width: 600px; margin: 20px auto; background: var(--card-bg); border: 1px solid #3a3a45; padding: 15px; border-radius: 8px; display: none; flex-direction: column; gap: 12px; }
+    /* Gamemode Bar */
+    .gm-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+    .gm-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--subtext); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .gm-btn img { width: 16px; height: 16px; }
+
+    /* Leaderboard Table Structure */
+    .table-header { display: grid; grid-template-columns: 40px 1fr 60px 1.2fr; font-size: 11px; color: var(--subtext); font-weight: bold; text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border); }
+    .lb-container { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .player-row { display: grid; grid-template-columns: 40px 1fr 60px 1.2fr; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 8px; border-radius: 6px; position: relative; }
+    
+    .rank-num { font-weight: bold; font-style: italic; font-size: 16px; color: #fff; }
+    .p-info { display: flex; align-items: center; gap: 10px; }
+    .p-skin { width: 32px; height: 42px; object-fit: contain; }
+    .p-name { font-weight: bold; font-size: 14px; color: #fff; }
+    .p-sub { font-size: 11px; color: var(--subtext); }
+
+    .region-tag { background: #281d1d; color: #ff5555; border: 1px solid #4a2828; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-align: center; width: max-content; }
+    .region-tag.EU { background: #1d281e; color: #55ff55; border-color: #284a2b; }
+    .region-tag.ME { background: #28261d; color: #ffaa00; border-color: #4a4228; }
+
+    .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tier-badge { background: #1a1d26; border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
+    .tier-badge img { width: 14px; height: 14px; }
+    .tier-val { color: #ffaa00; }
+
+    /* Admin Action Controls */
+    .action-btns { display: none; gap: 4px; position: absolute; right: 8px; top: 8px; }
+    .admin-active .action-btns { display: flex; }
+    .btn-act { background: #222; border: 1px solid #444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; cursor: pointer; }
+    .btn-del { color: var(--danger); border-color: var(--danger); }
+
+    /* Admin Panel Styling */
+    .admin-panel { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 8px; display: none; flex-direction: column; gap: 12px; margin-bottom: 15px; }
     .admin-panel.active { display: flex; }
-    .admin-panel h3 { margin: 0; color: var(--accent); font-size: 16px; border-bottom: 1px solid #2a2a30; padding-bottom: 8px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; text-align: left; }
-    .form-group label { font-size: 12px; color: var(--subtext); }
-    .form-group input, .form-group select { background: #0e0e11; border: 1px solid #3a3a45; color: #fff; padding: 8px; border-radius: 4px; outline: none; }
-    .btn-submit { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
+    .admin-panel h3 { margin: 0; color: var(--accent); font-size: 15px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; color: var(--subtext); }
+    .form-group input, .form-group select { background: #0b0c10; border: 1px solid var(--border); color: #fff; padding: 7px; border-radius: 4px; font-size: 12px; }
+    .btn-main { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 8px; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <header>
-    <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Settings</button>
     <h1 id="siteTitle">BRUTE <span>TIERS</span></h1>
-    <div class="subtitle">Official Community PvP Rankings</div>
+    <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
   </header>
 
-  <!-- Admin Controls Panel -->
+  <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel">
-    <h3>⚙️ Admin Control Panel</h3>
+    <h3>⚙️ Admin Control Center</h3>
     
-    <!-- Title Customizer -->
+    <!-- Title Edit -->
     <div class="form-group">
-      <label>Change Server/Website Name</label>
-      <div style="display:flex; gap: 8px;">
-        <input type="text" id="newTitleInput" placeholder="e.g. BRUTE TIERS" style="flex:1;">
-        <button class="btn-submit" onclick="updateSiteTitle()" style="margin:0; padding:0 15px;">Save Name</button>
+      <label>Server/Website Name</label>
+      <div style="display:flex; gap: 6px;">
+        <input type="text" id="titleInput" placeholder="BRUTE TIERS" style="flex:1;">
+        <button class="btn-main" onclick="saveTitle()">Save Title</button>
       </div>
     </div>
 
-    <hr style="border:0; border-top:1px solid #2a2a30; width:100%;">
-
-    <!-- Player Manager -->
-    <div class="form-group">
-      <label>Player Username</label>
-      <input type="text" id="playerNameInput" placeholder="Exact Minecraft Name">
+    <!-- Gamemode Add/Remove -->
+    <div style="border-top:1px solid var(--border); padding-top:10px;">
+      <label style="font-size:12px; font-weight:bold; color:var(--accent);">Gamemode Manager</label>
+      <div style="display:flex; gap:6px; margin-top:6px;">
+        <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Pot)" style="flex:1;">
+        <input type="text" id="newGmIcon" placeholder="Icon Image URL" style="flex:1;">
+        <button class="btn-main" onclick="addGamemode()">Add GM</button>
+      </div>
+      <div id="gmRemoveList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-      <div class="form-group" style="flex: 1;">
-        <label>Gamemode</label>
-        <select id="gamemodeSelect">
-          <option value="sword">Sword</option>
-          <option value="vanilla">Vanilla</option>
-          <option value="crystal">Crystal</option>
-          <option value="axe">Axe</option>
-        </select>
+    <!-- Add/Edit Player -->
+    <div style="border-top:1px solid var(--border); padding-top:10px;" class="form-group">
+      <label style="font-size:12px; font-weight:bold; color:var(--accent);" id="formModeTitle">Add / Edit Player</label>
+      <input type="hidden" id="editingPlayerId">
+      <input type="text" id="pName" placeholder="Minecraft Username">
+      
+      <div style="display:flex; gap:6px;">
+        <input type="text" id="pRegion" placeholder="Region (NA, EU, ME)" style="flex:1;">
+        <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
 
-      <div class="form-group" style="flex: 1;">
-        <label>Tier Rank</label>
-        <select id="tierSelect">
-          <option value="Tier 1 (High)">Tier 1 (High)</option>
-          <option value="Tier 2 (Mid)">Tier 2 (Mid)</option>
-          <option value="Tier 3 (Low)">Tier 3 (Low)</option>
-        </select>
+      <div style="display:flex; gap:6px;">
+        <select id="pGmSelect" style="flex:1;"></select>
+        <input type="text" id="pTierVal" placeholder="Tier Text (e.g. HT1, LT2)" style="flex:1;">
       </div>
+
+      <button class="btn-main" onclick="savePlayer()" style="margin-top:6px;">Save Player to Leaderboard</button>
     </div>
-
-    <button class="btn-submit" onclick="addPlayer()">+ Add Player to Tierlist</button>
   </div>
 
-  <!-- Gamemode Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchGamemode('sword', event)">Sword</button>
-    <button class="tab-btn" onclick="switchGamemode('vanilla', event)">Vanilla</button>
-    <button class="tab-btn" onclick="switchGamemode('crystal', event)">Crystal</button>
-    <button class="tab-btn" onclick="switchGamemode('axe', event)">Axe</button>
+  <!-- Gamemodes Bar -->
+  <div class="gm-bar" id="gmBar"></div>
+
+  <!-- Table Header -->
+  <div class="table-header">
+    <div>#</div>
+    <div>Player</div>
+    <div>Region</div>
+    <div>Tiers</div>
   </div>
 
-  <!-- Tierlist Output Container -->
-  <div class="tier-container" id="tierContainer"></div>
+  <!-- Leaderboard Output -->
+  <div class="lb-container" id="lbContainer"></div>
 
   <script>
-    // Password Configuration
-    const ADMIN_PASSWORD = "98909890";
+    const ADMIN_PASS = "98909890";
 
-    // Default Tierlist Data
-    const defaultData = {
-      sword: { "Tier 1 (High)": ["Steve"], "Tier 2 (Mid)": ["Alex"], "Tier 3 (Low)": ["Notch"] },
-      vanilla: { "Tier 1 (High)": ["Notch"], "Tier 2 (Mid)": ["Steve"], "Tier 3 (Low)": ["Alex"] },
-      crystal: { "Tier 1 (High)": ["Alex"], "Tier 2 (Mid)": ["Grumm"], "Tier 3 (Low)": ["Steve"] },
-      axe: { "Tier 1 (High)": ["Steve"], "Tier 2 (Mid)": ["Grumm"], "Tier 3 (Low)": ["Notch"] }
-    };
+    // Default Gamemodes
+    const defaultGamemodes = [
+      { id: 'sword', name: 'Sword', icon: 'https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png' },
+      { id: 'vanilla', name: 'Vanilla', icon: 'https://minecraft.wiki/images/Netherite_Crystal_JE2.png' },
+      { id: 'pot', name: 'Pot', icon: 'https://minecraft.wiki/images/Splashing_Healing_Potion_JE2_BE2.png' }
+    ];
 
-    // Load Saved Data or Default
-    let tierData = JSON.parse(localStorage.getItem('mctiers_data')) || defaultData;
-    let currentMode = 'sword';
-    let isAdminOpen = false;
+    // Default Players
+    const defaultPlayers = [
+      { id: '1', name: 'Marlowww', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
+      { id: '2', name: 'ItzRealMe', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } }
+    ];
 
-    // Load Saved Website Title
-    const savedTitle = localStorage.getItem('mctiers_title');
-    if (savedTitle) {
-      document.getElementById('siteTitle').innerHTML = savedTitle;
+    let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
+    let players = JSON.parse(localStorage.getItem('mct_players')) || defaultPlayers;
+    let isAdmin = false;
+
+    // Load Title
+    const savedTitle = localStorage.getItem('mct_title');
+    if (savedTitle) document.getElementById('siteTitle').innerHTML = savedTitle;
+
+    function renderAll() {
+      renderGamemodes();
+      renderLeaderboard();
     }
 
-    function renderTiers() {
-      const container = document.getElementById('tierContainer');
+    function renderGamemodes() {
+      const bar = document.getElementById('gmBar');
+      const select = document.getElementById('pGmSelect');
+      const rmList = document.getElementById('gmRemoveList');
+
+      bar.innerHTML = '';
+      select.innerHTML = '';
+      rmList.innerHTML = '';
+
+      gamemodes.forEach(gm => {
+        // Top Bar Button
+        bar.innerHTML += `<div class="gm-btn"><img src="${gm.icon}" error="this.style.display='none'"> ${gm.name}</div>`;
+        // Admin Select
+        select.innerHTML += `<option value="${gm.id}">${gm.name}</option>`;
+        // Admin Remove Buttons
+        rmList.innerHTML += `<button class="btn-act btn-del" onclick="removeGamemode('${gm.id}')">✕ ${gm.name}</button>`;
+      });
+    }
+
+    function renderLeaderboard() {
+      const container = document.getElementById('lbContainer');
       container.innerHTML = '';
 
-      if (isAdminOpen) {
-        container.classList.add('admin-active');
-      } else {
-        container.classList.remove('admin-active');
-      }
+      if (isAdmin) container.classList.add('admin-active');
+      else container.classList.remove('admin-active');
 
-      const data = tierData[currentMode];
-      let tierIndex = 1;
+      players.forEach((p, idx) => {
+        let tiersHTML = '';
+        for (const [gmId, tierVal] of Object.entries(p.tiers)) {
+          const gm = gamemodes.find(g => g.id === gmId);
+          if (gm) {
+            tiersHTML += `
+              <div class="tier-badge">
+                <img src="${gm.icon}">
+                <span class="tier-val">${tierVal}</span>
+              </div>
+            `;
+          }
+        }
 
-      for (const [tierName, players] of Object.entries(data)) {
-        const card = document.createElement('div');
-        card.className = `tier-card t${tierIndex}`;
-        
-        let playersHTML = players.map(p => `
-          <div class="player-tag">
-            <img src="https://mc-heads.net/avatar/${p}/18" alt="${p}">
-            <span>${p}</span>
-            <button class="remove-btn" onclick="removePlayer('${p}', '${tierName}')">✕</button>
+        container.innerHTML += `
+          <div class="player-row">
+            <div class="rank-num">${idx + 1}.</div>
+            <div class="p-info">
+              <img class="p-skin" src="https://mc-heads.net/body/${p.name}/40" alt="${p.name}">
+              <div>
+                <div class="p-name">${p.name}</div>
+                <div class="p-sub">${p.sub || 'Member'}</div>
+              </div>
+            </div>
+            <div>
+              <span class="region-tag ${p.region}">${p.region || 'NA'}</span>
+            </div>
+            <div class="tiers-list">${tiersHTML}</div>
+            
+            <div class="action-btns">
+              <button class="btn-act" onclick="editPlayer('${p.id}')">Edit</button>
+              <button class="btn-act btn-del" onclick="deletePlayer('${p.id}')">✕</button>
+            </div>
           </div>
-        `).join('');
-
-        card.innerHTML = `
-          <div class="tier-title">${tierName}</div>
-          <div class="player-list">${playersHTML}</div>
         `;
-        container.appendChild(card);
-        tierIndex++;
-      }
-    }
-
-    function switchGamemode(mode, evt) {
-      currentMode = mode;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      if (evt) evt.target.classList.add('active');
-      renderTiers();
+      });
     }
 
     function toggleAdminPanel() {
-      const panel = document.getElementById('adminPanel');
-      
-      if (!isAdminOpen) {
-        const inputPass = prompt("Enter Admin Password:");
-        if (inputPass !== ADMIN_PASSWORD) {
-          alert("Incorrect Password!");
-          return;
+      if (!isAdmin) {
+        const pass = prompt("Enter Admin Password:");
+        if (pass !== ADMIN_PASS) return alert("Incorrect Password!");
+        isAdmin = true;
+      } else {
+        isAdmin = false;
+      }
+      document.getElementById('adminPanel').classList.toggle('active', isAdmin);
+      renderLeaderboard();
+    }
+
+    function saveTitle() {
+      const val = document.getElementById('titleInput').value.trim();
+      if (!val) return;
+      const parts = val.split(' ');
+      let titleHTML = val;
+      if (parts.length > 1) {
+        const last = parts.pop();
+        titleHTML = `${parts.join(' ')} <span>${last}</span>`;
+      }
+      document.getElementById('siteTitle').innerHTML = titleHTML;
+      localStorage.setItem('mct_title', titleHTML);
+    }
+
+    function addGamemode() {
+      const name = document.getElementById('newGmName').value.trim();
+      const icon = document.getElementById('newGmIcon').value.trim();
+      if (!name) return alert('Enter Gamemode Name!');
+
+      const id = name.toLowerCase().replace(/\s+/g, '');
+      gamemodes.push({ id, name, icon: icon || 'https://minecraft.wiki/images/Diamond_JE3_BE3.png' });
+      localStorage.setItem('mct_gms', JSON.stringify(gamemodes));
+      renderAll();
+      document.getElementById('newGmName').value = '';
+      document.getElementById('newGmIcon').value = '';
+    }
+
+    function removeGamemode(id) {
+      gamemodes = gamemodes.filter(g => g.id !== id);
+      localStorage.setItem('mct_gms', JSON.stringify(gamemodes));
+      renderAll();
+    }
+
+    function savePlayer() {
+      const editId = document.getElementById('editingPlayerId').value;
+      const name = document.getElementById('pName').value.trim();
+      const region = document.getElementById('pRegion').value.trim().toUpperCase();
+      const sub = document.getElementById('pSub').value.trim();
+      const gmId = document.getElementById('pGmSelect').value;
+      const tierVal = document.getElementById('pTierVal').value.trim();
+
+      if (!name) return alert('Enter Minecraft Username!');
+
+      if (editId) {
+        // Edit Existing
+        const p = players.find(x => x.id === editId);
+        if (p) {
+          p.name = name;
+          p.region = region;
+          p.sub = sub;
+          if (tierVal) p.tiers[gmId] = tierVal;
+        }
+      } else {
+        // Add New
+        const existing = players.find(x => x.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+          existing.region = region;
+          existing.sub = sub;
+          if (tierVal) existing.tiers[gmId] = tierVal;
+        } else {
+          const newP = {
+            id: Date.now().toString(),
+            name,
+            region,
+            sub,
+            tiers: {}
+          };
+          if (tierVal) newP.tiers[gmId] = tierVal;
+          players.push(newP);
         }
       }
-      
-      isAdminOpen = !isAdminOpen;
-      panel.classList.toggle('active', isAdminOpen);
-      renderTiers();
+
+      localStorage.setItem('mct_players', JSON.stringify(players));
+      resetPlayerForm();
+      renderLeaderboard();
     }
 
-    function updateSiteTitle() {
-      const input = document.getElementById('newTitleInput').value.trim();
-      if (!input) return;
-      
-      const words = input.split(' ');
-      let formattedTitle = input;
-      if (words.length > 1) {
-        const lastWord = words.pop();
-        formattedTitle = `${words.join(' ')} <span>${lastWord}</span>`;
-      }
-
-      document.getElementById('siteTitle').innerHTML = formattedTitle;
-      localStorage.setItem('mctiers_title', formattedTitle);
-      document.getElementById('newTitleInput').value = '';
+    function editPlayer(id) {
+      const p = players.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('editingPlayerId').value = p.id;
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pRegion').value = p.region || '';
+      document.getElementById('pSub').value = p.sub || '';
+      document.getElementById('formModeTitle').innerText = 'Editing Player: ' + p.name;
     }
 
-    function addPlayer() {
-      const name = document.getElementById('playerNameInput').value.trim();
-      const mode = document.getElementById('gamemodeSelect').value;
-      const tier = document.getElementById('tierSelect').value;
-
-      if (!name) return alert('Please enter a player username.');
-
-      if (!tierData[mode][tier].includes(name)) {
-        tierData[mode][tier].push(name);
-        saveAndReload();
-        document.getElementById('playerNameInput').value = '';
-      } else {
-        alert('Player is already in this tier!');
-      }
+    function deletePlayer(id) {
+      players = players.filter(x => x.id !== id);
+      localStorage.setItem('mct_players', JSON.stringify(players));
+      renderLeaderboard();
     }
 
-    function removePlayer(name, tier) {
-      tierData[currentMode][tier] = tierData[currentMode][tier].filter(p => p !== name);
-      saveAndReload();
+    function resetPlayerForm() {
+      document.getElementById('editingPlayerId').value = '';
+      document.getElementById('pName').value = '';
+      document.getElementById('pRegion').value = '';
+      document.getElementById('pSub').value = '';
+      document.getElementById('pTierVal').value = '';
+      document.getElementById('formModeTitle').innerText = 'Add / Edit Player';
     }
 
-    function saveAndReload() {
-      localStorage.setItem('mctiers_data', JSON.stringify(tierData));
-      renderTiers();
-    }
-
-    // Initial Load
-    renderTiers();
+    renderAll();
   </script>
 </body>
 </html>
