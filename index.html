@@ -66,6 +66,11 @@
             background: var(--accent-hover);
         }
 
+        .btn-logout {
+            background: #ef4444;
+            display: none;
+        }
+
         .admin-panel {
             max-width: 1200px;
             margin: 0 auto 20px auto;
@@ -274,18 +279,18 @@
         .badge {
             background: var(--bg-input);
             border: 1px solid var(--border);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-weight: 700;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .badge img {
-            width: 14px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
             object-fit: contain;
         }
 
@@ -316,7 +321,10 @@
 
     <header>
         <div class="logo">BRUTE<span>TIERS</span></div>
-        <button class="btn" onclick="toggleAdmin()">⚙ Admin Panel</button>
+        <div>
+            <button class="btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin Login</button>
+            <button class="btn btn-logout" id="logoutBtn" onclick="logoutAdmin()">Logout Admin</button>
+        </div>
     </header>
 
     <div class="kit-bar" id="kitBar"></div>
@@ -364,6 +372,8 @@
     <script>
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
+        const ADMIN_PASS = "98909890";
+        let isAdminLoggedIn = false;
         
         const TIER_SCORES = {
             'HT1': 125, 'HT2': 112, 'HT3': 100, 'HT4': 88, 'HT5': 75,
@@ -403,7 +413,28 @@
         let players = JSON.parse(localStorage.getItem('brute_tiers_data')) || defaultPlayers;
 
         function toggleAdmin() {
-            document.getElementById('adminPanel').classList.toggle('active');
+            if (isAdminLoggedIn) {
+                document.getElementById('adminPanel').classList.toggle('active');
+            } else {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === ADMIN_PASS) {
+                    isAdminLoggedIn = true;
+                    document.getElementById('adminPanel').classList.add('active');
+                    document.getElementById('adminToggleBtn').textContent = "⚙ Panel";
+                    document.getElementById('logoutBtn').style.display = "inline-block";
+                    renderLeaderboard();
+                } else if (pass !== null) {
+                    alert("Incorrect Password!");
+                }
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('adminToggleBtn').textContent = "⚙ Admin Login";
+            document.getElementById('logoutBtn').style.display = "none";
+            renderLeaderboard();
         }
 
         function handleSkinUpload(event) {
@@ -505,15 +536,16 @@
                                 const icon = kitIcons[kit];
                                 return tier && tier !== 'NA' ? `
                                     <span class="badge ${tier}">
-                                        ${icon ? `<img src="${icon}">` : ''}
-                                        ${kit}: ${tier}
+                                        ${icon ? `<img src="${icon}">` : `<span>${kit}:</span>`}
+                                        ${tier}
                                     </span>` : '';
                             }).join('')}
                         </div>
+                        ${isAdminLoggedIn ? `
                         <div class="actions">
                             <button class="btn-sm btn-edit" onclick="editPlayer(${index})">Edit</button>
                             <button class="btn-sm btn-delete" onclick="deletePlayer(${index})">X</button>
-                        </div>
+                        </div>` : ''}
                     </div>
                 `;
             }).join('');
@@ -521,13 +553,11 @@
             players.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
         }
 
-        // Automatic 2D/3D Body Skin Rendering for local PNGs and Username APIs
         function renderSkin(index, username, customSkin) {
             const container = document.getElementById(`skin-box-${index}`);
             if (!container) return;
 
             if (customSkin && customSkin.trim() !== '') {
-                // If custom PNG uploaded, draw assembled front body onto HTML5 Canvas
                 const canvas = document.createElement('canvas');
                 canvas.width = 16;
                 canvas.height = 32;
@@ -538,26 +568,18 @@
                 const img = new Image();
                 img.onload = () => {
                     ctx.clearRect(0, 0, 16, 32);
-                    // Head
                     ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
-                    // Head Overlay
                     ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-                    // Torso
                     ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
-                    // Right Arm
                     ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
-                    // Left Arm
                     ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
-                    // Right Leg
                     ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
-                    // Left Leg
                     ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
                 };
                 img.src = customSkin;
                 container.innerHTML = '';
                 container.appendChild(canvas);
             } else {
-                // Fetch full-body 3D render model for usernames
                 const img = document.createElement('img');
                 img.className = 'skin-img';
                 img.src = `https://mc-heads.net/body/${username}/right`;
@@ -569,6 +591,8 @@
 
         document.getElementById('playerForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
             const index = document.getElementById('editIndex').value;
             const username = document.getElementById('username').value.trim();
             const region = document.getElementById('region').value;
@@ -595,6 +619,7 @@
         });
 
         function editPlayer(index) {
+            if (!isAdminLoggedIn) return;
             const player = players[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
@@ -606,11 +631,12 @@
             });
 
             if (!document.getElementById('adminPanel').classList.contains('active')) {
-                toggleAdmin();
+                document.getElementById('adminPanel').classList.add('active');
             }
         }
 
         function deletePlayer(index) {
+            if (!isAdminLoggedIn) return;
             if (confirm('Delete this player?')) {
                 players.splice(index, 1);
                 renderLeaderboard();
