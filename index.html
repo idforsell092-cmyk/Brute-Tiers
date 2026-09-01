@@ -6,15 +6,15 @@
   <title>MCTiers Leaderboard</title>
   <style>
     :root {
-      --bg: #0b0c10;
-      --card-bg: #14161d;
+      --bg: #0b0d12;
+      --card-bg: #131722;
       --accent: #55ff55;
       --text: #efeff1;
       --subtext: #8e8e9e;
-      --border: #232631;
+      --border: #1e2433;
       --danger: #ff4545;
     }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
     h1 { margin: 0; font-size: 22px; font-weight: 800; }
     h1 span { color: var(--accent); }
@@ -23,26 +23,62 @@
 
     /* Gamemode Bar */
     .gm-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-    .gm-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--subtext); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .gm-btn img { width: 16px; height: 16px; object-fit: contain; }
+    .gm-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--subtext); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .gm-btn img { width: 18px; height: 18px; object-fit: contain; }
 
     /* Leaderboard Table Structure */
-    .table-header { display: grid; grid-template-columns: 40px 1fr 60px 1.2fr; font-size: 11px; color: var(--subtext); font-weight: bold; text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border); }
-    .lb-container { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-    .player-row { display: grid; grid-template-columns: 40px 1fr 60px 1.2fr; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 8px; border-radius: 6px; position: relative; }
+    .table-header { display: grid; grid-template-columns: 160px 1fr 60px 1.2fr; font-size: 11px; color: var(--subtext); font-weight: bold; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .lb-container { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .player-row { display: grid; grid-template-columns: 160px 1fr 60px 1.2fr; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; position: relative; }
     
-    .rank-num { font-weight: bold; font-style: italic; font-size: 16px; color: #fff; }
-    .p-info { display: flex; align-items: center; gap: 10px; }
-    .p-skin { width: 32px; height: 42px; object-fit: contain; image-rendering: pixelated; }
-    .p-name { font-weight: bold; font-size: 14px; color: #fff; }
-    .p-sub { font-size: 11px; color: var(--subtext); }
+    /* MCTiers Slanted Badge System */
+    .badge-wrapper {
+      position: relative;
+      width: 140px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #2a3245 0%, #171c28 100%);
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+      border-radius: 4px 0 0 4px;
+      overflow: hidden;
+    }
+    
+    .badge-wrapper.rank-1 { background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%); color: #000; }
+    .badge-wrapper.rank-2 { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); color: #000; }
+    .badge-wrapper.rank-3 { background: linear-gradient(135deg, #f97316 0%, #9a3412 100%); color: #fff; }
+
+    .rank-num {
+      font-weight: 900;
+      font-style: italic;
+      font-size: 22px;
+      padding-left: 14px;
+      z-index: 2;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .badge-wrapper .p-skin {
+      position: absolute;
+      right: 4px;
+      bottom: -6px;
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.4));
+      z-index: 1;
+    }
+
+    .p-info { display: flex; flex-direction: column; justify-content: center; padding-left: 10px; }
+    .p-name { font-weight: bold; font-size: 15px; color: #fff; }
+    .p-sub { font-size: 11px; color: var(--subtext); display: flex; align-items: center; gap: 4px; }
 
     .region-tag { background: #281d1d; color: #ff5555; border: 1px solid #4a2828; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-align: center; width: max-content; }
     .region-tag.EU { background: #1d281e; color: #55ff55; border-color: #284a2b; }
     .region-tag.ME { background: #28261d; color: #ffaa00; border-color: #4a4228; }
 
     .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tier-badge { background: #1a1d26; border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
+    .tier-badge { background: #0f121a; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; }
     .tier-badge img { width: 14px; height: 14px; object-fit: contain; }
     .tier-val { color: #ffaa00; }
 
@@ -140,10 +176,10 @@
 
   <!-- Table Header -->
   <div class="table-header">
-    <div>#</div>
-    <div>Player</div>
-    <div>Region</div>
-    <div>Tiers</div>
+    <div>RANK</div>
+    <div>PLAYER</div>
+    <div>REGION</div>
+    <div>TIERS</div>
   </div>
 
   <!-- Leaderboard Output -->
@@ -152,24 +188,22 @@
   <script>
     const ADMIN_PASS = "98909890";
 
-    // Default Gamemodes
     const defaultGamemodes = [
       { id: 'sword', name: 'Sword', icon: 'https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png' },
       { id: 'vanilla', name: 'Vanilla', icon: 'https://minecraft.wiki/images/Netherite_Crystal_JE2.png' },
       { id: 'pot', name: 'Pot', icon: 'https://minecraft.wiki/images/Splashing_Healing_Potion_JE2_BE2.png' }
     ];
 
-    // Default Players
     const defaultPlayers = [
       { id: '1', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
-      { id: '2', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } }
+      { id: '2', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } },
+      { id: '3', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
     ];
 
     let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
     let players = JSON.parse(localStorage.getItem('mct_players')) || defaultPlayers;
     let isAdmin = false;
 
-    // Load Title
     const savedTitle = localStorage.getItem('mct_title');
     if (savedTitle) document.getElementById('siteTitle').innerHTML = savedTitle;
 
@@ -215,21 +249,26 @@
           }
         }
 
-        const skinSrc = p.customSkin ? p.customSkin : `https://mc-heads.net/body/${p.name}/40`;
+        const skinSrc = p.customSkin ? p.customSkin : `https://mc-heads.net/body/${p.name}/100`;
+        const rankNum = idx + 1;
+        const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
 
         container.innerHTML += `
           <div class="player-row">
-            <div class="rank-num">${idx + 1}.</div>
-            <div class="p-info">
-              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://mc-heads.net/body/Steve/40'">
-              <div>
-                <div class="p-name">${p.name}</div>
-                <div class="p-sub">${p.sub || 'Member'}</div>
-              </div>
+            <div class="badge-wrapper ${rankClass}">
+              <span class="rank-num">${rankNum}.</span>
+              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://mc-heads.net/body/Steve/100'">
             </div>
+            
+            <div class="p-info">
+              <div class="p-name">${p.name}</div>
+              <div class="p-sub">♦ ${p.sub || 'Member'}</div>
+            </div>
+            
             <div>
               <span class="region-tag ${p.region}">${p.region || 'NA'}</span>
             </div>
+            
             <div class="tiers-list">${tiersHTML}</div>
             
             <div class="action-btns">
@@ -278,7 +317,7 @@
       reader.readAsDataURL(file);
     }
 
-    // Auto-convert raw 64x64 skin PNG to assembled player front view
+    // Auto-crop & assemble skin to 3D front view
     function handleSkinUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
