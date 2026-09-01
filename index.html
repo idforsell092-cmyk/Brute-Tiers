@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community MCTiers</title>
+  <style>
+    :root {
+      --bg: #0e0e11;
+      --card-bg: #18181c;
+      --accent: #55ff55;
+      --text: #efeff1;
+      --subtext: #adadb8;
+      --danger: #ff4545;
+      --t1: #ff4545; --t2: #ffaa00; --t3: #ffff55; --t4: #55ff55; --t5: #55ffff;
+    }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+    header { text-align: center; padding: 20px 0; border-bottom: 1px solid #2a2a30; position: relative; }
+    h1 { margin: 0; color: #fff; font-size: 26px; text-transform: uppercase; }
+    h1 span { color: var(--accent); }
+    .subtitle { color: var(--subtext); font-size: 13px; margin-top: 5px; }
+    
+    /* Navigation Tabs */
+    .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+    .tab-btn { background: var(--card-bg); border: 1px solid #2a2a30; color: var(--subtext); padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .tab-btn.active { border-color: var(--accent); color: #fff; background: #222228; }
+    
+    /* Tier Cards */
+    .tier-container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .tier-card { background: var(--card-bg); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 5px solid #fff; }
+    .tier-card.t1 { border-color: var(--t1); } .tier-card.t2 { border-color: var(--t2); }
+    .tier-card.t3 { border-color: var(--t3); } .tier-card.t4 { border-color: var(--t4); }
+    .tier-title { font-weight: bold; font-size: 16px; text-transform: uppercase; }
+    .player-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .player-tag { background: #222228; padding: 5px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; font-size: 14px; position: relative; }
+    .player-tag img { width: 18px; height: 18px; border-radius: 2px; }
+    .remove-btn { display: none; color: var(--danger); font-weight: bold; margin-left: 4px; cursor: pointer; border: none; background: transparent; font-size: 14px; }
+    .admin-active .remove-btn { display: inline; }
 
+    /* Admin Settings Panel */
+    .admin-toggle-btn { position: absolute; right: 10px; top: 10px; background: #222228; border: 1px solid #333; color: var(--subtext); padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+    .admin-panel { max-width: 600px; margin: 20px auto; background: var(--card-bg); border: 1px solid #3a3a45; padding: 15px; border-radius: 8px; display: none; flex-direction: column; gap: 12px; }
+    .admin-panel.active { display: flex; }
+    .admin-panel h3 { margin: 0; color: var(--accent); font-size: 16px; border-bottom: 1px solid #2a2a30; padding-bottom: 8px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; text-align: left; }
+    .form-group label { font-size: 12px; color: var(--subtext); }
+    .form-group input, .form-group select { background: #0e0e11; border: 1px solid #3a3a45; color: #fff; padding: 8px; border-radius: 4px; outline: none; }
+    .btn-submit { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Settings</button>
+    <h1 id="siteTitle">BRUTE <span>TIERS</span></h1>
+    <div class="subtitle">Official Community PvP Rankings</div>
+  </header>
+
+  <!-- Admin Controls Panel -->
+  <div class="admin-panel" id="adminPanel">
+    <h3>⚙️ Admin Control Panel</h3>
+    
+    <!-- Title Customizer -->
+    <div class="form-group">
+      <label>Change Server/Website Name</label>
+      <div style="display:flex; gap: 8px;">
+        <input type="text" id="newTitleInput" placeholder="e.g. BRUTE TIERS" style="flex:1;">
+        <button class="btn-submit" onclick="updateSiteTitle()" style="margin:0; padding:0 15px;">Save Name</button>
+      </div>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #2a2a30; width:100%;">
+
+    <!-- Player Manager -->
+    <div class="form-group">
+      <label>Player Username</label>
+      <input type="text" id="playerNameInput" placeholder="Exact Minecraft Name">
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <div class="form-group" style="flex: 1;">
+        <label>Gamemode</label>
+        <select id="gamemodeSelect">
+          <option value="sword">Sword</option>
+          <option value="vanilla">Vanilla</option>
+          <option value="crystal">Crystal</option>
+          <option value="axe">Axe</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="flex: 1;">
+        <label>Tier Rank</label>
+        <select id="tierSelect">
+          <option value="Tier 1 (High)">Tier 1 (High)</option>
+          <option value="Tier 2 (Mid)">Tier 2 (Mid)</option>
+          <option value="Tier 3 (Low)">Tier 3 (Low)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="addPlayer()">+ Add Player to Tierlist</button>
+  </div>
+
+  <!-- Gamemode Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchGamemode('sword', event)">Sword</button>
+    <button class="tab-btn" onclick="switchGamemode('vanilla', event)">Vanilla</button>
+    <button class="tab-btn" onclick="switchGamemode('crystal', event)">Crystal</button>
+    <button class="tab-btn" onclick="switchGamemode('axe', event)">Axe</button>
+  </div>
+
+  <!-- Tierlist Output Container -->
+  <div class="tier-container" id="tierContainer"></div>
+
+  <script>
+    // Default Tierlist Data
+    const defaultData = {
+      sword: { "Tier 1 (High)": ["Steve"], "Tier 2 (Mid)": ["Alex"], "Tier 3 (Low)": ["Notch"] },
+      vanilla: { "Tier 1 (High)": ["Notch"], "Tier 2 (Mid)": ["Steve"], "Tier 3 (Low)": ["Alex"] },
+      crystal: { "Tier 1 (High)": ["Alex"], "Tier 2 (Mid)": ["Grumm"], "Tier 3 (Low)": ["Steve"] },
+      axe: { "Tier 1 (High)": ["Steve"], "Tier 2 (Mid)": ["Grumm"], "Tier 3 (Low)": ["Notch"] }
+    };
+
+    // Load Saved Data or Default
+    let tierData = JSON.parse(localStorage.getItem('mctiers_data')) || defaultData;
+    let currentMode = 'sword';
+    let isAdminOpen = false;
+
+    // Load Saved Website Title
+    const savedTitle = localStorage.getItem('mctiers_title');
+    if (savedTitle) {
+      document.getElementById('siteTitle').innerHTML = savedTitle;
+    }
+
+    function renderTiers() {
+      const container = document.getElementById('tierContainer');
+      container.innerHTML = '';
+
+      if (isAdminOpen) {
+        container.classList.add('admin-active');
+      } else {
+        container.classList.remove('admin-active');
+      }
+
+      const data = tierData[currentMode];
+      let tierIndex = 1;
+
+      for (const [tierName, players] of Object.entries(data)) {
+        const card = document.createElement('div');
+        card.className = `tier-card t${tierIndex}`;
+        
+        let playersHTML = players.map(p => `
+          <div class="player-tag">
+            <img src="https://mc-heads.net/avatar/${p}/18" alt="${p}">
+            <span>${p}</span>
+            <button class="remove-btn" onclick="removePlayer('${p}', '${tierName}')">✕</button>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="tier-title">${tierName}</div>
+          <div class="player-list">${playersHTML}</div>
+        `;
+        container.appendChild(card);
+        tierIndex++;
+      }
+    }
+
+    function switchGamemode(mode, evt) {
+      currentMode = mode;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (evt) evt.target.classList.add('active');
+      renderTiers();
+    }
+
+    function toggleAdminPanel() {
+      const panel = document.getElementById('adminPanel');
+      isAdminOpen = !isAdminOpen;
+      panel.classList.toggle('active', isAdminOpen);
+      renderTiers();
+    }
+
+    function updateSiteTitle() {
+      const input = document.getElementById('newTitleInput').value.trim();
+      if (!input) return;
+      
+      // Wraps second word in styled span
+      const words = input.split(' ');
+      let formattedTitle = input;
+      if (words.length > 1) {
+        const lastWord = words.pop();
+        formattedTitle = `${words.join(' ')} <span>${lastWord}</span>`;
+      }
+
+      document.getElementById('siteTitle').innerHTML = formattedTitle;
+      localStorage.setItem('mctiers_title', formattedTitle);
+      document.getElementById('newTitleInput').value = '';
+    }
+
+    function addPlayer() {
+      const name = document.getElementById('playerNameInput').value.trim();
+      const mode = document.getElementById('gamemodeSelect').value;
+      const tier = document.getElementById('tierSelect').value;
+
+      if (!name) return alert('Please enter a player username.');
+
+      if (!tierData[mode][tier].includes(name)) {
+        tierData[mode][tier].push(name);
+        saveAndReload();
+        document.getElementById('playerNameInput').value = '';
+      } else {
+        alert('Player is already in this tier!');
+      }
+    }
+
+    function removePlayer(name, tier) {
+      tierData[currentMode][tier] = tierData[currentMode][tier].filter(p => p !== name);
+      saveAndReload();
+    }
+
+    function saveAndReload() {
+      localStorage.setItem('mctiers_data', JSON.stringify(tierData));
+      renderTiers();
+    }
+
+    // Initial Load
+    renderTiers();
+  </script>
+</body>
+</html>
