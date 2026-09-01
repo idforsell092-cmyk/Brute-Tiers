@@ -113,6 +113,9 @@
   <div class="tier-container" id="tierContainer"></div>
 
   <script>
+    // Password Configuration
+    const ADMIN_PASSWORD = "98909890";
+
     // Default Tierlist Data
     const defaultData = {
       sword: { "Tier 1 (High)": ["Steve"], "Tier 2 (Mid)": ["Alex"], "Tier 3 (Low)": ["Notch"] },
@@ -175,6 +178,15 @@
 
     function toggleAdminPanel() {
       const panel = document.getElementById('adminPanel');
+      
+      if (!isAdminOpen) {
+        const inputPass = prompt("Enter Admin Password:");
+        if (inputPass !== ADMIN_PASSWORD) {
+          alert("Incorrect Password!");
+          return;
+        }
+      }
+      
       isAdminOpen = !isAdminOpen;
       panel.classList.toggle('active', isAdminOpen);
       renderTiers();
@@ -184,7 +196,6 @@
       const input = document.getElementById('newTitleInput').value.trim();
       if (!input) return;
       
-      // Wraps second word in styled span
       const words = input.split(' ');
       let formattedTitle = input;
       if (words.length > 1) {
