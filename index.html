@@ -1,520 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BRUTE TIERS</title>
-  <style>
-    :root {
-      --bg: #0b0d12;
-      --card-bg: #131722;
-      --accent: #a855f7;
-      --accent-hover: #9333ea;
-      --accent-glow: rgba(168, 85, 247, 0.25);
-      --text: #efeff1;
-      --subtext: #94a3b8;
-      --border: #1e293b;
-      --danger: #ef4444;
-      --panel-bg: #0f121d;
-    }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
-    h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-    h1 span { color: var(--accent); }
-    
-    .admin-toggle-btn { background: #1e1b2e; border: 1px solid var(--accent); color: var(--accent); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .admin-toggle-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRUTE TIERS</title>
+    <style>
+        :root {
+            --bg-main: #0d0e12;
+            --bg-card: #15161e;
+            --bg-input: #1f202c;
+            --accent: #a855f7;
+            --accent-hover: #9333ea;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #2e303e;
+            --gold: #f59e0b;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+        }
 
-    /* Gamemode Bar */
-    .gm-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-    .gm-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--subtext); padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .gm-btn img { width: 18px; height: 18px; object-fit: contain; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* Leaderboard Table Structure */
-    .table-header { display: grid; grid-template-columns: 160px 1fr 60px 1.2fr; font-size: 11px; color: var(--subtext); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border); }
-    .lb-container { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-    .player-row { display: grid; grid-template-columns: 160px 1fr 60px 1.2fr; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; position: relative; }
-    
-    /* Rank Container */
-    .rank-container {
-      position: relative;
-      width: 140px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-    }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-    /* Slanted Badge Background */
-    .badge-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 110px;
-      height: 100%;
-      background: linear-gradient(135deg, #2a3245 0%, #171c28 100%);
-      clip-path: polygon(0 0, 100% 0, 75% 100%, 0 100%);
-      border-radius: 4px 0 0 4px;
-    }
-    
-    .badge-bg.rank-1 { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
-    .badge-bg.rank-2 { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); }
-    .badge-bg.rank-3 { background: linear-gradient(135deg, #f97316 0%, #9a3412 100%); }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+        }
 
-    .rank-num {
-      position: relative;
-      z-index: 2;
-      font-weight: 900;
-      font-style: italic;
-      font-size: 22px;
-      padding-left: 14px;
-      color: #fff;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-    }
-    .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
 
-    /* Player Skin Render */
-    .p-skin-wrapper {
-      position: absolute;
-      right: 12px;
-      bottom: -2px;
-      height: 54px;
-      width: auto;
-      z-index: 3;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-    .p-skin-wrapper img {
-      height: 54px;
-      width: auto;
-      object-fit: contain;
-      image-rendering: pixelated;
-      filter: drop-shadow(-2px 2px 3px rgba(0,0,0,0.5));
-    }
+        .logo span {
+            color: var(--accent);
+        }
 
-    .p-info { display: flex; flex-direction: column; justify-content: center; padding-left: 10px; }
-    .p-name { font-weight: 700; font-size: 15px; color: #fff; }
-    .p-sub { font-size: 11px; color: var(--subtext); display: flex; align-items: center; gap: 4px; }
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-    .region-tag { background: #281d1d; color: #ff5555; border: 1px solid #4a2828; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-align: center; width: max-content; }
-    .region-tag.EU { background: #1d281e; color: #55ff55; border-color: #284a2b; }
-    .region-tag.ME { background: #28261d; color: #ffaa00; border-color: #4a4228; }
-    .region-tag.AS { background: #1d2228; color: #55aaff; border-color: #28384a; }
+        .btn:hover {
+            background: var(--accent-hover);
+        }
 
-    .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tier-badge { background: #0f121a; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
-    .tier-badge img { width: 14px; height: 14px; object-fit: contain; }
-    .tier-val { color: #ffaa00; }
+        .admin-panel {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
+        }
 
-    /* Admin Controls */
-    .action-btns { display: none; gap: 4px; position: absolute; right: 8px; top: 8px; }
-    .admin-active .action-btns { display: flex; }
-    .btn-act { background: #1e293b; border: 1px solid var(--border); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
-    .btn-del { color: var(--danger); border-color: #451a1a; background: #281515; }
+        .admin-panel.active {
+            display: block;
+        }
 
-    /* Light Purple Admin Panel UI */
-    .admin-panel { 
-      background: var(--panel-bg); 
-      border: 1px solid rgba(168, 85, 247, 0.3); 
-      padding: 18px; 
-      border-radius: 12px; 
-      display: none; 
-      flex-direction: column; 
-      gap: 14px; 
-      margin-bottom: 20px; 
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
-    }
-    .admin-panel.active { display: flex; }
-    .admin-panel h3 { margin: 0; color: #f3e8ff; font-size: 15px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    
-    .panel-section { background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
-    
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 11px; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-group input, .form-group select { background: #090b10; border: 1px solid var(--border); color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 12px; outline: none; transition: 0.2s; }
-    .form-group input:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
-    
-    .btn-main { background: var(--accent); color: #fff; font-weight: 700; border: none; padding: 9px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 12px; }
-    .btn-main:hover { background: var(--accent-hover); box-shadow: 0 0 10px var(--accent-glow); }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
 
-    .drop-zone { border: 2px dashed rgba(168, 85, 247, 0.4); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: #cbd5e1; cursor: pointer; background: rgba(168, 85, 247, 0.05); transition: 0.2s; font-weight: 600; }
-    .drop-zone:hover { border-color: var(--accent); background: rgba(168, 85, 247, 0.12); }
-    .file-input { display: none; }
-  </style>
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: white;
+            outline: none;
+        }
+
+        .tier-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tier-input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .leaderboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .player-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 20px;
+            display: grid;
+            grid-template-columns: 50px 70px 1fr 80px 2fr auto;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rank {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+
+        .avatar-container {
+            width: 50px;
+            height: 50px;
+        }
+
+        .avatar-canvas {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        .player-info h3 {
+            font-size: 1.1rem;
+        }
+
+        .player-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .region-badge {
+            background: var(--bg-input);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .tier-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .badge {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge.HT1, .badge.HT2 { color: #f43f5e; border-color: #f43f5e44; }
+        .badge.HT3, .badge.HT4, .badge.HT5 { color: #fb923c; border-color: #fb923c44; }
+        .badge.LT1, .badge.LT2, .badge.LT3 { color: #38bdf8; border-color: #38bdf844; }
+        .badge.LT4, .badge.LT5 { color: #a3e635; border-color: #a3e63544; }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+
+        .btn-edit { background: #3b82f6; }
+        .btn-delete { background: #ef4444; }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1 id="siteTitle">BRUTE <span>TIERS</span></h1>
-    <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
-  </header>
+    <header>
+        <div class="logo">BRUTE<span>TIERS</span></div>
+        <button class="btn" onclick="toggleAdmin()">⚙ Admin Panel</button>
+    </header>
 
-  <div class="admin-panel" id="adminPanel">
-    <h3>⚙️ Admin Control Center</h3>
-    
-    <div class="panel-section">
-      <div class="form-group">
-        <label>Server / Website Name</label>
-        <div style="display:flex; gap: 8px;">
-          <input type="text" id="titleInput" placeholder="BRUTE TIERS" style="flex:1;">
-          <button class="btn-main" onclick="saveTitle()">Save Title</button>
-        </div>
-      </div>
+    <div class="admin-panel" id="adminPanel">
+        <h2 style="margin-bottom: 15px;">Add / Edit Player</h2>
+        <form id="playerForm">
+            <input type="hidden" id="editIndex">
+            <div class="form-grid">
+                <div>
+                    <label>Minecraft Username</label>
+                    <input type="text" id="username" placeholder="e.g. AxtherBhaii" required>
+                </div>
+                <div>
+                    <label>Region</label>
+                    <select id="region">
+                        <option value="IND">IND</option>
+                        <option value="NA">NA</option>
+                        <option value="EU">EU</option>
+                        <option value="ASIA">ASIA</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Custom Skin PNG URL (Optional)</label>
+                    <input type="url" id="customSkin" placeholder="https://i.imgur.com/...">
+                </div>
+            </div>
+
+            <label style="display:block; margin-bottom: 10px; font-weight:600;">Kit Tiers</label>
+            <div class="tier-inputs" id="tierInputsContainer"></div>
+
+            <button type="submit" class="btn" style="width: 100%;">Save Player to Global Leaderboard</button>
+        </form>
     </div>
 
-    <div class="panel-section">
-      <label style="font-size:12px; font-weight:bold; color:var(--accent);">Gamemode Manager</label>
-      <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Sword, Pot)">
-      <input type="text" id="newGmIcon" placeholder="Icon Image URL (or upload image below)">
-      
-      <div class="drop-zone" onclick="document.getElementById('gmFileInput').click()">
-        📁 Tap to Select/Upload Gamemode Icon
-      </div>
-      <input type="file" id="gmFileInput" class="file-input" accept="image/*" onchange="handleFileUpload(event)">
+    <div class="leaderboard" id="leaderboard"></div>
 
-      <button class="btn-main" onclick="addGamemode()">+ Add Gamemode</button>
-      <div id="gmRemoveList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;"></div>
-    </div>
-
-    <div class="panel-section">
-      <label style="font-size:12px; font-weight:bold; color:var(--accent);" id="formModeTitle">Add / Edit Player</label>
-      <input type="hidden" id="editingPlayerId">
-      <input type="hidden" id="renderedSkinData">
-      
-      <div style="display:flex; gap:8px;">
-        <input type="number" id="pRank" placeholder="Rank #" style="width: 90px;" min="1">
-        <input type="text" id="pName" placeholder="Minecraft Username" style="flex:1;">
-      </div>
-
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="pRegion" placeholder="Region (e.g. NA, EU, AS)" style="flex:1;">
-        <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
-      </div>
-
-      <div class="drop-zone" onclick="document.getElementById('skinFileInput').click()">
-        👕 Tap to Upload Custom Skin (.png)
-      </div>
-      <input type="file" id="skinFileInput" class="file-input" accept="image/png" onchange="processCustomSkin(event)">
-      <div id="skinUploadStatus" style="font-size: 11px; color: var(--accent); font-weight: bold; display: none;">✓ Custom Skin Attached!</div>
-
-      <div style="display:flex; gap:8px;">
-        <select id="pGmSelect" style="flex:1;"></select>
-        <input type="text" id="pTierVal" placeholder="Tier (e.g. HT1, LT2)" style="flex:1;">
-      </div>
-
-      <div style="display:flex; gap:8px; margin-top:4px;">
-        <button class="btn-main" onclick="savePlayer()" style="flex:1;">Save Player</button>
-        <button class="btn-main" onclick="resetPlayerForm()" style="background:#334155;">Clear Form</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="gm-bar" id="gmBar"></div>
-
-  <div class="table-header">
-    <div>RANK</div>
-    <div>PLAYER</div>
-    <div>REGION</div>
-    <div>TIERS</div>
-  </div>
-
-  <div class="lb-container" id="lbContainer"></div>
-
-  <script>
-    const ADMIN_PASS = "98909890";
-
-    const defaultGamemodes = [
-      { id: 'sword', name: 'Sword', icon: 'https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png' },
-      { id: 'nethpot', name: 'NethPot', icon: 'https://minecraft.wiki/images/Splashing_Healing_Potion_JE2_BE2.png' }
-    ];
-
-    const defaultPlayers = [
-      { id: '1', name: 'ItsNotWh1te', customSkin: '', region: 'AS', sub: 'Combat GrandExpert', tiers: { sword: 'HT1' } },
-      { id: '2', name: 'Marlowww', customSkin: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', nethpot: 'HT1' } },
-      { id: '3', name: 'ItzRealMe', customSkin: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3' } },
-      { id: '4', name: 'coldified', customSkin: '', region: 'ME', sub: 'Combat Master', tiers: { sword: 'HT2' } }
-    ];
-
-    let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
-    let players = JSON.parse(localStorage.getItem('mct_players')) || defaultPlayers;
-    let isAdmin = false;
-
-    const savedTitle = localStorage.getItem('mct_title');
-    if (savedTitle) document.getElementById('siteTitle').innerHTML = savedTitle;
-
-    function renderAll() {
-      renderGamemodes();
-      renderLeaderboard();
-    }
-
-    function renderGamemodes() {
-      const bar = document.getElementById('gmBar');
-      const select = document.getElementById('pGmSelect');
-      const rmList = document.getElementById('gmRemoveList');
-
-      bar.innerHTML = '';
-      select.innerHTML = '';
-      rmList.innerHTML = '';
-
-      gamemodes.forEach(gm => {
-        bar.innerHTML += `<div class="gm-btn"><img src="${gm.icon}" onerror="this.style.display='none'"> ${gm.name}</div>`;
-        select.innerHTML += `<option value="${gm.id}">${gm.name}</option>`;
-        rmList.innerHTML += `<button class="btn-act btn-del" onclick="removeGamemode('${gm.id}')">✕ ${gm.name}</button>`;
-      });
-    }
-
-    // Process custom skin upload via 2D canvas assembly to create 3D front body render
-    function processCustomSkin(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          canvas.width = 16;
-          canvas.height = 32;
-          const ctx = canvas.getContext('2d');
-          ctx.imageSmoothingEnabled = false;
-
-          // Draw Head
-          ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
-          // Draw Head Outer Layer
-          ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-
-          // Draw Body
-          ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
-          // Draw Body Outer Layer
-          ctx.drawImage(img, 20, 36, 8, 12, 4, 8, 8, 12);
-
-          // Draw Right Arm
-          ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
-          // Draw Left Arm
-          ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
-
-          // Draw Right Leg
-          ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
-          // Draw Left Leg
-          ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
-
-          const compiledRender = canvas.toDataURL('image/png');
-          document.getElementById('renderedSkinData').value = compiledRender;
-          document.getElementById('skinUploadStatus').style.display = 'block';
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function renderLeaderboard() {
-      const container = document.getElementById('lbContainer');
-      container.innerHTML = '';
-
-      if (isAdmin) container.classList.add('admin-active');
-      else container.classList.remove('admin-active');
-
-      players.forEach((p, idx) => {
-        let tiersHTML = '';
-        for (const [gmId, tierVal] of Object.entries(p.tiers)) {
-          const gm = gamemodes.find(g => g.id === gmId);
-          if (gm) {
-            tiersHTML += `
-              <div class="tier-badge">
-                <img src="${gm.icon}">
-                <span class="tier-val">${tierVal}</span>
-              </div>
-            `;
-          }
-        }
-
-        const rankNum = idx + 1;
-        const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
+    <script>
+        const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
+        const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
         
-        // Custom uploaded skin vs standard 3D Visage API
-        const skinSrc = (p.customSkin && p.customSkin.startsWith('data:image')) 
-          ? p.customSkin 
-          : `https://visage.surgeplay.com/full/120/${p.name}`;
+        const TIER_SCORES = {
+            'HT1': 125, 'HT2': 112, 'HT3': 100, 'HT4': 88, 'HT5': 75,
+            'LT1': 62,  'LT2': 50,  'LT3': 38,  'LT4': 25, 'LT5': 12,
+            'NA': 0
+        };
 
-        container.innerHTML += `
-          <div class="player-row">
-            <div class="rank-container ${rankClass}">
-              <div class="badge-bg ${rankClass}"></div>
-              <span class="rank-num">${rankNum}.</span>
-              <div class="p-skin-wrapper">
-                <img src="${skinSrc}" alt="${p.name}" onerror="this.src='https://visage.surgeplay.com/full/120/Steve'">
-              </div>
-            </div>
-            
-            <div class="p-info">
-              <div class="p-name">${p.name}</div>
-              <div class="p-sub">♦ ${p.sub || 'Member'}</div>
-            </div>
-            
-            <div>
-              <span class="region-tag ${p.region}">${p.region || 'NA'}</span>
-            </div>
-            
-            <div class="tiers-list">${tiersHTML}</div>
-            
-            <div class="action-btns">
-              <button class="btn-act" onclick="editPlayer('${p.id}')">Edit</button>
-              <button class="btn-act btn-del" onclick="deletePlayer('${p.id}')">✕</button>
-            </div>
-          </div>
-        `;
-      });
-    }
+        // GLOBAL DEFAULT DATA - SHARED AMONG ALL VISITORS
+        const defaultPlayers = [
+            {
+                username: "AxtherBhaii",
+                region: "IND",
+                customSkin: "",
+                tiers: { Sword: "HT4", Axe: "HT3", NethPot: "LT1", DiaPot: "LT2", UHC: "HT4", Smp: "LT2", Lifesteal: "LT3", Mace: "NA", Crystal: "LT1" }
+            },
+            {
+                username: "ItsNotWh1te",
+                region: "IND",
+                customSkin: "",
+                tiers: { Sword: "LT2", Axe: "HT3", NethPot: "HT5", DiaPot: "LT3", UHC: "LT1", Smp: "LT4", Lifesteal: "LT3", Mace: "LT4", Crystal: "LT3" }
+            },
+            {
+                username: "blatha",
+                region: "IND",
+                customSkin: "",
+                tiers: { Sword: "HT5", Axe: "LT2", NethPot: "NA", DiaPot: "LT3", UHC: "LT3", Smp: "LT5", Lifesteal: "LT4", Mace: "NA", Crystal: "NA" }
+            },
+            { username: "sufrrlol", region: "NA", customSkin: "", tiers: { Sword: "LT3" } },
+            { username: "RealElite_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
+            { username: "nexloft_playz", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
+            { username: "RaiKOuu_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
+            { username: "EzLoad__", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
+            { username: "ItzDoomsdayy", region: "NA", customSkin: "", tiers: { Sword: "LT5" } }
+        ];
 
-    function toggleAdminPanel() {
-      if (!isAdmin) {
-        const pass = prompt("Enter Admin Password:");
-        if (pass !== ADMIN_PASS) return alert("Incorrect Password!");
-        isAdmin = true;
-      } else {
-        isAdmin = false;
-      }
-      document.getElementById('adminPanel').classList.toggle('active', isAdmin);
-      renderLeaderboard();
-    }
+        let players = JSON.parse(localStorage.getItem('brute_tiers_data')) || defaultPlayers;
 
-    function saveTitle() {
-      const val = document.getElementById('titleInput').value.trim();
-      if (!val) return;
-      const parts = val.split(' ');
-      let titleHTML = val;
-      if (parts.length > 1) {
-        const last = parts.pop();
-        titleHTML = `${parts.join(' ')} <span>${last}</span>`;
-      }
-      document.getElementById('siteTitle').innerHTML = titleHTML;
-      localStorage.setItem('mct_title', titleHTML);
-    }
-
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('newGmIcon').value = e.target.result;
-        alert("Gamemode icon uploaded!");
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function addGamemode() {
-      const name = document.getElementById('newGmName').value.trim();
-      const icon = document.getElementById('newGmIcon').value.trim();
-      if (!name) return alert('Enter Gamemode Name!');
-
-      const id = name.toLowerCase().replace(/\s+/g, '');
-      gamemodes.push({ id, name, icon: icon || 'https://minecraft.wiki/images/Diamond_JE3_BE3.png' });
-      localStorage.setItem('mct_gms', JSON.stringify(gamemodes));
-      renderAll();
-      document.getElementById('newGmName').value = '';
-      document.getElementById('newGmIcon').value = '';
-      document.getElementById('gmFileInput').value = '';
-    }
-
-    function removeGamemode(id) {
-      gamemodes = gamemodes.filter(g => g.id !== id);
-      localStorage.setItem('mct_gms', JSON.stringify(gamemodes));
-      renderAll();
-    }
-
-    function savePlayer() {
-      const editId = document.getElementById('editingPlayerId').value;
-      const rankInput = document.getElementById('pRank').value.trim();
-      const name = document.getElementById('pName').value.trim();
-      const customSkin = document.getElementById('renderedSkinData').value;
-      const region = document.getElementById('pRegion').value.trim().toUpperCase();
-      const sub = document.getElementById('pSub').value.trim();
-      const gmId = document.getElementById('pGmSelect').value;
-      const tierVal = document.getElementById('pTierVal').value.trim();
-
-      if (!name) return alert('Enter Minecraft Username!');
-
-      let targetIndex = rankInput ? parseInt(rankInput) - 1 : players.length;
-      if (targetIndex < 0) targetIndex = 0;
-
-      let playerObj;
-
-      if (editId) {
-        const currentIndex = players.findIndex(x => x.id === editId);
-        if (currentIndex !== -1) {
-          playerObj = players.splice(currentIndex, 1)[0];
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
         }
-      }
 
-      if (!playerObj) {
-        const existingIndex = players.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
-        if (existingIndex !== -1) {
-          playerObj = players.splice(existingIndex, 1)[0];
-        } else {
-          playerObj = {
-            id: Date.now().toString(),
-            name,
-            customSkin: '',
-            region,
-            sub,
-            tiers: {}
-          };
+        function buildTierInputs() {
+            const container = document.getElementById('tierInputsContainer');
+            container.innerHTML = KITS.map(kit => `
+                <div class="tier-input-group">
+                    <label>${kit}</label>
+                    <select id="tier-${kit}">
+                        ${TIERS.map(t => `<option value="${t}">${t}</option>`).join('')}
+                    </select>
+                </div>
+            `).join('');
         }
-      }
 
-      playerObj.name = name;
-      if (customSkin) {
-        playerObj.customSkin = customSkin;
-      }
-      playerObj.region = region;
-      playerObj.sub = sub;
-      if (tierVal) playerObj.tiers[gmId] = tierVal;
+        function calculatePoints(playerTiers) {
+            let total = 0;
+            KITS.forEach(kit => {
+                const tier = playerTiers[kit] || 'NA';
+                total += TIER_SCORES[tier] || 0;
+            });
+            return total;
+        }
 
-      if (targetIndex >= players.length) {
-        players.push(playerObj);
-      } else {
-        players.splice(targetIndex, 0, playerObj);
-      }
+        function getTitle(points) {
+            if (points >= 800) return 'Combat Grandmaster';
+            if (points >= 500) return 'Combat GrandExpert';
+            if (points >= 300) return 'Combat Expert';
+            if (points >= 100) return 'Combat Specialist';
+            return 'Rookie';
+        }
 
-      localStorage.setItem('mct_players', JSON.stringify(players));
-      resetPlayerForm();
-      renderLeaderboard();
-    }
-    function editPlayer(id) {
-      const index = players.findIndex(x => x.id === id);
-      if (index === -1) return;
-      
-      const p = players[index];
-      document.getElementById('editingPlayerId').value = p.id;
-      document.getElementById('pRank').value = index + 1;
-      document.getElementById('pName').value = p.name;
-      document.getElementById('renderedSkinData').value = p.customSkin || '';
-      document.getElementById('pRegion').value = p.region || '';
-      document.getElementById('pSub').value = p.sub || '';
-      document.getElementById('formModeTitle').innerText = 'Editing Player: ' + p.name;
-    }
+        function renderLeaderboard() {
+            players.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            localStorage.setItem('brute_tiers_data', JSON.stringify(players));
 
-    function deletePlayer(id) {
-      players = players.filter(x => x.id !== id);
-      localStorage.setItem('mct_players', JSON.stringify(players));
-      renderLeaderboard();
-    }
+            const container = document.getElementById('leaderboard');
+            container.innerHTML = players.map((player, index) => {
+                const points = calculatePoints(player.tiers);
+                const title = getTitle(points);
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
 
-    function resetPlayerForm() {
-      document.getElementById('editingPlayerId').value = '';
-      document.getElementById('pRank').value = '';
-      document.getElementById('pName').value = '';
-      document.getElementById('renderedSkinData').value = '';
-      document.getElementById('pRegion').value = '';
-      document.getElementById('pSub').value = '';
-      document.getElementById('pTierVal').value = '';
-      document.getElementById('skinFileInput').value = '';
-      document.getElementById('skinUploadStatus').style.display = 'none';
-      document.getElementById('formModeTitle').innerText = 'Add / Edit Player';
-    }
+                return `
+                    <div class="player-card">
+                        <div class="rank ${rankClass}">${index + 1}.</div>
+                        <div class="avatar-container">
+                            <canvas id="avatar-${index}" class="avatar-canvas" width="64" height="64"></canvas>
+                        </div>
+                        <div class="player-info">
+                            <h3>${player.username}</h3>
+                            <p>✦ ${title} (${points} Points)</p>
+                        </div>
+                        <div class="region-badge">${player.region}</div>
+                        <div class="tier-badges">
+                            ${KITS.map(kit => {
+                                const tier = player.tiers[kit];
+                                return tier && tier !== 'NA' ? `<span class="badge ${tier}">${kit}: ${tier}</span>` : '';
+                            }).join('')}
+                        </div>
+                        <div class="actions">
+                            <button class="btn-sm btn-edit" onclick="editPlayer(${index})">Edit</button>
+                            <button class="btn-sm btn-delete" onclick="deletePlayer(${index})">X</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
-    renderAll();
-  </script>
+            players.forEach((player, index) => draw3DSkin(index, player.username, player.customSkin));
+        }
+
+        function draw3DSkin(index, username, customSkin) {
+            const canvas = document.getElementById(`avatar-${index}`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = customSkin || `https://mc-heads.net/avatar/${username}/64`;
+
+            img.onload = () => {
+                ctx.clearRect(0, 0, 64, 64);
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 0, 0, 64, 64);
+            };
+        }
+
+        document.getElementById('playerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const username = document.getElementById('username').value.trim();
+            const region = document.getElementById('region').value;
+            const customSkin = document.getElementById('customSkin').value.trim();
+
+            const tiers = {};
+            KITS.forEach(kit => {
+                tiers[kit] = document.getElementById(`tier-${kit}`).value;
+            });
+
+            const playerData = { username, region, customSkin, tiers };
+
+            if (index !== '') {
+                players[index] = playerData;
+            } else {
+                players.push(playerData);
+            }
+
+            document.getElementById('playerForm').reset();
+            document.getElementById('editIndex').value = '';
+            toggleAdmin();
+            renderLeaderboard();
+        });
+
+        function editPlayer(index) {
+            const player = players[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('username').value = player.username;
+            document.getElementById('region').value = player.region;
+            document.getElementById('customSkin').value = player.customSkin || '';
+
+            KITS.forEach(kit => {
+                document.getElementById(`tier-${kit}`).value = player.tiers[kit] || 'NA';
+            });
+
+            if (!document.getElementById('adminPanel').classList.contains('active')) {
+                toggleAdmin();
+            }
+        }
+
+        function deletePlayer(index) {
+            if (confirm('Delete this player?')) {
+                players.splice(index, 1);
+                renderLeaderboard();
+            }
+        }
+
+        buildTierInputs();
+        renderLeaderboard();
+    </script>
 </body>
 </html>
