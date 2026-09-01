@@ -24,7 +24,7 @@
     /* Gamemode Bar */
     .gm-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
     .gm-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--subtext); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .gm-btn img { width: 16px; height: 16px; }
+    .gm-btn img { width: 16px; height: 16px; object-fit: contain; }
 
     /* Leaderboard Table Structure */
     .table-header { display: grid; grid-template-columns: 40px 1fr 60px 1.2fr; font-size: 11px; color: var(--subtext); font-weight: bold; text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border); }
@@ -43,7 +43,7 @@
 
     .tiers-list { display: flex; flex-wrap: wrap; gap: 6px; }
     .tier-badge { background: #1a1d26; border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
-    .tier-badge img { width: 14px; height: 14px; }
+    .tier-badge img { width: 14px; height: 14px; object-fit: contain; }
     .tier-val { color: #ffaa00; }
 
     /* Admin Action Controls */
@@ -60,6 +60,11 @@
     .form-group label { font-size: 11px; color: var(--subtext); }
     .form-group input, .form-group select { background: #0b0c10; border: 1px solid var(--border); color: #fff; padding: 7px; border-radius: 4px; font-size: 12px; }
     .btn-main { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 8px; border-radius: 4px; cursor: pointer; }
+
+    /* Image Drop Zone Styling */
+    .drop-zone { border: 2px dashed var(--border); border-radius: 6px; padding: 10px; text-align: center; font-size: 11px; color: var(--subtext); cursor: pointer; background: #0b0c10; transition: border 0.2s; }
+    .drop-zone:hover { border-color: var(--accent); }
+    .file-input { display: none; }
   </style>
 </head>
 <body>
@@ -83,13 +88,18 @@
     </div>
 
     <!-- Gamemode Add/Remove -->
-    <div style="border-top:1px solid var(--border); padding-top:10px;">
+    <div style="border-top:1px solid var(--border); padding-top:10px;" class="form-group">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);">Gamemode Manager</label>
-      <div style="display:flex; gap:6px; margin-top:6px;">
-        <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Pot)" style="flex:1;">
-        <input type="text" id="newGmIcon" placeholder="Icon Image URL" style="flex:1;">
-        <button class="btn-main" onclick="addGamemode()">Add GM</button>
+      <input type="text" id="newGmName" placeholder="Gamemode Name (e.g. Pot)">
+      <input type="text" id="newGmIcon" placeholder="Icon Image URL (or upload image below)">
+      
+      <!-- Image Drop / File Picker Area -->
+      <div class="drop-zone" onclick="document.getElementById('gmFileInput').click()">
+        📁 Tap to Select/Upload Gamemode Image
       </div>
+      <input type="file" id="gmFileInput" class="file-input" accept="image/*" onchange="handleFileUpload(event)">
+
+      <button class="btn-main" onclick="addGamemode()" style="margin-top:4px;">Add GM</button>
       <div id="gmRemoveList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
     </div>
 
@@ -97,12 +107,16 @@
     <div style="border-top:1px solid var(--border); padding-top:10px;" class="form-group">
       <label style="font-size:12px; font-weight:bold; color:var(--accent);" id="formModeTitle">Add / Edit Player</label>
       <input type="hidden" id="editingPlayerId">
-      <input type="text" id="pName" placeholder="Minecraft Username">
       
       <div style="display:flex; gap:6px;">
+        <input type="text" id="pName" placeholder="Minecraft Username" style="flex:1;">
         <input type="text" id="pRegion" placeholder="Region (NA, EU, ME)" style="flex:1;">
-        <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)" style="flex:1;">
       </div>
+
+      <!-- Custom Skin URL Input -->
+      <input type="text" id="pSkinUrl" placeholder="Custom Skin URL (SkinsRestorer link / Imgur / Leave blank for default skin)">
+
+      <input type="text" id="pSub" placeholder="Title (e.g. Combat Master)">
 
       <div style="display:flex; gap:6px;">
         <select id="pGmSelect" style="flex:1;"></select>
@@ -139,8 +153,8 @@
 
     // Default Players
     const defaultPlayers = [
-      { id: '1', name: 'Marlowww', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
-      { id: '2', name: 'ItzRealMe', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } }
+      { id: '1', name: 'Marlowww', skinUrl: '', region: 'NA', sub: 'Combat Grandmaster', tiers: { sword: 'HT1', pot: 'LT1' } },
+      { id: '2', name: 'ItzRealMe', skinUrl: '', region: 'EU', sub: 'Combat Master', tiers: { sword: 'HT3', vanilla: 'LT2' } }
     ];
 
     let gamemodes = JSON.parse(localStorage.getItem('mct_gms')) || defaultGamemodes;
@@ -166,11 +180,8 @@
       rmList.innerHTML = '';
 
       gamemodes.forEach(gm => {
-        // Top Bar Button
-        bar.innerHTML += `<div class="gm-btn"><img src="${gm.icon}" error="this.style.display='none'"> ${gm.name}</div>`;
-        // Admin Select
+        bar.innerHTML += `<div class="gm-btn"><img src="${gm.icon}" onerror="this.style.display='none'"> ${gm.name}</div>`;
         select.innerHTML += `<option value="${gm.id}">${gm.name}</option>`;
-        // Admin Remove Buttons
         rmList.innerHTML += `<button class="btn-act btn-del" onclick="removeGamemode('${gm.id}')">✕ ${gm.name}</button>`;
       });
     }
@@ -196,11 +207,14 @@
           }
         }
 
+        // Use custom skin URL if provided, otherwise default to mc-heads
+        const skinSrc = (p.skinUrl && p.skinUrl.trim() !== '') ? p.skinUrl : `https://mc-heads.net/body/${p.name}/40`;
+
         container.innerHTML += `
           <div class="player-row">
             <div class="rank-num">${idx + 1}.</div>
             <div class="p-info">
-              <img class="p-skin" src="https://mc-heads.net/body/${p.name}/40" alt="${p.name}">
+              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://mc-heads.net/body/Steve/40'">
               <div>
                 <div class="p-name">${p.name}</div>
                 <div class="p-sub">${p.sub || 'Member'}</div>
@@ -245,6 +259,18 @@
       localStorage.setItem('mct_title', titleHTML);
     }
 
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('newGmIcon').value = e.target.result;
+        alert("Image uploaded successfully!");
+      };
+      reader.readAsDataURL(file);
+    }
+
     function addGamemode() {
       const name = document.getElementById('newGmName').value.trim();
       const icon = document.getElementById('newGmIcon').value.trim();
@@ -256,6 +282,7 @@
       renderAll();
       document.getElementById('newGmName').value = '';
       document.getElementById('newGmIcon').value = '';
+      document.getElementById('gmFileInput').value = '';
     }
 
     function removeGamemode(id) {
@@ -267,6 +294,7 @@
     function savePlayer() {
       const editId = document.getElementById('editingPlayerId').value;
       const name = document.getElementById('pName').value.trim();
+      const skinUrl = document.getElementById('pSkinUrl').value.trim();
       const region = document.getElementById('pRegion').value.trim().toUpperCase();
       const sub = document.getElementById('pSub').value.trim();
       const gmId = document.getElementById('pGmSelect').value;
@@ -279,6 +307,7 @@
         const p = players.find(x => x.id === editId);
         if (p) {
           p.name = name;
+          p.skinUrl = skinUrl;
           p.region = region;
           p.sub = sub;
           if (tierVal) p.tiers[gmId] = tierVal;
@@ -287,6 +316,7 @@
         // Add New
         const existing = players.find(x => x.name.toLowerCase() === name.toLowerCase());
         if (existing) {
+          existing.skinUrl = skinUrl;
           existing.region = region;
           existing.sub = sub;
           if (tierVal) existing.tiers[gmId] = tierVal;
@@ -294,6 +324,7 @@
           const newP = {
             id: Date.now().toString(),
             name,
+            skinUrl,
             region,
             sub,
             tiers: {}
@@ -313,6 +344,7 @@
       if (!p) return;
       document.getElementById('editingPlayerId').value = p.id;
       document.getElementById('pName').value = p.name;
+      document.getElementById('pSkinUrl').value = p.skinUrl || '';
       document.getElementById('pRegion').value = p.region || '';
       document.getElementById('pSub').value = p.sub || '';
       document.getElementById('formModeTitle').innerText = 'Editing Player: ' + p.name;
@@ -327,6 +359,7 @@
     function resetPlayerForm() {
       document.getElementById('editingPlayerId').value = '';
       document.getElementById('pName').value = '';
+      document.getElementById('pSkinUrl').value = '';
       document.getElementById('pRegion').value = '';
       document.getElementById('pSub').value = '';
       document.getElementById('pTierVal').value = '';
