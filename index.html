@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BRUTE TIERS</title>
+    
+    <!-- Firebase SDK Modular Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-main: #0c0e14;
@@ -223,7 +228,6 @@
             .actions { grid-area: actions; }
         }
 
-        /* Exact MCTiers Slanted Banner */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
@@ -277,7 +281,6 @@
             justify-content: center;
         }
 
-        /* Fixed Skin Image & Canvas Display Size */
         .skin-canvas {
             width: 54px;
             height: 54px;
@@ -388,7 +391,7 @@
         
         <form id="playerForm">
             <h3 class="form-section-title">Add / Edit Player</h3>
-            <input type="hidden" id="editIndex">
+            <input type="hidden" id="editKey">
             
             <div class="form-grid">
                 <div>
@@ -414,7 +417,7 @@
             <h3 class="form-section-title">Kit Tiers</h3>
             <div class="tier-inputs" id="tierInputsContainer"></div>
 
-            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Player to Global Leaderboard</button>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Player to Global Database</button>
         </form>
 
         <h3 class="form-section-title" style="margin-top: 25px;">Kit Representatives & Icons Settings</h3>
@@ -424,6 +427,20 @@
     <div class="leaderboard" id="leaderboard"></div>
 
     <script>
+        // REPLACE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
         const ADMIN_PASS = "98909890";
@@ -435,34 +452,28 @@
             'NA': 0
         };
 
-        let kitIcons = JSON.parse(localStorage.getItem('brute_kit_icons')) || {};
+        let kitIcons = {};
+        let playersList = [];
 
-        const defaultPlayers = [
-            {
-                username: "AxtherBhaii",
-                region: "IND",
-                customSkin: "",
-                tiers: { Sword: "HT4", Axe: "HT3", NethPot: "LT1", DiaPot: "LT2", UHC: "HT4", Smp: "LT2", Lifesteal: "LT3", Mace: "NA", Crystal: "LT1" }
-            },
-            {
-                username: "ItsNotWh1te",
-                region: "IND",
-                customSkin: "",
-                tiers: { Sword: "LT2", Axe: "HT3", NethPot: "HT5", DiaPot: "LT3", UHC: "LT1", Smp: "LT4", Lifesteal: "LT3", Mace: "LT4", Crystal: "LT3" }
-            },
-            {
-                username: "blatha",
-                region: "IND",
-                customSkin: "",
-                tiers: { Sword: "HT5", Axe: "LT2", NethPot: "NA", DiaPot: "LT3", UHC: "LT3", Smp: "LT5", Lifesteal: "LT4", Mace: "NA", Crystal: "NA" }
-            },
-            { username: "sufrrlol", region: "NA", customSkin: "", tiers: { Sword: "LT3" } },
-            { username: "RealElite_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
-            { username: "nexloft_playz", region: "NA", customSkin: "", tiers: { Sword: "LT4" } },
-            { username: "RaiKOuu_", region: "NA", customSkin: "", tiers: { Sword: "LT4" } }
-        ];
+        // Realtime Listener for Kit Icons
+        db.ref('kitIcons').on('value', snapshot => {
+            kitIcons = snapshot.val() || {};
+            renderKitBar();
+            renderKitRepsManager();
+            renderLeaderboard();
+        });
 
-        let players = JSON.parse(localStorage.getItem('brute_tiers_data')) || defaultPlayers;
+        // Realtime Listener for Global Player Leaderboard
+        db.ref('players').on('value', snapshot => {
+            const data = snapshot.val();
+            playersList = [];
+            if(data) {
+                Object.keys(data).forEach(key => {
+                    playersList.push({ key, ...data[key] });
+                });
+            }
+            renderLeaderboard();
+        });
 
         function toggleAdmin() {
             if (isAdminLoggedIn) {
@@ -505,11 +516,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    kitIcons[kit] = e.target.result;
-                    localStorage.setItem('brute_kit_icons', JSON.stringify(kitIcons));
-                    renderKitBar();
-                    renderKitRepsManager();
-                    renderLeaderboard();
+                    db.ref('kitIcons/' + kit).set(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
@@ -563,11 +570,10 @@
         }
 
         function renderLeaderboard() {
-            players.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
-            localStorage.setItem('brute_tiers_data', JSON.stringify(players));
+            playersList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
 
             const container = document.getElementById('leaderboard');
-            container.innerHTML = players.map((player, index) => {
+            container.innerHTML = playersList.map((player, index) => {
                 const points = calculatePoints(player.tiers);
                 const title = getTitle(points);
                 const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-default';
@@ -601,14 +607,14 @@
                         </div>
                         ${isAdminLoggedIn ? `
                         <div class="actions">
-                            <button class="btn-sm btn-edit" onclick="editPlayer(${index})">Edit</button>
-                            <button class="btn-sm btn-delete" onclick="deletePlayer(${index})">X</button>
+                            <button class="btn-sm btn-edit" onclick="editPlayer('${player.key}')">Edit</button>
+                            <button class="btn-sm btn-delete" onclick="deletePlayer('${player.key}')">X</button>
                         </div>` : ''}
                     </div>
                 `;
             }).join('');
 
-            players.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
+            playersList.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
         }
 
         function renderSkin(index, username, customSkin) {
@@ -649,7 +655,7 @@
             e.preventDefault();
             if (!isAdminLoggedIn) return;
 
-            const index = document.getElementById('editIndex').value;
+            const editKey = document.getElementById('editKey').value;
             const username = document.getElementById('username').value.trim();
             const region = document.getElementById('region').value;
             const customSkin = document.getElementById('customSkinBase64').value;
@@ -661,23 +667,24 @@
 
             const playerData = { username, region, customSkin, tiers };
 
-            if (index !== '') {
-                players[index] = playerData;
+            if (editKey) {
+                db.ref('players/' + editKey).update(playerData);
             } else {
-                players.push(playerData);
+                db.ref('players').push(playerData);
             }
 
             document.getElementById('playerForm').reset();
-            document.getElementById('editIndex').value = '';
+            document.getElementById('editKey').value = '';
             document.getElementById('customSkinBase64').value = '';
             toggleAdmin();
-            renderLeaderboard();
         });
 
-        function editPlayer(index) {
+        function editPlayer(key) {
             if (!isAdminLoggedIn) return;
-            const player = players[index];
-            document.getElementById('editIndex').value = index;
+            const player = playersList.find(p => p.key === key);
+            if(!player) return;
+
+            document.getElementById('editKey').value = key;
             document.getElementById('username').value = player.username;
             document.getElementById('region').value = player.region;
             document.getElementById('customSkinBase64').value = player.customSkin || '';
@@ -691,18 +698,16 @@
             }
         }
 
-        function deletePlayer(index) {
+        function deletePlayer(key) {
             if (!isAdminLoggedIn) return;
-            if (confirm('Delete this player?')) {
-                players.splice(index, 1);
-                renderLeaderboard();
+            if (confirm('Delete this player globally?')) {
+                db.ref('players/' + key).remove();
             }
         }
 
         buildTierInputs();
         renderKitBar();
         renderKitRepsManager();
-        renderLeaderboard();
     </script>
 </body>
 </html>
