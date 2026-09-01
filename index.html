@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BRUTE TIERS</title>
-    
-    <!-- Firebase SDK Modular Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
     <style>
         :root {
             --bg-main: #0c0e14;
@@ -112,17 +107,6 @@
             outline: none;
         }
 
-        .file-upload-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .file-upload-wrapper input[type="file"] {
-            font-size: 0.8rem;
-            padding: 6px;
-        }
-
         .tier-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -135,32 +119,6 @@
             font-size: 0.8rem;
             color: var(--text-muted);
             margin-bottom: 4px;
-        }
-
-        .representatives-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .rep-card-input {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .rep-icon-preview {
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            background: #000;
-            object-fit: cover;
-            border: 1px solid var(--border);
         }
 
         .kit-bar {
@@ -177,21 +135,12 @@
         }
 
         .kit-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             background: var(--bg-input);
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
             border: 1px solid var(--border);
             font-size: 0.85rem;
             font-weight: 600;
-        }
-
-        .kit-pill img {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
         }
 
         .leaderboard {
@@ -237,7 +186,6 @@
             transform: skewX(-20deg);
             border-radius: 4px;
             overflow: hidden;
-            position: relative;
         }
 
         .rank-number-box {
@@ -253,10 +201,7 @@
             flex-shrink: 0;
         }
 
-        .rank-number-box span {
-            transform: skewX(20deg);
-        }
-
+        .rank-number-box span { transform: skewX(20deg); }
         .rank-number-box.rank-1 { background: #eab308; color: #000; }
         .rank-number-box.rank-2 { background: #94a3b8; color: #000; }
         .rank-number-box.rank-3 { background: #c2410c; color: #fff; }
@@ -268,8 +213,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
         }
 
         .skin-unskew {
@@ -281,13 +224,6 @@
             justify-content: center;
         }
 
-        .skin-canvas {
-            width: 54px;
-            height: 54px;
-            object-fit: contain;
-            image-rendering: pixelated;
-        }
-
         .skin-img {
             height: 90px;
             width: auto;
@@ -296,16 +232,8 @@
             margin-top: 15px;
         }
 
-        .player-info h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .player-info p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .player-info h3 { font-size: 1.2rem; font-weight: 700; }
+        .player-info p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
 
         .region-badge {
             background: var(--bg-input);
@@ -317,21 +245,10 @@
             border: 2px solid var(--border);
         }
 
-        .region-badge.na-region {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
+        .region-badge.na-region { border-color: #ef4444; color: #ef4444; }
+        .region-badge.other-region { border-color: #84cc16; color: #84cc16; }
 
-        .region-badge.other-region {
-            border-color: #84cc16;
-            color: #84cc16;
-        }
-
-        .tier-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+        .tier-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 
         .badge {
             background: var(--bg-input);
@@ -340,15 +257,6 @@
             border-radius: 5px;
             font-size: 0.75rem;
             font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge img {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
         }
 
         .badge.HT1, .badge.HT2 { color: #f43f5e; border-color: #f43f5e44; }
@@ -356,22 +264,11 @@
         .badge.LT1, .badge.LT2, .badge.LT3 { color: #38bdf8; border-color: #38bdf844; }
         .badge.LT4, .badge.LT5 { color: #a3e635; border-color: #a3e63544; }
 
-        .actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            color: white;
-        }
-
+        .actions { display: flex; gap: 6px; }
+        .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: none; color: white; }
         .btn-edit { background: #3b82f6; }
         .btn-delete { background: #ef4444; }
+        .loading-text { text-align: center; color: var(--text-muted); margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -388,10 +285,9 @@
 
     <div class="admin-panel" id="adminPanel">
         <h2>Admin Management Panel</h2>
-        
         <form id="playerForm">
             <h3 class="form-section-title">Add / Edit Player</h3>
-            <input type="hidden" id="editKey">
+            <input type="hidden" id="editIndex">
             
             <div class="form-grid">
                 <div>
@@ -407,73 +303,83 @@
                         <option value="ASIA">ASIA</option>
                     </select>
                 </div>
-                <div class="file-upload-wrapper">
-                    <label>Player Skin (Upload Image File)</label>
-                    <input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)">
-                    <input type="hidden" id="customSkinBase64">
-                </div>
             </div>
 
             <h3 class="form-section-title">Kit Tiers</h3>
             <div class="tier-inputs" id="tierInputsContainer"></div>
 
-            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Player to Global Database</button>
+            <button type="submit" class="btn" id="saveBtn" style="width: 100%; margin-top: 10px;">Save Player to Global Tierlist</button>
         </form>
-
-        <h3 class="form-section-title" style="margin-top: 25px;">Kit Representatives & Icons Settings</h3>
-        <div class="representatives-grid" id="representativesManager"></div>
     </div>
 
-    <div class="leaderboard" id="leaderboard"></div>
+    <div class="leaderboard" id="leaderboard">
+        <div class="loading-text">Loading Global Leaderboard...</div>
+    </div>
 
     <script>
-        // REPLACE WITH YOUR FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // YOUR API CREDENTIALS INTEGRATED
+        const JSONBIN_ID = "6a9753d8da38895dfe2cfae0";
+        const MASTER_KEY = "$2a$10$P5QFYrh6juAzCoDI5nhou.k.YPAyiRePx/by0iRbjM3aEW5IfTxCq";
 
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
         const ADMIN_PASS = "98909890";
         let isAdminLoggedIn = false;
-        
+
         const TIER_SCORES = {
             'HT1': 125, 'HT2': 112, 'HT3': 100, 'HT4': 88, 'HT5': 75,
             'LT1': 62,  'LT2': 50,  'LT3': 38,  'LT4': 25, 'LT5': 12,
             'NA': 0
         };
 
-        let kitIcons = {};
         let playersList = [];
 
-        // Realtime Listener for Kit Icons
-        db.ref('kitIcons').on('value', snapshot => {
-            kitIcons = snapshot.val() || {};
-            renderKitBar();
-            renderKitRepsManager();
-            renderLeaderboard();
-        });
-
-        // Realtime Listener for Global Player Leaderboard
-        db.ref('players').on('value', snapshot => {
-            const data = snapshot.val();
-            playersList = [];
-            if(data) {
-                Object.keys(data).forEach(key => {
-                    playersList.push({ key, ...data[key] });
+        // Fetch data from Cloud Database
+        async function fetchGlobalData() {
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': MASTER_KEY }
                 });
+                const data = await res.json();
+                
+                // Sanitizing Response Data
+                let fetchedRecords = data.record;
+                if (!Array.isArray(fetchedRecords)) {
+                    if (fetchedRecords && typeof fetchedRecords === 'object') {
+                        fetchedRecords = Object.values(fetchedRecords);
+                    } else {
+                        fetchedRecords = [];
+                    }
+                }
+                
+                // Filter dummy objects if any
+                playersList = fetchedRecords.filter(p => p && p.username);
+                renderLeaderboard();
+            } catch (err) {
+                console.error("Fetch Error:", err);
+                document.getElementById('leaderboard').innerHTML = `<div class="loading-text">Error syncing leaderboard data.</div>`;
             }
-            renderLeaderboard();
-        });
+        }
+
+        // Save updated list to Cloud Database
+        async function saveGlobalData() {
+            document.getElementById('saveBtn').textContent = "Saving...";
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': MASTER_KEY
+                    },
+                    body: JSON.stringify(playersList)
+                });
+                document.getElementById('saveBtn').textContent = "Save Player to Global Tierlist";
+                fetchGlobalData();
+            } catch (err) {
+                alert("Error saving data!");
+                document.getElementById('saveBtn').textContent = "Save Player to Global Tierlist";
+            }
+        }
 
         function toggleAdmin() {
             if (isAdminLoggedIn) {
@@ -500,28 +406,6 @@
             renderLeaderboard();
         }
 
-        function handleSkinUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('customSkinBase64').value = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleKitIconUpload(kit, event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    db.ref('kitIcons/' + kit).set(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
         function buildTierInputs() {
             document.getElementById('tierInputsContainer').innerHTML = KITS.map(kit => `
                 <div class="tier-input-group">
@@ -531,31 +415,15 @@
                     </select>
                 </div>
             `).join('');
-        }
 
-        function renderKitBar() {
             document.getElementById('kitBar').innerHTML = KITS.map(kit => `
-                <div class="kit-pill">
-                    ${kitIcons[kit] ? `<img src="${kitIcons[kit]}" alt="${kit}">` : ''}
-                    <span>${kit}</span>
-                </div>
-            `).join('');
-        }
-
-        function renderKitRepsManager() {
-            document.getElementById('representativesManager').innerHTML = KITS.map(kit => `
-                <div class="rep-card-input">
-                    <img src="${kitIcons[kit] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
-                    <div style="flex-grow: 1;">
-                        <label style="font-size:0.8rem; font-weight:bold; display:block;">${kit} Icon</label>
-                        <input type="file" accept="image/*" onchange="handleKitIconUpload('${kit}', event)">
-                    </div>
-                </div>
+                <div class="kit-pill"><span>${kit}</span></div>
             `).join('');
         }
 
         function calculatePoints(playerTiers) {
             let total = 0;
+            if (!playerTiers) return 0;
             KITS.forEach(kit => {
                 total += TIER_SCORES[playerTiers[kit] || 'NA'] || 0;
             });
@@ -573,6 +441,11 @@
             playersList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
 
             const container = document.getElementById('leaderboard');
+            if(playersList.length === 0) {
+                container.innerHTML = `<div class="loading-text">No players in leaderboard. Admin can add players from Panel.</div>`;
+                return;
+            }
+
             container.innerHTML = playersList.map((player, index) => {
                 const points = calculatePoints(player.tiers);
                 const title = getTitle(points);
@@ -586,111 +459,71 @@
                                 <span>${index + 1}.</span>
                             </div>
                             <div class="skin-holder">
-                                <div class="skin-unskew" id="skin-box-${index}"></div>
+                                <div class="skin-unskew">
+                                    <img class="skin-img" src="https://mc-heads.net/body/${player.username}/right" onerror="this.src='https://mc-heads.net/body/Steve/right'">
+                                </div>
                             </div>
                         </div>
                         <div class="player-info">
                             <h3>${player.username}</h3>
                             <p>✦ ${title} (${points} Points)</p>
                         </div>
-                        <div class="region-badge ${regionClass}">${player.region}</div>
+                        <div class="region-badge ${regionClass}">${player.region || 'IND'}</div>
                         <div class="tier-badges">
                             ${KITS.map(kit => {
-                                const tier = player.tiers[kit];
-                                const icon = kitIcons[kit];
-                                return tier && tier !== 'NA' ? `
-                                    <span class="badge ${tier}">
-                                        ${icon ? `<img src="${icon}">` : `<span>${kit}:</span>`}
-                                        ${tier}
-                                    </span>` : '';
+                                const tier = player.tiers ? player.tiers[kit] : 'NA';
+                                return tier && tier !== 'NA' ? `<span class="badge ${tier}">${kit}: ${tier}</span>` : '';
                             }).join('')}
                         </div>
                         ${isAdminLoggedIn ? `
                         <div class="actions">
-                            <button class="btn-sm btn-edit" onclick="editPlayer('${player.key}')">Edit</button>
-                            <button class="btn-sm btn-delete" onclick="deletePlayer('${player.key}')">X</button>
+                            <button class="btn-sm btn-edit" onclick="editPlayer(${index})">Edit</button>
+                            <button class="btn-sm btn-delete" onclick="deletePlayer(${index})">X</button>
                         </div>` : ''}
                     </div>
                 `;
             }).join('');
-
-            playersList.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
         }
 
-        function renderSkin(index, username, customSkin) {
-            const container = document.getElementById(`skin-box-${index}`);
-            if (!container) return;
-
-            if (customSkin && customSkin.trim() !== '') {
-                const canvas = document.createElement('canvas');
-                canvas.width = 16;
-                canvas.height = 16;
-                canvas.className = 'skin-canvas';
-                const ctx = canvas.getContext('2d');
-                ctx.imageSmoothingEnabled = false;
-
-                const img = new Image();
-                img.onload = () => {
-                    ctx.clearRect(0, 0, 16, 16);
-                    ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
-                    ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-                    ctx.drawImage(img, 20, 20, 8, 8, 4, 8, 8, 8);
-                    ctx.drawImage(img, 44, 20, 4, 8, 0, 8, 4, 8);
-                    ctx.drawImage(img, 36, 52, 4, 8, 12, 8, 4, 8);
-                };
-                img.src = customSkin;
-                container.innerHTML = '';
-                container.appendChild(canvas);
-            } else {
-                const img = document.createElement('img');
-                img.className = 'skin-img';
-                img.src = `https://mc-heads.net/body/${username}/right`;
-                img.onerror = () => { img.src = 'https://mc-heads.net/body/Steve/right'; };
-                container.innerHTML = '';
-                container.appendChild(img);
-            }
-        }
-
-        document.getElementById('playerForm').addEventListener('submit', (e) => {
+        document.getElementById('playerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!isAdminLoggedIn) return;
 
-            const editKey = document.getElementById('editKey').value;
+            const editIndex = document.getElementById('editIndex').value;
             const username = document.getElementById('username').value.trim();
             const region = document.getElementById('region').value;
-            const customSkin = document.getElementById('customSkinBase64').value;
 
             const tiers = {};
             KITS.forEach(kit => {
                 tiers[kit] = document.getElementById(`tier-${kit}`).value;
             });
 
-            const playerData = { username, region, customSkin, tiers };
+            const playerData = { username, region, tiers };
 
-            if (editKey) {
-                db.ref('players/' + editKey).update(playerData);
+            if (editIndex !== "") {
+                playersList[parseInt(editIndex)] = playerData;
             } else {
-                db.ref('players').push(playerData);
+                playersList.push(playerData);
             }
 
             document.getElementById('playerForm').reset();
-            document.getElementById('editKey').value = '';
-            document.getElementById('customSkinBase64').value = '';
+            document.getElementById('editIndex').value = '';
+            
+            await saveGlobalData();
             toggleAdmin();
         });
 
-        function editPlayer(key) {
+        function editPlayer(index) {
             if (!isAdminLoggedIn) return;
-            const player = playersList.find(p => p.key === key);
-            if(!player) return;
+            const player = playersList[index];
+            if (!player) return;
 
-            document.getElementById('editKey').value = key;
+            document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
-            document.getElementById('region').value = player.region;
-            document.getElementById('customSkinBase64').value = player.customSkin || '';
+            document.getElementById('region').value = player.region || 'IND';
 
             KITS.forEach(kit => {
-                document.getElementById(`tier-${kit}`).value = player.tiers[kit] || 'NA';
+                document.getElementById(`tier-${kit}`).value = (player.tiers && player.tiers[kit]) ? player.tiers[kit] : 'NA';
             });
 
             if (!document.getElementById('adminPanel').classList.contains('active')) {
@@ -698,16 +531,20 @@
             }
         }
 
-        function deletePlayer(key) {
+        async function deletePlayer(index) {
             if (!isAdminLoggedIn) return;
             if (confirm('Delete this player globally?')) {
-                db.ref('players/' + key).remove();
+                playersList.splice(index, 1);
+                await saveGlobalData();
             }
         }
 
+        // Initialize App
         buildTierInputs();
-        renderKitBar();
-        renderKitRepsManager();
+        fetchGlobalData();
+        
+        // Auto-refresh leaderboard every 10 seconds to sync changes automatically across all devices
+        setInterval(fetchGlobalData, 10000);
     </script>
 </body>
 </html>
