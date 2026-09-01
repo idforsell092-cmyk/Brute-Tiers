@@ -409,6 +409,10 @@
                     <input type="text" id="username" placeholder="e.g. AxtherBhaii" required>
                 </div>
                 <div>
+                    <label>Rank Position (Optional, e.g. 1, 2, 3)</label>
+                    <input type="number" id="customRank" placeholder="Auto calculated if empty" min="1">
+                </div>
+                <div>
                     <label>Custom Title (Optional)</label>
                     <input type="text" id="customTitle" placeholder="e.g. Combat GrandExpert, Godlike, etc.">
                 </div>
@@ -463,7 +467,6 @@
             playersList: []
         };
 
-        // Fetch Data from Global JSONBin
         async function fetchGlobalData() {
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
@@ -491,7 +494,6 @@
             }
         }
 
-        // Save Data to Global JSONBin
         async function saveGlobalData() {
             const saveBtn = document.getElementById('saveBtn');
             if (saveBtn) saveBtn.textContent = "Syncing with Database...";
@@ -549,7 +551,6 @@
             }
         }
 
-        // Compression for Representative Icons
         function handleKitIconUpload(kit, event) {
             const file = event.target.files[0];
             if (file) {
@@ -637,7 +638,17 @@
         }
 
         function renderLeaderboard() {
-            appData.playersList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            // Sort by Custom Rank if available, otherwise by Points
+            appData.playersList.sort((a, b) => {
+                const rankA = parseInt(a.customRank);
+                const rankB = parseInt(b.customRank);
+
+                if (!isNaN(rankA) && !isNaN(rankB)) return rankA - rankB;
+                if (!isNaN(rankA)) return -1;
+                if (!isNaN(rankB)) return 1;
+
+                return calculatePoints(b.tiers) - calculatePoints(a.tiers);
+            });
 
             const container = document.getElementById('leaderboard');
             if (appData.playersList.length === 0) {
@@ -648,14 +659,18 @@
             container.innerHTML = appData.playersList.map((player, index) => {
                 const points = calculatePoints(player.tiers);
                 const title = (player.customTitle && player.customTitle.trim() !== '') ? player.customTitle : getDefaultTitle(points);
-                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-default';
+                
+                // Display Rank: Custom Rank if specified, else calculated index + 1
+                const displayRank = player.customRank ? parseInt(player.customRank) : (index + 1);
+                
+                const rankClass = displayRank === 1 ? 'rank-1' : displayRank === 2 ? 'rank-2' : displayRank === 3 ? 'rank-3' : 'rank-default';
                 const regionClass = player.region === 'NA' ? 'na-region' : 'other-region';
 
                 return `
                     <div class="player-card">
                         <div class="mctiers-badge-wrapper">
                             <div class="rank-number-box ${rankClass}">
-                                <span>${index + 1}.</span>
+                                <span>${displayRank}.</span>
                             </div>
                             <div class="skin-holder">
                                 <div class="skin-unskew" id="skin-box-${index}"></div>
@@ -729,6 +744,7 @@
 
             const editIndex = document.getElementById('editIndex').value;
             const username = document.getElementById('username').value.trim();
+            const customRank = document.getElementById('customRank').value.trim();
             const customTitle = document.getElementById('customTitle').value.trim();
             const region = document.getElementById('region').value.trim() || 'IND';
             const customSkin = document.getElementById('customSkinBase64').value;
@@ -738,7 +754,7 @@
                 tiers[kit] = document.getElementById(`tier-${kit}`).value;
             });
 
-            const playerData = { username, customTitle, region, customSkin, tiers };
+            const playerData = { username, customRank, customTitle, region, customSkin, tiers };
 
             if (editIndex !== "") {
                 appData.playersList[parseInt(editIndex)] = playerData;
@@ -761,6 +777,7 @@
 
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
+            document.getElementById('customRank').value = player.customRank || '';
             document.getElementById('customTitle').value = player.customTitle || '';
             document.getElementById('region').value = player.region || 'IND';
             document.getElementById('customSkinBase64').value = player.customSkin || '';
