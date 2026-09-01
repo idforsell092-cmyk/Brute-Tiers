@@ -68,7 +68,7 @@
     }
     .rank-1 .rank-num, .rank-2 .rank-num { color: #000; text-shadow: none; }
 
-    /* Fixed Uncropped 3D Player Skin Display */
+    /* Uncropped 3D Player Skin */
     .p-skin {
       position: absolute;
       right: 12px;
@@ -120,7 +120,6 @@
     <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ Admin Panel</button>
   </header>
 
-  <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Admin Control Center</h3>
     
@@ -231,9 +230,20 @@
       });
     }
 
-    // Returns isometric 3D render pose API matching MCTiers
+    // High-reliability 3D skin provider with fallback
     function get3DSkinUrl(username) {
-      return `https://visage.surge.playit.gg/full/512/${username}`;
+      return `https://crafatar.com/renders/body/${username}?scale=4&default=MSTEVE&overlay=true`;
+    }
+
+    function handleSkinError(img, username) {
+      // Fallback chain in case primary provider fails
+      if (!img.dataset.triedFallback1) {
+        img.dataset.triedFallback1 = "true";
+        img.src = `https://mc-heads.net/body/${username}/100`;
+      } else if (!img.dataset.triedFallback2) {
+        img.dataset.triedFallback2 = "true";
+        img.src = `https://crafatar.com/renders/body/8667ba71-b82d-4077-9299-52fc30896072?scale=4&overlay=true`;
+      }
     }
 
     function renderLeaderboard() {
@@ -266,7 +276,7 @@
             <div class="rank-container ${rankClass}">
               <div class="badge-bg ${rankClass}"></div>
               <span class="rank-num">${rankNum}.</span>
-              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="this.src='https://visage.surge.playit.gg/full/512/Steve'">
+              <img class="p-skin" src="${skinSrc}" alt="${p.name}" onerror="handleSkinError(this, '${p.name}')">
             </div>
             
             <div class="p-info">
