@@ -14,6 +14,7 @@
             --text-main: #ffffff;
             --text-muted: #94a3b8;
             --border: #232736;
+            --active-lime: #84cc16;
         }
 
         * {
@@ -180,11 +181,26 @@
             align-items: center;
             gap: 8px;
             background: var(--bg-input);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
-            border: 1px solid var(--border);
+            border: 2px solid transparent;
             font-size: 0.85rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+
+        .kit-pill:hover {
+            border-color: rgba(132, 204, 22, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .kit-pill.active {
+            border-color: var(--active-lime);
+            box-shadow: 0 0 12px rgba(132, 204, 22, 0.4);
+            background: rgba(132, 204, 22, 0.1);
+            color: #ffffff;
         }
 
         .kit-pill img { width: 22px; height: 22px; object-fit: contain; }
@@ -208,12 +224,11 @@
             overflow: hidden;
             transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
             opacity: 0;
-            animation: cardPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: cardPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         @keyframes cardPopIn {
-            0% { opacity: 0; transform: translateY(30px) scale(0.92); }
-            70% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+            0% { opacity: 0; transform: translateY(25px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
@@ -398,6 +413,12 @@
             color: #38bdf8;
         }
 
+        .badge.highlight-tier {
+            border-color: var(--active-lime);
+            color: #a3e635;
+            box-shadow: 0 0 8px rgba(132, 204, 22, 0.4);
+        }
+
         .badge img { width: 16px; height: 16px; object-fit: contain; }
 
         .actions { display: flex; gap: 6px; }
@@ -479,10 +500,18 @@
         const JSONBIN_ID = "6a9753d8da38895dfe2cfae0";
         const MASTER_KEY = "$2a$10$P5QFYrh6juAzCoDI5nhou.k.YPAyiRePx/by0iRbjM3aEW5IfTxCq";
 
+        const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
         const ADMIN_PASS = "98909890";
         let isAdminLoggedIn = false;
+        let selectedCategory = 'Overall';
+
+        const TIER_ORDER = {
+            'HT1': 1, 'HT2': 2, 'HT3': 3, 'HT4': 4, 'HT5': 5,
+            'LT1': 6, 'LT2': 7, 'LT3': 8, 'LT4': 9, 'LT5': 10,
+            'NA': 99
+        };
 
         const TIER_SCORES = {
             'HT1': 125, 'HT2': 112, 'HT3': 100, 'HT4': 88, 'HT5': 75,
@@ -590,7 +619,6 @@
             renderLeaderboard();
         }
 
-        /* Extract Head + Layer Overlay when Custom Skin Uploaded */
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -605,9 +633,7 @@
                         ctx.imageSmoothingEnabled = false;
 
                         if (img.width >= 64 && img.height >= 32) {
-                            // Extract Base Head (8x8 -> 32x32)
                             ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
-                            // Extract Outer Hat/Overlay Layer
                             ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32);
                             document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
                         } else {
@@ -620,7 +646,7 @@
             }
         }
 
-        function handleKitIconUpload(kit, event) {
+        function handleKitIconUpload(category, event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -633,7 +659,7 @@
                         ctx.clearRect(0, 0, 32, 32);
                         ctx.drawImage(img, 0, 0, 32, 32);
                         
-                        appData.kitIcons[kit] = canvas.toDataURL('image/png', 0.5);
+                        appData.kitIcons[category] = canvas.toDataURL('image/png', 0.5);
                         
                         renderKitBar();
                         renderKitRepsManager();
@@ -646,14 +672,20 @@
             }
         }
 
-        async function updateKitIconUrl(kit, url) {
+        async function updateKitIconUrl(category, url) {
             if(url.trim() !== "") {
-                appData.kitIcons[kit] = url.trim();
+                appData.kitIcons[category] = url.trim();
                 renderKitBar();
                 renderKitRepsManager();
                 renderLeaderboard();
                 await saveGlobalData();
             }
+        }
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            renderKitBar();
+            renderLeaderboard();
         }
 
         function buildTierInputs() {
@@ -668,22 +700,22 @@
         }
 
         function renderKitBar() {
-            document.getElementById('kitBar').innerHTML = KITS.map(kit => `
-                <div class="kit-pill">
-                    ${appData.kitIcons[kit] ? `<img src="${appData.kitIcons[kit]}" alt="${kit}">` : ''}
-                    <span>${kit}</span>
+            document.getElementById('kitBar').innerHTML = ALL_CATEGORIES.map(cat => `
+                <div class="kit-pill ${cat === selectedCategory ? 'active' : ''}" onclick="selectCategory('${cat}')">
+                    ${appData.kitIcons[cat] ? `<img src="${appData.kitIcons[cat]}" alt="${cat}">` : ''}
+                    <span>${cat}</span>
                 </div>
             `).join('');
         }
 
         function renderKitRepsManager() {
-            document.getElementById('representativesManager').innerHTML = KITS.map(kit => `
+            document.getElementById('representativesManager').innerHTML = ALL_CATEGORIES.map(cat => `
                 <div class="rep-card-input">
-                    <img src="${appData.kitIcons[kit] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
+                    <img src="${appData.kitIcons[cat] || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%231f202c\'/></svg>'}" class="rep-icon-preview">
                     <div class="rep-inputs-col">
-                        <label style="font-size:0.8rem; font-weight:bold;">${kit} Icon</label>
-                        <input type="file" accept="image/*" onchange="handleKitIconUpload('${kit}', event)">
-                        <input type="text" placeholder="Or Direct Image URL" value="${appData.kitIcons[kit] && !appData.kitIcons[kit].startsWith('data:') ? appData.kitIcons[kit] : ''}" onchange="updateKitIconUrl('${kit}', this.value)">
+                        <label style="font-size:0.8rem; font-weight:bold;">${cat} Icon</label>
+                        <input type="file" accept="image/*" onchange="handleKitIconUpload('${cat}', event)">
+                        <input type="text" placeholder="Or Direct Image URL" value="${appData.kitIcons[cat] && !appData.kitIcons[cat].startsWith('data:') ? appData.kitIcons[cat] : ''}" onchange="updateKitIconUrl('${cat}', this.value)">
                     </div>
                 </div>
             `).join('');
@@ -705,24 +737,39 @@
 
         function renderLeaderboard() {
             if (!appData.playersList) appData.playersList = [];
-            appData.playersList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+
+            let displayList = [...appData.playersList];
+
+            if (selectedCategory === 'Overall') {
+                displayList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            } else {
+                displayList = displayList.filter(p => p.tiers && p.tiers[selectedCategory] && p.tiers[selectedCategory] !== 'NA');
+                displayList.sort((a, b) => {
+                    const orderA = TIER_ORDER[a.tiers[selectedCategory]] || 99;
+                    const orderB = TIER_ORDER[b.tiers[selectedCategory]] || 99;
+                    return orderA - orderB;
+                });
+            }
 
             const container = document.getElementById('leaderboard');
-            if (appData.playersList.length === 0) {
-                container.innerHTML = `<div class="loading-text">No players found. Login as Admin to add players.</div>`;
+            if (displayList.length === 0) {
+                container.innerHTML = `<div class="loading-text">No players found for category "${selectedCategory}".</div>`;
                 return;
             }
 
-            container.innerHTML = appData.playersList.map((player, index) => {
+            container.innerHTML = displayList.map((player, index) => {
+                const originalIndex = appData.playersList.indexOf(player);
                 const points = calculatePoints(player.tiers);
                 const title = (player.customTitle && player.customTitle.trim() !== '') ? player.customTitle : getDefaultTitle(points);
                 
                 const displayRank = index + 1;
                 const rankCardClass = displayRank === 1 ? 'rank-card-1 glint-effect' : displayRank === 2 ? 'rank-card-2 glint-effect' : displayRank === 3 ? 'rank-card-3 glint-effect' : 'rank-card-default';
-                const animDelay = (index * 0.08).toFixed(2);
+                const animDelay = (index * 0.05).toFixed(2);
 
                 const regionStr = (player.region || 'NA').trim().toUpperCase();
                 const regionClass = regionStr === 'NA' ? 'region-na' : 'region-custom';
+
+                const currentKitTier = selectedCategory !== 'Overall' ? (player.tiers ? player.tiers[selectedCategory] : null) : null;
 
                 return `
                     <div class="player-card ${rankCardClass}" style="animation-delay: ${animDelay}s;">
@@ -736,15 +783,16 @@
                         </div>
                         <div class="player-info">
                             <h3>${player.username}</h3>
-                            <p>✦ ${title} (${points} Points)</p>
+                            <p>✦ ${currentKitTier ? `${selectedCategory}: ${currentKitTier}` : `${title} (${points} Points)`}</p>
                         </div>
                         <div class="region-badge ${regionClass}">${regionStr}</div>
                         <div class="tier-badges">
                             ${KITS.map(kit => {
                                 const tier = player.tiers ? player.tiers[kit] : 'NA';
                                 const icon = appData.kitIcons[kit];
+                                const isHighlighted = kit === selectedCategory;
                                 return tier && tier !== 'NA' ? `
-                                    <span class="badge ${tier}">
+                                    <span class="badge ${isHighlighted ? 'highlight-tier' : ''}">
                                         ${icon ? `<img src="${icon}">` : `<span>${kit}:</span>`}
                                         ${tier}
                                     </span>` : '';
@@ -752,17 +800,16 @@
                         </div>
                         ${isAdminLoggedIn ? `
                         <div class="actions">
-                            <button class="btn-sm btn-edit" onclick="editPlayer(${index})">Edit</button>
-                            <button class="btn-sm btn-delete" onclick="deletePlayer(${index})">X</button>
+                            <button class="btn-sm btn-edit" onclick="editPlayer(${originalIndex})">Edit</button>
+                            <button class="btn-sm btn-delete" onclick="deletePlayer(${originalIndex})">X</button>
                         </div>` : ''}
                     </div>
                 `;
             }).join('');
 
-            appData.playersList.forEach((player, index) => renderSkinHead(index, player.username, player.customSkin));
+            displayList.forEach((player, index) => renderSkinHead(index, player.username, player.customSkin));
         }
 
-        /* Pure Head Display function (Premium & Cracked) */
         function renderSkinHead(index, username, customSkin) {
             const container = document.getElementById(`skin-box-${index}`);
             if (!container) return;
