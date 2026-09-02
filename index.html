@@ -404,7 +404,6 @@
             font-weight: 600;
         }
 
-        /* Region Badge Outlines */
         .region-badge {
             padding: 4px 10px;
             border-radius: 6px;
@@ -433,7 +432,6 @@
             gap: 6px;
         }
 
-        /* Tier Box Outlines like Image 1 */
         .badge {
             background: rgba(15, 23, 42, 0.65);
             border: 1.5px solid #38bdf8;
@@ -608,7 +606,7 @@
             if (saveBtn) saveBtn.textContent = "Syncing...";
 
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -616,8 +614,13 @@
                     },
                     body: JSON.stringify(appData)
                 });
+                
+                if (!res.ok) {
+                    throw new Error("Payload size limit or sync failure.");
+                }
             } catch (err) {
-                console.warn("Saved locally.");
+                console.warn("Failed syncing remote database; fallback to local storage.", err);
+                alert("Warning: Heavy skin file size issue. Saved locally.");
             } finally {
                 if (saveBtn) saveBtn.textContent = "Save Player to Database";
             }
@@ -648,12 +651,25 @@
             renderLeaderboard();
         }
 
+        /* Auto-Resizing skin image to 64x64 PNG format to prevent API payload errors */
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('customSkinBase64').value = e.target.result;
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 64;
+                        canvas.height = 64;
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = false;
+                        ctx.clearRect(0, 0, 64, 64);
+                        ctx.drawImage(img, 0, 0, 64, 64);
+                        
+                        document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -667,11 +683,11 @@
                     const img = new Image();
                     img.onload = async function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = 64;
-                        canvas.height = 64;
+                        canvas.width = 48;
+                        canvas.height = 48;
                         const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, 64, 64);
-                        ctx.drawImage(img, 0, 0, 64, 64);
+                        ctx.clearRect(0, 0, 48, 48);
+                        ctx.drawImage(img, 0, 0, 48, 48);
                         
                         appData.kitIcons[kit] = canvas.toDataURL('image/png');
                         
