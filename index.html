@@ -74,6 +74,16 @@
             gap: 6px;
             font-size: 0.85rem;
             will-change: transform;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
         }
 
         .btn-discord { background: var(--discord); }
@@ -95,6 +105,12 @@
             color: white;
             backdrop-filter: blur(4px);
             font-size: 0.9rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-box input:focus, .region-filter select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
         }
 
         .region-filter { flex: 0 0 130px; }
@@ -105,6 +121,7 @@
             border-radius: 12px;
             padding: 15px;
             display: none;
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .admin-panel.active { display: block; }
@@ -160,19 +177,26 @@
             cursor: pointer;
             color: var(--text-muted);
             flex-shrink: 0;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .kit-pill:hover {
+            transform: translateY(-2px) scale(1.04);
+            color: #ffffff;
         }
 
         .kit-pill.active {
             border-color: var(--accent);
             background: rgba(59, 130, 246, 0.2);
             color: #ffffff;
+            transform: scale(1.05);
         }
 
         .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
 
         .leaderboard { display: flex; flex-direction: column; gap: 10px; }
 
-        /* General Player Card Base */
+        /* General Player Card Base with Smooth Animations */
         .player-card {
             border-radius: 10px;
             padding: 10px;
@@ -185,9 +209,27 @@
             border: 1px solid var(--border);
             overflow: hidden;
             contain: content;
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+            animation: cardFadePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ease-out;
         }
 
-        /* Visible Shine Effect ONLY for Top 3 Ranks */
+        .player-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent);
+        }
+
+        .player-card:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes cardFadePop {
+            0% { opacity: 0; transform: translateY(12px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* High Visibility Bright Shine Effect ONLY for Top 3 Ranks */
         .player-card.rank-card-1::after,
         .player-card.rank-card-2::after,
         .player-card.rank-card-3::after {
@@ -245,6 +287,7 @@
             left: 8px;
             font-size: 1rem;
             z-index: 5;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .mctiers-badge-wrapper {
@@ -285,6 +328,11 @@
             height: 36px;
             object-fit: cover;
             image-rendering: pixelated;
+            transition: transform 0.2s ease;
+        }
+
+        .player-card:hover .head-avatar-img {
+            transform: scale(1.1);
         }
 
         .player-info { flex: 1 1 150px; min-width: 140px; z-index: 2; }
@@ -316,6 +364,11 @@
             align-items: center;
             gap: 4px;
             color: var(--tier-color, #38bdf8);
+            transition: transform 0.2s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.1);
         }
 
         .badge img { width: 14px; height: 14px; object-fit: contain; }
@@ -332,7 +385,8 @@
         .badge.tier-LT5 { --tier-color: #00ff66; }
 
         .actions { display: flex; gap: 4px; margin-left: auto; z-index: 2; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
+        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; transition: transform 0.15s ease; }
+        .btn-sm:hover { transform: scale(1.1); }
         .btn-edit { background: #3b82f6; }
         .btn-delete { background: #ef4444; }
 
@@ -345,6 +399,7 @@
             align-items: center;
             justify-content: center;
             padding: 15px;
+            backdrop-filter: blur(4px);
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
@@ -355,8 +410,16 @@
             max-width: 400px;
             padding: 20px;
             position: relative;
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s ease; }
+        .modal-close:hover { transform: scale(1.2) rotate(90deg); }
         .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; object-fit: cover; }
         .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -636,7 +699,6 @@
             `).join('');
         }
 
-        // Automatic Compression for Custom Skin Upload (Fixes Skin Corruption & Loss)
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
