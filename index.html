@@ -532,7 +532,14 @@
         function loadFromLocalStorage() {
             try {
                 const local = localStorage.getItem('brute_tiers_data');
-                if (local) appData = JSON.parse(local);
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    if (parsed && typeof parsed === 'object') {
+                        appData = parsed;
+                        if (!appData.playersList) appData.playersList = [];
+                        if (!appData.kitIcons) appData.kitIcons = {};
+                    }
+                }
             } catch(e) {}
         }
 
@@ -546,9 +553,13 @@
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, { headers: { 'X-Master-Key': MASTER_KEY } });
                 if (res.ok) {
                     const responseData = await res.json();
-                    if (responseData.record) {
-                        appData = responseData.record;
-                        saveToLocalStorage();
+                    if (responseData && responseData.record) {
+                        const rec = responseData.record;
+                        if (Array.isArray(rec.playersList)) {
+                            appData = rec;
+                            if (!appData.kitIcons) appData.kitIcons = {};
+                            saveToLocalStorage();
+                        }
                     }
                 }
             } catch (err) {}
@@ -789,7 +800,9 @@
 
             const playerData = { username, customTitle, region, customSkin, tiers };
 
-            if (editIndex !== null && editIndex >= 0) {
+            if (!appData.playersList) appData.playersList = [];
+
+            if (editIndex !== null && editIndex >= 0 && editIndex < appData.playersList.length) {
                 appData.playersList[editIndex] = playerData;
             } else {
                 appData.playersList.push(playerData);
