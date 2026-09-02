@@ -376,8 +376,8 @@
         }
 
         .skin-canvas {
-            width: 54px;
-            height: 54px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
             image-rendering: pixelated;
         }
@@ -553,7 +553,11 @@
         function loadFromLocalStorage() {
             try {
                 const local = localStorage.getItem('brute_tiers_data');
-                if (local) appData = JSON.parse(local);
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    appData.playersList = parsed.playersList || [];
+                    appData.kitIcons = parsed.kitIcons || {};
+                }
             } catch(e) {
                 console.error("Local storage error", e);
             }
@@ -568,29 +572,31 @@
         }
 
         async function fetchGlobalData() {
+            loadFromLocalStorage();
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
                     method: 'GET',
                     headers: { 'X-Master-Key': MASTER_KEY }
                 });
 
-                if (!res.ok) throw new Error("API Connection Failed");
-
-                const responseData = await res.json();
-                let record = responseData.record;
-
-                if (record) {
-                    if (Array.isArray(record)) {
-                        appData.playersList = record.filter(p => p && p.username);
-                        appData.kitIcons = appData.kitIcons || {};
-                    } else if (typeof record === 'object') {
-                        appData.playersList = Array.isArray(record.playersList) ? record.playersList.filter(p => p && p.username) : [];
-                        appData.kitIcons = record.kitIcons || {};
+                if (res.ok) {
+                    const responseData = await res.json();
+                    let record = responseData.record;
+                    if (record) {
+                        let remotePlayers = Array.isArray(record.playersList) ? record.playersList : (Array.isArray(record) ? record : []);
+                        
+                        // Merge local and remote players to prevent missing entries
+                        const playerMap = new Map();
+                        remotePlayers.forEach(p => { if (p && p.username) playerMap.set(p.username.toLowerCase(), p); });
+                        appData.playersList.forEach(p => { if (p && p.username) playerMap.set(p.username.toLowerCase(), p); });
+                        
+                        appData.playersList = Array.from(playerMap.values());
+                        appData.kitIcons = record.kitIcons || appData.kitIcons || {};
+                        saveToLocalStorage();
                     }
                 }
-                saveToLocalStorage();
             } catch (err) {
-                loadFromLocalStorage();
+                console.warn("Using offline/cached data.");
             } finally {
                 renderKitBar();
                 renderKitRepsManager();
@@ -614,13 +620,9 @@
                     },
                     body: JSON.stringify(appData)
                 });
-                
-                if (!res.ok) {
-                    throw new Error("Payload size limit or sync failure.");
-                }
+                if (!res.ok) throw new Error("Sync Fail");
             } catch (err) {
-                console.warn("Failed syncing remote database; fallback to local storage.", err);
-                alert("Warning: Heavy skin file size issue. Saved locally.");
+                console.warn("Saved locally due to sync issue.");
             } finally {
                 if (saveBtn) saveBtn.textContent = "Save Player to Database";
             }
@@ -651,7 +653,7 @@
             renderLeaderboard();
         }
 
-        /* Auto-Resizing skin image to 64x64 PNG format to prevent API payload errors */
+        /* Extract & Compress Head Icon to Ultra Small Base64 */
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -660,14 +662,23 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = 64;
-                        canvas.height = 64;
+                        canvas.width = 16;
+                        canvas.height = 16;
                         const ctx = canvas.getContext('2d');
                         ctx.imageSmoothingEnabled = false;
-                        ctx.clearRect(0, 0, 64, 64);
-                        ctx.drawImage(img, 0, 0, 64, 64);
-                        
-                        document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
+                        ctx.clearRect(0, 0, 16, 16);
+
+                        if (img.width >= 64 && img.height >= 32) {
+                            // Extract Minecraft Head & Overlay
+                            ctx.drawImage(img, 8, 8, 8, 8, 4, 4, 8, 8);
+                            ctx.drawImage(img, 40, 8, 8, 8, 4, 4, 8, 8);
+                        } else {
+                            // Scale down generic image
+                            ctx.drawImage(img, 0, 0, 16, 16);
+                        }
+
+                        // Low memory footprint Base64 output
+                        document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png', 0.5);
                     };
                     img.src = e.target.result;
                 };
@@ -683,13 +694,13 @@
                     const img = new Image();
                     img.onload = async function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = 48;
-                        canvas.height = 48;
+                        canvas.width = 32;
+                        canvas.height = 32;
                         const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, 48, 48);
-                        ctx.drawImage(img, 0, 0, 48, 48);
+                        ctx.clearRect(0, 0, 32, 32);
+                        ctx.drawImage(img, 0, 0, 32, 32);
                         
-                        appData.kitIcons[kit] = canvas.toDataURL('image/png');
+                        appData.kitIcons[kit] = canvas.toDataURL('image/png', 0.5);
                         
                         renderKitBar();
                         renderKitRepsManager();
@@ -825,25 +836,11 @@
             if (!container) return;
 
             if (customSkin && customSkin.trim() !== '') {
-                const canvas = document.createElement('canvas');
-                canvas.width = 16;
-                canvas.height = 16;
-                canvas.className = 'skin-canvas';
-                const ctx = canvas.getContext('2d');
-                ctx.imageSmoothingEnabled = false;
-
-                const img = new Image();
-                img.onload = () => {
-                    ctx.clearRect(0, 0, 16, 16);
-                    ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
-                    ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
-                    ctx.drawImage(img, 20, 20, 8, 8, 4, 8, 8, 8);
-                    ctx.drawImage(img, 44, 20, 4, 8, 0, 8, 4, 8);
-                    ctx.drawImage(img, 36, 52, 4, 8, 12, 8, 4, 8);
-                };
+                const img = document.createElement('img');
+                img.className = 'skin-canvas';
                 img.src = customSkin;
                 container.innerHTML = '';
-                container.appendChild(canvas);
+                container.appendChild(img);
             } else {
                 const img = document.createElement('img');
                 img.className = 'skin-img';
@@ -919,7 +916,6 @@
         }
 
         buildTierInputs();
-        loadFromLocalStorage();
         fetchGlobalData();
     </script>
 </body>
