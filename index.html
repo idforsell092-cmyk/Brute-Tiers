@@ -6,17 +6,17 @@
     <title>BRUTE TIERS</title>
     <style>
         :root {
-            --bg-main: #2a1b28;
-            --bg-card: rgba(48, 28, 45, 0.85);
-            --bg-input: #3b2237;
-            --accent: #f472b6;
-            --accent-hover: #ec4899;
+            --bg-main: #180914;
+            --bg-card: rgba(35, 15, 32, 0.85);
+            --bg-input: #2d132c;
+            --accent: #d946ef;
+            --accent-hover: #c026d3;
             --discord: #5865F2;
             --discord-hover: #4752C4;
-            --text-main: #fce7f3;
-            --text-muted: #fbcfe8;
-            --border: #502d4b;
-            --active-lime: #f472b6;
+            --text-main: #fae8ff;
+            --text-muted: #f5d0fe;
+            --border: #4a1d46;
+            --active-lime: #e879f9;
         }
 
         * {
@@ -27,7 +27,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1f121d 0%, #381e33 50%, #221220 100%);
+            background: linear-gradient(135deg, #2a0818 0%, #4a0e2e 35%, #3b0764 70%, #1e1b4b 100%);
             background-attachment: fixed;
             color: var(--text-main);
             padding: 15px;
@@ -39,7 +39,7 @@
             content: "";
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(rgba(244, 114, 182, 0.15) 1px, transparent 0);
+            background-image: radial-gradient(rgba(217, 70, 239, 0.15) 1px, transparent 0);
             background-size: 24px 24px;
             pointer-events: none;
             z-index: 0;
@@ -73,11 +73,11 @@
             gap: 10px;
         }
 
-        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; color: #fbcfe8; }
-        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(244, 114, 182, 0.5); }
+        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; color: #fae8ff; }
+        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(217, 70, 239, 0.6); }
 
         .btn {
-            background: var(--accent);
+            background: linear-gradient(90deg, #e11d48 0%, #a855f7 100%);
             color: white;
             border: none;
             padding: 10px 18px;
@@ -89,11 +89,14 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+            box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
         }
 
-        .btn:hover { background: var(--accent-hover); }
-        
+        .btn:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
         .btn-discord {
             background: var(--discord);
             box-shadow: 0 0 10px rgba(88, 101, 242, 0.3);
@@ -101,6 +104,7 @@
 
         .btn-discord:hover {
             background: var(--discord-hover);
+            filter: none;
         }
 
         .btn-logout { background: #ef4444; display: none; }
@@ -189,7 +193,7 @@
             width: 36px;
             height: 36px;
             border-radius: 6px;
-            background: #1a0f18;
+            background: #120510;
             object-fit: contain;
             border: 1px solid var(--border);
             flex-shrink: 0;
@@ -235,14 +239,14 @@
         }
 
         .kit-pill:hover {
-            border-color: rgba(244, 114, 182, 0.4);
+            border-color: rgba(225, 29, 72, 0.5);
             transform: translateY(-2px);
         }
 
         .kit-pill.active {
             border-color: var(--accent);
-            box-shadow: 0 0 12px rgba(244, 114, 182, 0.4);
-            background: rgba(244, 114, 182, 0.15);
+            box-shadow: 0 0 12px rgba(217, 70, 239, 0.4);
+            background: linear-gradient(90deg, rgba(225, 29, 72, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
             color: #ffffff;
         }
 
@@ -460,7 +464,7 @@
 
         .badge.highlight-tier {
             border-width: 2px;
-            box-shadow: 0 0 12px var(--tier-color, rgba(244, 114, 182, 0.6));
+            box-shadow: 0 0 12px var(--tier-color, rgba(217, 70, 239, 0.6));
         }
 
         .badge img { width: 16px; height: 16px; object-fit: contain; }
