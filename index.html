@@ -221,7 +221,7 @@
             transform: translateY(8px) scale(0.99);
         }
 
-        /* General Player Card Base with Smooth Animations */
+        /* General Player Card Base */
         .player-card {
             border-radius: 10px;
             padding: 10px;
@@ -255,7 +255,7 @@
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* High Visibility Bright Shine Effect ONLY for Top 3 Ranks */
+        /* Shine Effect ONLY for Top 3 Ranks */
         .player-card.rank-card-1::after,
         .player-card.rank-card-2::after,
         .player-card.rank-card-3::after {
@@ -544,18 +544,35 @@
         }
 
         function saveToLocalStorage() {
-            try { localStorage.setItem('brute_tiers_data', JSON.stringify(appData)); } catch(e) {}
+            try { 
+                localStorage.setItem('brute_tiers_data', JSON.stringify(appData)); 
+            } catch(e) {}
         }
 
         async function fetchGlobalData() {
+            // Load local data first for instant visibility
             loadFromLocalStorage();
+            renderKitBar();
+            renderKitRepsManager();
+            renderLeaderboard();
+
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, { headers: { 'X-Master-Key': MASTER_KEY } });
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, { 
+                    headers: { 'X-Master-Key': MASTER_KEY } 
+                });
                 if (res.ok) {
                     const responseData = await res.json();
                     if (responseData && responseData.record) {
                         const rec = responseData.record;
                         if (Array.isArray(rec.playersList)) {
+                            // Merge missing local players so they don't vanish on delayed load
+                            const existingUsernames = new Set(rec.playersList.map(p => p.username.toLowerCase()));
+                            (appData.playersList || []).forEach(localPlayer => {
+                                if (!existingUsernames.has(localPlayer.username.toLowerCase())) {
+                                    rec.playersList.push(localPlayer);
+                                }
+                            });
+
                             appData = rec;
                             if (!appData.kitIcons) appData.kitIcons = {};
                             saveToLocalStorage();
@@ -563,6 +580,7 @@
                     }
                 }
             } catch (err) {}
+
             renderKitBar();
             renderKitRepsManager();
             renderLeaderboard();
@@ -574,7 +592,10 @@
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-Master-Key': MASTER_KEY 
+                    },
                     body: JSON.stringify(appData)
                 });
             } catch (err) {}
@@ -808,6 +829,10 @@
                 appData.playersList.push(playerData);
             }
 
+            // Save immediately to local state and memory
+            saveToLocalStorage();
+            renderLeaderboard();
+
             document.getElementById('playerForm').reset();
             document.getElementById('editIndex').value = '';
             document.getElementById('customSkinBase64').value = '';
@@ -836,6 +861,8 @@
         async function deletePlayer(index) {
             if (confirm('Delete player?')) {
                 appData.playersList.splice(index, 1);
+                saveToLocalStorage();
+                renderLeaderboard();
                 await saveGlobalData();
             }
         }
