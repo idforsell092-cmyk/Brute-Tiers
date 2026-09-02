@@ -6,17 +6,17 @@
     <title>BRUTE TIERS</title>
     <style>
         :root {
-            --bg-main: #0c0e14;
-            --bg-card: #151821;
-            --bg-input: #1c202d;
-            --accent: #a855f7;
-            --accent-hover: #9333ea;
+            --bg-main: #2a1b28;
+            --bg-card: rgba(48, 28, 45, 0.85);
+            --bg-input: #3b2237;
+            --accent: #f472b6;
+            --accent-hover: #ec4899;
             --discord: #5865F2;
             --discord-hover: #4752C4;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --border: #232736;
-            --active-lime: #84cc16;
+            --text-main: #fce7f3;
+            --text-muted: #fbcfe8;
+            --border: #502d4b;
+            --active-lime: #f472b6;
         }
 
         * {
@@ -27,10 +27,27 @@
         }
 
         body {
-            background-color: var(--bg-main);
+            background: linear-gradient(135deg, #1f121d 0%, #381e33 50%, #221220 100%);
+            background-attachment: fixed;
             color: var(--text-main);
             padding: 15px;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(rgba(244, 114, 182, 0.15) 1px, transparent 0);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header, .kit-bar, .leaderboard, .admin-panel {
+            position: relative;
+            z-index: 1;
         }
 
         header, .kit-bar {
@@ -56,8 +73,8 @@
             gap: 10px;
         }
 
-        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
-        .logo span { color: var(--accent); }
+        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; color: #fbcfe8; }
+        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(244, 114, 182, 0.5); }
 
         .btn {
             background: var(--accent);
@@ -72,12 +89,14 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
         }
 
         .btn:hover { background: var(--accent-hover); }
         
         .btn-discord {
             background: var(--discord);
+            box-shadow: 0 0 10px rgba(88, 101, 242, 0.3);
         }
 
         .btn-discord:hover {
@@ -91,6 +110,7 @@
             margin: 0 auto 20px auto;
             background: var(--bg-card);
             border: 1px solid var(--border);
+            backdrop-filter: blur(8px);
             border-radius: 12px;
             padding: 20px;
             display: none;
@@ -169,7 +189,7 @@
             width: 36px;
             height: 36px;
             border-radius: 6px;
-            background: #000;
+            background: #1a0f18;
             object-fit: contain;
             border: 1px solid var(--border);
             flex-shrink: 0;
@@ -191,6 +211,7 @@
             flex-wrap: wrap;
             gap: 10px;
             background: var(--bg-card);
+            backdrop-filter: blur(8px);
             padding: 12px;
             border-radius: 10px;
             border: 1px solid var(--border);
@@ -210,17 +231,18 @@
             cursor: pointer;
             transition: all 0.25s ease;
             user-select: none;
+            color: var(--text-muted);
         }
 
         .kit-pill:hover {
-            border-color: rgba(132, 204, 22, 0.4);
+            border-color: rgba(244, 114, 182, 0.4);
             transform: translateY(-2px);
         }
 
         .kit-pill.active {
-            border-color: var(--active-lime);
-            box-shadow: 0 0 12px rgba(132, 204, 22, 0.4);
-            background: rgba(132, 204, 22, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(244, 114, 182, 0.4);
+            background: rgba(244, 114, 182, 0.15);
             color: #ffffff;
         }
 
@@ -277,7 +299,8 @@
         }
 
         .player-card.rank-card-default {
-            background: #151821;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
             border: 1px solid var(--border);
             color: #ffffff;
         }
@@ -390,6 +413,7 @@
             opacity: 0.9;
             margin-top: 2px;
             font-weight: 600;
+            color: var(--text-muted);
         }
 
         .region-badge {
@@ -420,7 +444,6 @@
             gap: 6px;
         }
 
-        /* Tier Badge Styles & Dynamic Gradient Outlines */
         .badge {
             background: rgba(15, 23, 42, 0.65);
             border: 1.5px solid var(--tier-color, #38bdf8);
@@ -437,22 +460,21 @@
 
         .badge.highlight-tier {
             border-width: 2px;
-            box-shadow: 0 0 12px var(--tier-color, rgba(132, 204, 22, 0.6));
+            box-shadow: 0 0 12px var(--tier-color, rgba(244, 114, 182, 0.6));
         }
 
         .badge img { width: 16px; height: 16px; object-fit: contain; }
 
-        /* Specific Tier Border Colors (HT1 Red -> LT5 Lime Green) */
-        .badge.tier-HT1 { --tier-color: #ef4444; } /* Red */
-        .badge.tier-HT2 { --tier-color: #f97316; } /* Orange-Red */
-        .badge.tier-HT3 { --tier-color: #f59e0b; } /* Orange */
-        .badge.tier-HT4 { --tier-color: #eab308; } /* Yellow-Orange */
-        .badge.tier-HT5 { --tier-color: #facc15; } /* Yellow */
-        .badge.tier-LT1 { --tier-color: #a3e635; } /* Yellow-Green */
-        .badge.tier-LT2 { --tier-color: #84cc16; } /* Light Lime */
-        .badge.tier-LT3 { --tier-color: #22c55e; } /* Green */
-        .badge.tier-LT4 { --tier-color: #10b981; } /* Bright Green */
-        .badge.tier-LT5 { --tier-color: #00ff66; } /* Lime Green */
+        .badge.tier-HT1 { --tier-color: #ef4444; }
+        .badge.tier-HT2 { --tier-color: #f97316; }
+        .badge.tier-HT3 { --tier-color: #f59e0b; }
+        .badge.tier-HT4 { --tier-color: #eab308; }
+        .badge.tier-HT5 { --tier-color: #facc15; }
+        .badge.tier-LT1 { --tier-color: #a3e635; }
+        .badge.tier-LT2 { --tier-color: #84cc16; }
+        .badge.tier-LT3 { --tier-color: #22c55e; }
+        .badge.tier-LT4 { --tier-color: #10b981; }
+        .badge.tier-LT5 { --tier-color: #00ff66; }
 
         .actions { display: flex; gap: 6px; }
 
@@ -475,7 +497,6 @@
     <header>
         <div class="logo">BRUTE<span>TIERS</span></div>
         <div class="header-btns">
-            <!-- Discord Button added on the left side of Admin Login -->
             <a href="https://discord.gg/BAjzj8qmmk" target="_blank" class="btn btn-discord">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
