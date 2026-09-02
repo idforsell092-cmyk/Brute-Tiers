@@ -333,12 +333,13 @@
             justify-content: center;
         }
 
-        .skin-canvas {
-            height: 90px;
-            width: auto;
+        .head-avatar-img {
+            width: 44px;
+            height: 44px;
             object-fit: contain;
             image-rendering: pixelated;
-            margin-top: 15px;
+            border-radius: 4px;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
         }
 
         .player-info h3 {
@@ -489,10 +490,7 @@
             'NA': 0
         };
 
-        let appData = {
-            kitIcons: {},
-            playersList: []
-        };
+        let appData = { kitIcons: {}, playersList: [] };
 
         function loadFromLocalStorage() {
             try {
@@ -592,12 +590,31 @@
             renderLeaderboard();
         }
 
+        /* Extract Head + Layer Overlay when Custom Skin Uploaded */
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('customSkinBase64').value = e.target.result;
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 32;
+                        canvas.height = 32;
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = false;
+
+                        if (img.width >= 64 && img.height >= 32) {
+                            // Extract Base Head (8x8 -> 32x32)
+                            ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
+                            // Extract Outer Hat/Overlay Layer
+                            ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32);
+                            document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
+                        } else {
+                            document.getElementById('customSkinBase64').value = e.target.result;
+                        }
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -742,51 +759,26 @@
                 `;
             }).join('');
 
-            appData.playersList.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
+            appData.playersList.forEach((player, index) => renderSkinHead(index, player.username, player.customSkin));
         }
 
-        /* 3D Isometric Player Skin Renderer */
-        function renderSkin(index, username, customSkin) {
+        /* Pure Head Display function (Premium & Cracked) */
+        function renderSkinHead(index, username, customSkin) {
             const container = document.getElementById(`skin-box-${index}`);
             if (!container) return;
 
+            const img = document.createElement('img');
+            img.className = 'head-avatar-img';
+
             if (customSkin && customSkin.trim() !== '') {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 64; canvas.height = 128;
-                    canvas.className = 'skin-canvas';
-                    const ctx = canvas.getContext('2d');
-                    ctx.imageSmoothingEnabled = false;
-
-                    // Draw Head & Layers
-                    ctx.drawImage(img, 8, 8, 8, 8, 20, 4, 24, 24);
-                    ctx.drawImage(img, 40, 8, 8, 8, 20, 4, 24, 24);
-
-                    // Draw Body Torso
-                    ctx.drawImage(img, 20, 20, 8, 12, 20, 28, 24, 36);
-                    ctx.drawImage(img, 20, 36, 8, 12, 20, 28, 24, 36);
-
-                    // Draw Arms
-                    ctx.drawImage(img, 44, 20, 4, 12, 8, 28, 12, 36);
-                    ctx.drawImage(img, 36, 52, 4, 12, 44, 28, 12, 36);
-
-                    // Draw Legs
-                    ctx.drawImage(img, 4, 20, 4, 12, 20, 64, 12, 36);
-                    ctx.drawImage(img, 20, 52, 4, 12, 32, 64, 12, 36);
-
-                    container.innerHTML = '';
-                    container.appendChild(canvas);
-                };
                 img.src = customSkin;
             } else {
-                const img = document.createElement('img');
-                img.className = 'skin-canvas';
-                img.src = `https://mc-heads.net/body/${username}/right`;
-                img.onerror = () => { img.src = 'https://mc-heads.net/body/Steve/right'; };
-                container.innerHTML = '';
-                container.appendChild(img);
+                img.src = `https://mc-heads.net/avatar/${username}/100`;
+                img.onerror = () => { img.src = 'https://mc-heads.net/avatar/Steve/100'; };
             }
+
+            container.innerHTML = '';
+            container.appendChild(img);
         }
 
         document.getElementById('playerForm').addEventListener('submit', async (e) => {
