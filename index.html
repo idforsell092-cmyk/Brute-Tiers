@@ -35,14 +35,8 @@
         }
 
         @keyframes fadeInTop {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         header {
@@ -53,15 +47,8 @@
             margin: 0 auto 20px auto;
         }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
+        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
+        .logo span { color: var(--accent); }
 
         .btn {
             background: var(--accent);
@@ -74,14 +61,8 @@
             transition: 0.2s;
         }
 
-        .btn:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn-logout {
-            background: #ef4444;
-            display: none;
-        }
+        .btn:hover { background: var(--accent-hover); }
+        .btn-logout { background: #ef4444; display: none; }
 
         .admin-panel {
             max-width: 1100px;
@@ -129,10 +110,7 @@
             gap: 5px;
         }
 
-        .file-upload-wrapper input[type="file"] {
-            font-size: 0.8rem;
-            padding: 6px;
-        }
+        .file-upload-wrapper input[type="file"] { font-size: 0.8rem; padding: 6px; }
 
         .tier-inputs {
             display: grid;
@@ -182,10 +160,7 @@
             flex-grow: 1;
         }
 
-        .rep-inputs-col input {
-            padding: 5px 8px;
-            font-size: 0.75rem;
-        }
+        .rep-inputs-col input { padding: 5px 8px; font-size: 0.75rem; }
 
         .kit-bar {
             max-width: 1100px;
@@ -212,11 +187,7 @@
             font-weight: 600;
         }
 
-        .kit-pill img {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-        }
+        .kit-pill img { width: 22px; height: 22px; object-fit: contain; }
 
         .leaderboard {
             max-width: 1100px;
@@ -241,23 +212,12 @@
         }
 
         @keyframes cardPopIn {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.92);
-            }
-            70% {
-                opacity: 1;
-                transform: translateY(-4px) scale(1.02);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(30px) scale(0.92); }
+            70% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .player-card:hover {
-            transform: translateY(-3px) scale(1.01);
-        }
+        .player-card:hover { transform: translateY(-3px) scale(1.01); }
 
         .player-card.rank-card-1 {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -352,9 +312,7 @@
             text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .rank-number-box span {
-            transform: skewX(20deg);
-        }
+        .rank-number-box span { transform: skewX(20deg); }
 
         .skin-holder {
             width: 105px;
@@ -376,13 +334,6 @@
         }
 
         .skin-canvas {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            image-rendering: pixelated;
-        }
-
-        .skin-img {
             height: 90px;
             width: auto;
             object-fit: contain;
@@ -446,16 +397,9 @@
             color: #38bdf8;
         }
 
-        .badge img {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
-        }
+        .badge img { width: 16px; height: 16px; object-fit: contain; }
 
-        .actions {
-            display: flex;
-            gap: 6px;
-        }
+        .actions { display: flex; gap: 6px; }
 
         .btn-sm {
             padding: 6px 10px;
@@ -510,7 +454,7 @@
                     </datalist>
                 </div>
                 <div class="file-upload-wrapper">
-                    <label>Player Custom Skin Image (File Upload)</label>
+                    <label>Player Custom Skin PNG (File Upload)</label>
                     <input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)">
                     <input type="hidden" id="customSkinBase64">
                 </div>
@@ -558,17 +502,13 @@
                     appData.playersList = parsed.playersList || [];
                     appData.kitIcons = parsed.kitIcons || {};
                 }
-            } catch(e) {
-                console.error("Local storage error", e);
-            }
+            } catch(e) { console.error("Local storage error", e); }
         }
 
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('brute_tiers_data', JSON.stringify(appData));
-            } catch(e) {
-                console.error("Local storage error", e);
-            }
+            } catch(e) { console.error("Local storage error", e); }
         }
 
         async function fetchGlobalData() {
@@ -585,7 +525,6 @@
                     if (record) {
                         let remotePlayers = Array.isArray(record.playersList) ? record.playersList : (Array.isArray(record) ? record : []);
                         
-                        // Merge local and remote players to prevent missing entries
                         const playerMap = new Map();
                         remotePlayers.forEach(p => { if (p && p.username) playerMap.set(p.username.toLowerCase(), p); });
                         appData.playersList.forEach(p => { if (p && p.username) playerMap.set(p.username.toLowerCase(), p); });
@@ -653,34 +592,12 @@
             renderLeaderboard();
         }
 
-        /* Extract & Compress Head Icon to Ultra Small Base64 */
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 16;
-                        canvas.height = 16;
-                        const ctx = canvas.getContext('2d');
-                        ctx.imageSmoothingEnabled = false;
-                        ctx.clearRect(0, 0, 16, 16);
-
-                        if (img.width >= 64 && img.height >= 32) {
-                            // Extract Minecraft Head & Overlay
-                            ctx.drawImage(img, 8, 8, 8, 8, 4, 4, 8, 8);
-                            ctx.drawImage(img, 40, 8, 8, 8, 4, 4, 8, 8);
-                        } else {
-                            // Scale down generic image
-                            ctx.drawImage(img, 0, 0, 16, 16);
-                        }
-
-                        // Low memory footprint Base64 output
-                        document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png', 0.5);
-                    };
-                    img.src = e.target.result;
+                    document.getElementById('customSkinBase64').value = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -694,8 +611,7 @@
                     const img = new Image();
                     img.onload = async function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = 32;
-                        canvas.height = 32;
+                        canvas.width = 32; canvas.height = 32;
                         const ctx = canvas.getContext('2d');
                         ctx.clearRect(0, 0, 32, 32);
                         ctx.drawImage(img, 0, 0, 32, 32);
@@ -759,9 +675,7 @@
         function calculatePoints(playerTiers) {
             let total = 0;
             if (!playerTiers) return 0;
-            KITS.forEach(kit => {
-                total += TIER_SCORES[playerTiers[kit] || 'NA'] || 0;
-            });
+            KITS.forEach(kit => { total += TIER_SCORES[playerTiers[kit] || 'NA'] || 0; });
             return total;
         }
 
@@ -831,19 +745,43 @@
             appData.playersList.forEach((player, index) => renderSkin(index, player.username, player.customSkin));
         }
 
+        /* 3D Isometric Player Skin Renderer */
         function renderSkin(index, username, customSkin) {
             const container = document.getElementById(`skin-box-${index}`);
             if (!container) return;
 
             if (customSkin && customSkin.trim() !== '') {
-                const img = document.createElement('img');
-                img.className = 'skin-canvas';
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64; canvas.height = 128;
+                    canvas.className = 'skin-canvas';
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = false;
+
+                    // Draw Head & Layers
+                    ctx.drawImage(img, 8, 8, 8, 8, 20, 4, 24, 24);
+                    ctx.drawImage(img, 40, 8, 8, 8, 20, 4, 24, 24);
+
+                    // Draw Body Torso
+                    ctx.drawImage(img, 20, 20, 8, 12, 20, 28, 24, 36);
+                    ctx.drawImage(img, 20, 36, 8, 12, 20, 28, 24, 36);
+
+                    // Draw Arms
+                    ctx.drawImage(img, 44, 20, 4, 12, 8, 28, 12, 36);
+                    ctx.drawImage(img, 36, 52, 4, 12, 44, 28, 12, 36);
+
+                    // Draw Legs
+                    ctx.drawImage(img, 4, 20, 4, 12, 20, 64, 12, 36);
+                    ctx.drawImage(img, 20, 52, 4, 12, 32, 64, 12, 36);
+
+                    container.innerHTML = '';
+                    container.appendChild(canvas);
+                };
                 img.src = customSkin;
-                container.innerHTML = '';
-                container.appendChild(img);
             } else {
                 const img = document.createElement('img');
-                img.className = 'skin-img';
+                img.className = 'skin-canvas';
                 img.src = `https://mc-heads.net/body/${username}/right`;
                 img.onerror = () => { img.src = 'https://mc-heads.net/body/Steve/right'; };
                 container.innerHTML = '';
@@ -864,9 +802,7 @@
             const customSkin = document.getElementById('customSkinBase64').value;
 
             const tiers = {};
-            KITS.forEach(kit => {
-                tiers[kit] = document.getElementById(`tier-${kit}`).value;
-            });
+            KITS.forEach(kit => { tiers[kit] = document.getElementById(`tier-${kit}`).value; });
 
             const playerData = { username, customTitle, region, customSkin, tiers };
 
