@@ -207,18 +207,77 @@
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
+        /* Base Player Card */
         .player-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 16px;
+            border-radius: 10px;
+            padding: 10px 18px;
             display: grid;
             grid-template-columns: 190px 1fr 65px 2fr auto;
             align-items: center;
             gap: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Dynamic Full-Card Color Themes */
+        .player-card.rank-card-1 {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: 1px solid #fbbf24;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+        }
+
+        .player-card.rank-card-2 {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            border: 1px solid #94a3b8;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(100, 116, 139, 0.25);
+        }
+
+        .player-card.rank-card-3 {
+            background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%);
+            border: 1px solid #ea580c;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(194, 65, 12, 0.25);
+        }
+
+        .player-card.rank-card-default {
+            background: #151821;
+            border: 1px solid var(--border);
+            color: #ffffff;
+        }
+
+        /* Enchantment Glint Animation */
+        .player-card.glint-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -150%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                60deg,
+                rgba(255, 255, 255, 0) 20%,
+                rgba(255, 255, 255, 0.25) 50%,
+                rgba(255, 255, 255, 0) 80%
+            );
+            transform: rotate(25deg);
+            animation: glintSweep 3.5s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes glintSweep {
+            0% { left: -150%; }
+            40% { left: 150%; }
+            100% { left: 150%; }
         }
 
         @media (max-width: 768px) {
@@ -241,11 +300,12 @@
             align-items: center;
             height: 60px;
             width: 180px;
-            background: #252a38;
+            background: rgba(0, 0, 0, 0.25);
             transform: skewX(-20deg);
-            border-radius: 4px;
+            border-radius: 6px;
             overflow: hidden;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .rank-number-box {
@@ -259,16 +319,12 @@
             font-style: italic;
             color: #ffffff;
             flex-shrink: 0;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
         .rank-number-box span {
             transform: skewX(20deg);
         }
-
-        .rank-number-box.rank-1 { background: #eab308; color: #000; }
-        .rank-number-box.rank-2 { background: #94a3b8; color: #000; }
-        .rank-number-box.rank-3 { background: #c2410c; color: #fff; }
-        .rank-number-box.rank-default { background: #2e3344; color: #fff; }
 
         .skin-holder {
             width: 105px;
@@ -305,35 +361,28 @@
         }
 
         .player-info h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .player-info p {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            opacity: 0.9;
             margin-top: 2px;
+            font-weight: 600;
         }
 
         .region-badge {
-            background: var(--bg-input);
+            background: rgba(0, 0, 0, 0.3);
             padding: 4px 8px;
             border-radius: 5px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-align: center;
-            border: 2px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-transform: uppercase;
-        }
-
-        .region-badge.na-region {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
-
-        .region-badge.other-region {
-            border-color: #84cc16;
-            color: #84cc16;
         }
 
         .tier-badges {
@@ -343,8 +392,8 @@
         }
 
         .badge {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 4px 8px;
             border-radius: 5px;
             font-size: 0.75rem;
@@ -352,6 +401,7 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            color: #ffffff;
         }
 
         .badge img {
@@ -359,11 +409,6 @@
             height: 16px;
             object-fit: contain;
         }
-
-        .badge.HT1, .badge.HT2 { color: #f43f5e; border-color: #f43f5e44; }
-        .badge.HT3, .badge.HT4, .badge.HT5 { color: #fb923c; border-color: #fb923c44; }
-        .badge.LT1, .badge.LT2, .badge.LT3 { color: #38bdf8; border-color: #38bdf844; }
-        .badge.LT4, .badge.LT5 { color: #a3e635; border-color: #a3e63544; }
 
         .actions {
             display: flex;
@@ -444,7 +489,6 @@
     </div>
 
     <script>
-        // Enter your Valid JSONBin ID & Key below if using JSONBin Cloud Sync
         const JSONBIN_ID = "6a9753d8da38895dfe2cfae0";
         const MASTER_KEY = "$2a$10$P5QFYrh6juAzCoDI5nhou.k.YPAyiRePx/by0iRbjM3aEW5IfTxCq";
 
@@ -464,13 +508,10 @@
             playersList: []
         };
 
-        // Load fallback from LocalStorage if network API fails
         function loadFromLocalStorage() {
             try {
                 const local = localStorage.getItem('brute_tiers_data');
-                if (local) {
-                    appData = JSON.parse(local);
-                }
+                if (local) appData = JSON.parse(local);
             } catch(e) {
                 console.error("Local storage error", e);
             }
@@ -507,13 +548,11 @@
                 }
                 saveToLocalStorage();
             } catch (err) {
-                console.warn("Cloud Sync Unavailable, Loading Local Data System...");
                 loadFromLocalStorage();
-            } finally {
+            } opacity:
                 renderKitBar();
                 renderKitRepsManager();
                 renderLeaderboard();
-            }
         }
 
         async function saveGlobalData() {
@@ -522,7 +561,7 @@
             if (saveBtn) saveBtn.textContent = "Syncing...";
 
             try {
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -530,9 +569,8 @@
                     },
                     body: JSON.stringify(appData)
                 });
-                if (!response.ok) throw new Error("Sync failed");
             } catch (err) {
-                console.warn("Cloud sync failed. Saved to local storage.");
+                console.warn("Saved to local storage.");
             } finally {
                 if (saveBtn) saveBtn.textContent = "Save Player to Database";
                 fetchGlobalData();
@@ -662,9 +700,7 @@
         }
 
         function renderLeaderboard() {
-            appData.playersList.sort((a, b) => {
-                return calculatePoints(b.tiers) - calculatePoints(a.tiers);
-            });
+            appData.playersList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
 
             const container = document.getElementById('leaderboard');
             if (!appData.playersList || appData.playersList.length === 0) {
@@ -677,13 +713,14 @@
                 const title = (player.customTitle && player.customTitle.trim() !== '') ? player.customTitle : getDefaultTitle(points);
                 
                 const displayRank = index + 1;
-                const rankClass = displayRank === 1 ? 'rank-1' : displayRank === 2 ? 'rank-2' : displayRank === 3 ? 'rank-3' : 'rank-default';
-                const regionClass = player.region === 'NA' ? 'na-region' : 'other-region';
+                
+                // Card Color Styles & Glint effect for Top 3
+                const rankCardClass = displayRank === 1 ? 'rank-card-1 glint-effect' : displayRank === 2 ? 'rank-card-2 glint-effect' : displayRank === 3 ? 'rank-card-3 glint-effect' : 'rank-card-default';
 
                 return `
-                    <div class="player-card">
+                    <div class="player-card ${rankCardClass}">
                         <div class="mctiers-badge-wrapper">
-                            <div class="rank-number-box ${rankClass}">
+                            <div class="rank-number-box">
                                 <span>${displayRank}.</span>
                             </div>
                             <div class="skin-holder">
@@ -694,7 +731,7 @@
                             <h3>${player.username}</h3>
                             <p>✦ ${title} (${points} Points)</p>
                         </div>
-                        <div class="region-badge ${regionClass}">${player.region || 'IND'}</div>
+                        <div class="region-badge">${player.region || 'IND'}</div>
                         <div class="tier-badges">
                             ${KITS.map(kit => {
                                 const tier = player.tiers ? player.tiers[kit] : 'NA';
