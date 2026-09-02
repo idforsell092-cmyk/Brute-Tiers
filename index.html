@@ -6,15 +6,15 @@
     <title>BRUTE TIERS</title>
     <style>
         :root {
-            --bg-main: #180914;
-            --bg-card: rgba(35, 15, 32, 0.85);
-            --bg-input: #2d132c;
-            --accent: #d946ef;
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.85);
+            --bg-input: #1e293b;
+            --accent: #3b82f6;
             --discord: #5865F2;
             --discord-hover: #4752C4;
-            --text-main: #fae8ff;
-            --text-muted: #f5d0fe;
-            --border: #4a1d46;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
         }
 
         * {
@@ -28,11 +28,11 @@
         html, body {
             width: 100%;
             overflow-x: hidden;
-            background: #1e1b4b;
+            background: #090d16;
         }
 
         body {
-            background: linear-gradient(135deg, #2a0818 0%, #4a0e2e 35%, #3b0764 70%, #1e1b4b 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%);
             background-attachment: fixed;
             color: var(--text-main);
             padding: 12px;
@@ -57,11 +57,11 @@
             gap: 10px;
         }
 
-        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; color: #fae8ff; }
-        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(217, 70, 239, 0.6); }
+        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; color: #ffffff; }
+        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
 
         .btn {
-            background: linear-gradient(90deg, #e11d48 0%, #a855f7 100%);
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
             color: white;
             border: none;
             padding: 8px 14px;
@@ -164,7 +164,7 @@
 
         .kit-pill.active {
             border-color: var(--accent);
-            background: rgba(217, 70, 239, 0.2);
+            background: rgba(59, 130, 246, 0.2);
             color: #ffffff;
         }
 
@@ -172,7 +172,7 @@
 
         .leaderboard { display: flex; flex-direction: column; gap: 10px; }
 
-        /* General Card Base */
+        /* General Player Card Base */
         .player-card {
             border-radius: 10px;
             padding: 10px;
@@ -187,7 +187,7 @@
             contain: content;
         }
 
-        /* High Visibility Bright Shine Effect ONLY for Top 3 Ranks */
+        /* Visible Shine Effect ONLY for Top 3 Ranks */
         .player-card.rank-card-1::after,
         .player-card.rank-card-2::after,
         .player-card.rank-card-3::after {
@@ -195,14 +195,14 @@
             position: absolute;
             top: -60%;
             left: -150%;
-            width: 45%;
+            width: 50%;
             height: 220%;
             background: linear-gradient(
                 115deg,
                 rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.6) 45%,
-                rgba(255, 255, 255, 0.9) 50%,
-                rgba(255, 255, 255, 0.6) 55%,
+                rgba(255, 255, 255, 0.65) 45%,
+                rgba(255, 255, 255, 0.95) 50%,
+                rgba(255, 255, 255, 0.65) 55%,
                 rgba(255, 255, 255, 0) 100%
             );
             transform: rotate(25deg);
@@ -252,7 +252,7 @@
             align-items: center;
             height: 48px;
             width: 130px;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.45);
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -277,18 +277,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .head-avatar-img {
             width: 36px;
             height: 36px;
-            object-fit: contain;
+            object-fit: cover;
             image-rendering: pixelated;
         }
 
         .player-info { flex: 1 1 150px; min-width: 140px; z-index: 2; }
-        .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-        .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 
         .region-badge {
             padding: 3px 8px;
@@ -305,7 +306,7 @@
         .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 200px; z-index: 2; }
 
         .badge {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
             border: 1px solid var(--tier-color, #38bdf8);
             padding: 3px 6px;
             border-radius: 4px;
@@ -347,7 +348,7 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
-            background: #1e091b;
+            background: #1e293b;
             border: 1px solid var(--accent);
             border-radius: 12px;
             width: 100%;
@@ -357,7 +358,7 @@
         }
         .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; }
+        .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; object-fit: cover; }
         .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .modal-stat-box { background: var(--bg-input); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.8rem; }
     </style>
@@ -635,13 +636,26 @@
             `).join('');
         }
 
+        // Automatic Compression for Custom Skin Upload (Fixes Skin Corruption & Loss)
         function handleSkinUpload(event) {
             const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => document.getElementById('customSkinBase64').value = e.target.result;
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64;
+                    canvas.height = 64;
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 64, 64);
+                    document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function handleKitIconUpload(category, event) {
