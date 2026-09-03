@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>BRUTE TIERS</title>
+    <title>BRUTE TIERS - Global Leaderboard</title>
     <style>
         :root {
             --bg-main: #0f172a;
@@ -391,10 +391,7 @@
             transition: transform 0.2s ease;
         }
 
-        .badge:hover {
-            transform: scale(1.1);
-        }
-
+        .badge:hover { transform: scale(1.1); }
         .badge img { width: 14px; height: 14px; object-fit: contain; }
 
         .badge.tier-HT1 { --tier-color: #ef4444; }
@@ -512,8 +509,7 @@
         </div>
     </div>
         <script>
-        const JSONBIN_ID = "6a9753d8da38895dfe2cfae0";
-        const MASTER_KEY = "$2a$10$P5QFYrh6juAzCoDI5nhou.k.YPAyiRePx/by0iRbjM3aEW5IfTxCq";
+        const PRIMARY_STORE_URL = "https://keyvalue.imkey.store/api/v1/store/brutetiers_global_db_v1";
 
         const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
@@ -565,15 +561,12 @@
             loadFromLocalStorage();
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest?nocache=${Date.now()}`, { 
-                    method: 'GET',
-                    headers: { 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Bin-Meta': 'false'
-                    } 
+                const res = await fetch(`https://api.myjson.online/v1/records/4831caed-eb58-45ba-8b89-21cb8b7db2d3`, {
+                    method: 'GET'
                 });
                 if (res.ok) {
-                    const cloudRecord = await res.json();
+                    const data = await res.json();
+                    const cloudRecord = data.jsonData || data.data || data;
                     if (cloudRecord) {
                         if (cloudRecord.kitIcons) {
                             appData.kitIcons = { ...appData.kitIcons, ...cloudRecord.kitIcons };
@@ -585,7 +578,7 @@
                     }
                 }
             } catch (err) {
-                console.error("Cloud fetch sync error:", err);
+                console.error("Global endpoint sync:", err);
             }
 
             renderKitBar();
@@ -603,21 +596,13 @@
                     playersList: appData.playersList || []
                 };
 
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                await fetch(`https://api.myjson.online/v1/records/4831caed-eb58-45ba-8b89-21cb8b7db2d3`, {
                     method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Bin-Meta': 'false'
-                    },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jsonData: payload })
                 });
-
-                if (!res.ok) {
-                    console.error("Cloud push failed status:", res.status);
-                }
             } catch (err) {
-                console.error("Cloud save failed:", err);
+                console.error("Global write error:", err);
             }
         }
 
@@ -847,7 +832,7 @@
 
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = "Saving...";
+            saveBtn.textContent = "Publishing Globally...";
 
             const editIndexVal = document.getElementById('editIndex').value;
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
@@ -923,8 +908,8 @@
         buildTierInputs();
         fetchGlobalData();
 
-        // 5-second background sync to propagate new players globally to all viewers
-        setInterval(fetchGlobalData, 5000);
+        // High-frequency auto-polling to pull updates for all active visitors continuously
+        setInterval(fetchGlobalData, 3000);
     </script>
 </body>
 </html>
