@@ -550,7 +550,6 @@
         }
 
         async function fetchGlobalData() {
-            // Load local data first for instant visibility
             loadFromLocalStorage();
             renderKitBar();
             renderKitRepsManager();
@@ -565,14 +564,6 @@
                     if (responseData && responseData.record) {
                         const rec = responseData.record;
                         if (Array.isArray(rec.playersList)) {
-                            // Merge missing local players so they don't vanish on delayed load
-                            const existingUsernames = new Set(rec.playersList.map(p => p.username.toLowerCase()));
-                            (appData.playersList || []).forEach(localPlayer => {
-                                if (!existingUsernames.has(localPlayer.username.toLowerCase())) {
-                                    rec.playersList.push(localPlayer);
-                                }
-                            });
-
                             appData = rec;
                             if (!appData.kitIcons) appData.kitIcons = {};
                             saveToLocalStorage();
@@ -590,7 +581,7 @@
             saveToLocalStorage();
             renderLeaderboard();
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json', 
@@ -598,7 +589,12 @@
                     },
                     body: JSON.stringify(appData)
                 });
-            } catch (err) {}
+                if (!res.ok) {
+                    console.error("JSONBin update status:", res.status);
+                }
+            } catch (err) {
+                console.error("Network sync failed:", err);
+            }
         }
 
         function toggleAdmin() {
@@ -768,6 +764,7 @@
             `).join('');
         }
 
+        // Lightweight image resizing to stay within JSONBin limit
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -777,12 +774,12 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = 64;
-                    canvas.height = 64;
+                    canvas.width = 32;
+                    canvas.height = 32;
                     const ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = false;
-                    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 64, 64);
-                    document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
+                    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
+                    document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png', 0.8);
                 };
                 img.src = e.target.result;
             };
@@ -794,12 +791,21 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = async e => {
-                    if (!appData.kitIcons) appData.kitIcons = {};
-                    appData.kitIcons[category] = e.target.result;
-                    renderKitBar();
-                    renderKitRepsManager();
-                    renderLeaderboard();
-                    await saveGlobalData();
+                    const img = new Image();
+                    img.onload = async () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 24;
+                        canvas.height = 24;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 24, 24);
+                        if (!appData.kitIcons) appData.kitIcons = {};
+                        appData.kitIcons[category] = canvas.toDataURL('image/png', 0.8);
+                        renderKitBar();
+                        renderKitRepsManager();
+                        renderLeaderboard();
+                        await saveGlobalData();
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -808,6 +814,10 @@
         document.getElementById('playerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!isAdminLoggedIn) return;
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving to Server...";
 
             const editIndexVal = document.getElementById('editIndex').value;
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
@@ -829,7 +839,6 @@
                 appData.playersList.push(playerData);
             }
 
-            // Save immediately to local state and memory
             saveToLocalStorage();
             renderLeaderboard();
 
@@ -838,6 +847,9 @@
             document.getElementById('customSkinBase64').value = '';
 
             await saveGlobalData();
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Player";
             toggleAdmin();
         });
 
