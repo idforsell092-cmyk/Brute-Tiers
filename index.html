@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>BRUTE TIERS - Realtime Leaderboard</title>
+
+    <!-- Discord & Open Graph Meta Tags for Embed Preview -->
     <meta property="og:title" content="BRUTE TIERS - Rankings" />
-<meta property="og:description" content="View Minecraft's best combat players or participate in the ranked community!" />
-<meta property="og:image" content="https://brute-tiers.vercel.app/logo.png" />
-<meta property="og:url" content="https://brute-tiers.vercel.app/" />
-<meta property="og:type" content="website" />
-<meta name="theme-color" content="#3b82f6" />
-<meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:description" content="View Minecraft's best combat players or participate in the ranked community!" />
+    <meta property="og:image" content="https://brute-tiers.vercel.app/logo.png" />
+    <meta property="og:url" content="https://brute-tiers.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#3b82f6" />
     
+    <!-- Big Image Card Style for Discord -->
+    <meta name="twitter:card" content="summary_large_image" />
+
     <!-- Firebase SDKs for Universal Cross-Device Live Sync -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -368,6 +372,7 @@
         .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 
+        /* Region Badges Styling */
         .region-badge {
             padding: 3px 8px;
             border-radius: 4px;
@@ -378,6 +383,12 @@
             color: #86efac;
             flex-shrink: 0;
             z-index: 2;
+        }
+
+        /* Specific style for NA or empty region */
+        .region-badge.region-na {
+            border: 1px solid #ef4444 !important;
+            color: #fca5a5 !important;
         }
 
         .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 200px; z-index: 2; }
@@ -660,6 +671,12 @@
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const avatarImg = player.customSkin || `https://mc-heads.net/avatar/${player.username}/100`;
 
+                // Region class logic: Red for NA or empty, Green for any specified region
+                const rawRegion = (player.region || '').trim().toUpperCase();
+                const isNaRegion = !rawRegion || rawRegion === 'NA';
+                const regionDisplay = isNaRegion ? 'NA' : rawRegion;
+                const regionClass = isNaRegion ? 'region-badge region-na' : 'region-badge';
+
                 return `
                     <div class="player-card ${rankClass}" style="--card-index: ${index};" onclick="openModal(${originalIndex})">
                         ${crownIcon ? `<div class="crown-overlay">${crownIcon}</div>` : ''}
@@ -673,7 +690,7 @@
                             <h3>${player.username}</h3>
                             <p>${title} (${points} Points)</p>
                         </div>
-                        <div class="region-badge">${(player.region || 'NA').toUpperCase()}</div>
+                        <div class="${regionClass}">${regionDisplay}</div>
                         <div class="tier-badges">
                             ${KITS.map(kit => {
                                 const tier = player.tiers ? player.tiers[kit] : 'NA';
