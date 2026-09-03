@@ -132,7 +132,6 @@
         }
 
         .admin-panel.active { display: block; }
-        .form-section-title { margin: 12px 0 8px 0; font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
 
         input, select {
@@ -533,7 +532,7 @@
                 const local = localStorage.getItem('brute_tiers_data');
                 if (local) {
                     const parsed = JSON.parse(local);
-                    if (parsed && Array.isArray(parsed.playersList) && parsed.playersList.length > 0) {
+                    if (parsed && Array.isArray(parsed.playersList)) {
                         appData = parsed;
                         if (!appData.kitIcons) appData.kitIcons = {};
                     }
@@ -545,6 +544,23 @@
             try { 
                 localStorage.setItem('brute_tiers_data', JSON.stringify(appData)); 
             } catch(e) {}
+        }
+
+        function mergePlayers(cloudPlayers) {
+            if (!Array.isArray(cloudPlayers)) return;
+            if (!Array.isArray(appData.playersList)) appData.playersList = [];
+
+            const map = new Map();
+            // Load local first
+            appData.playersList.forEach(p => {
+                if (p && p.username) map.set(p.username.toLowerCase(), p);
+            });
+            // Overwrite with cloud if present
+            cloudPlayers.forEach(p => {
+                if (p && p.username) map.set(p.username.toLowerCase(), p);
+            });
+
+            appData.playersList = Array.from(map.values());
         }
 
         async function fetchGlobalData() {
@@ -560,20 +576,22 @@
                 });
                 if (res.ok) {
                     const responseData = await res.json();
-                    if (responseData && responseData.record && Array.isArray(responseData.record.playersList)) {
-                        // Merge or update only if valid list exists
-                        if (responseData.record.playersList.length > 0 || appData.playersList.length === 0) {
-                            appData = responseData.record;
-                            if (!appData.kitIcons) appData.kitIcons = {};
-                            saveToLocalStorage();
-                            renderKitBar();
-                            renderKitRepsManager();
-                            renderLeaderboard();
+                    if (responseData && responseData.record) {
+                        const rec = responseData.record;
+                        if (rec.kitIcons) {
+                            appData.kitIcons = { ...appData.kitIcons, ...rec.kitIcons };
                         }
+                        if (Array.isArray(rec.playersList) && rec.playersList.length > 0) {
+                            mergePlayers(rec.playersList);
+                        }
+                        saveToLocalStorage();
+                        renderKitBar();
+                        renderKitRepsManager();
+                        renderLeaderboard();
                     }
                 }
             } catch (err) {
-                console.error("Cloud fetch error:", err);
+                console.error("Cloud sync fail, using cache:", err);
             }
         }
 
@@ -591,7 +609,7 @@
                     body: JSON.stringify(appData)
                 });
             } catch (err) {
-                console.error("Network sync error:", err);
+                console.error("Network save fail:", err);
             }
         }
 
@@ -762,7 +780,6 @@
             `).join('');
         }
 
-        // Automatic Minecraft 3D Head Cropper Fix
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -852,7 +869,12 @@
             if (editIndex !== null && editIndex >= 0 && editIndex < appData.playersList.length) {
                 appData.playersList[editIndex] = playerData;
             } else {
-                appData.playersList.push(playerData);
+                const existingIdx = appData.playersList.findIndex(p => p.username.toLowerCase() === username.toLowerCase());
+                if (existingIdx !== -1) {
+                    appData.playersList[existingIdx] = playerData;
+                } else {
+                    appData.playersList.push(playerData);
+                }
             }
 
             document.getElementById('playerForm').reset();
