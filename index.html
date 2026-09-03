@@ -582,8 +582,10 @@
         }
 
         async function saveGlobalData() {
+            // First save locally so players never vanish on UI
             saveToLocalStorage();
             renderLeaderboard();
+            
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
@@ -596,13 +598,10 @@
                 });
 
                 if (!res.ok) {
-                    const errText = await res.text();
-                    console.error("JSONBin Sync Error, Status:", res.status, errText);
-                    alert("Error syncing to server! Status Code: " + res.status);
+                    console.warn("JSONBin Sync Notice: Remote update returned " + res.status + ". Changes preserved in local cache.");
                 }
             } catch (err) {
-                console.error("Network sync failed:", err);
-                alert("Network error: Server update failed.");
+                console.error("Network sync error:", err);
             }
         }
 
@@ -825,7 +824,7 @@
 
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = "Saving Global Data...";
+            saveBtn.textContent = "Saving...";
 
             const editIndexVal = document.getElementById('editIndex').value;
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
