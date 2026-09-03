@@ -533,9 +533,8 @@
                 const local = localStorage.getItem('brute_tiers_data');
                 if (local) {
                     const parsed = JSON.parse(local);
-                    if (parsed && typeof parsed === 'object') {
+                    if (parsed && Array.isArray(parsed.playersList) && parsed.playersList.length > 0) {
                         appData = parsed;
-                        if (!appData.playersList) appData.playersList = [];
                         if (!appData.kitIcons) appData.kitIcons = {};
                     }
                 }
@@ -557,29 +556,25 @@
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest?nocache=${Date.now()}`, { 
                     method: 'GET',
-                    headers: { 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Access-Key': MASTER_KEY
-                    } 
+                    headers: { 'X-Master-Key': MASTER_KEY } 
                 });
                 if (res.ok) {
                     const responseData = await res.json();
-                    if (responseData && responseData.record) {
-                        const rec = responseData.record;
-                        if (Array.isArray(rec.playersList)) {
-                            appData = rec;
+                    if (responseData && responseData.record && Array.isArray(responseData.record.playersList)) {
+                        // Merge or update only if valid list exists
+                        if (responseData.record.playersList.length > 0 || appData.playersList.length === 0) {
+                            appData = responseData.record;
                             if (!appData.kitIcons) appData.kitIcons = {};
                             saveToLocalStorage();
+                            renderKitBar();
+                            renderKitRepsManager();
+                            renderLeaderboard();
                         }
                     }
                 }
             } catch (err) {
-                console.error("Cloud fetch failed:", err);
+                console.error("Cloud fetch error:", err);
             }
-
-            renderKitBar();
-            renderKitRepsManager();
-            renderLeaderboard();
         }
 
         async function saveGlobalData() {
@@ -591,8 +586,7 @@
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json', 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Access-Key': MASTER_KEY
+                        'X-Master-Key': MASTER_KEY
                     },
                     body: JSON.stringify(appData)
                 });
@@ -768,7 +762,7 @@
             `).join('');
         }
 
-        // Automatic Minecraft Head Cropping Logic Fix
+        // Automatic Minecraft 3D Head Cropper Fix
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -783,11 +777,8 @@
                     const ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = false;
 
-                    // Detect if uploaded image is a full 64x64 or 64x32 skin PNG or already cropped head
-                    if (img.width >= 64) {
-                        // Crop Head (base layer: x=8, y=8, w=8, h=8)
+                    if (img.width >= 32) {
                         ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
-                        // Overlay Helm/Hat layer (x=40, y=8, w=8, h=8)
                         ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32);
                     } else {
                         ctx.drawImage(img, 0, 0, 32, 32);
@@ -804,7 +795,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = async e => {
+                reader.onload = e => {
                     const img = new Image();
                     img.onload = async () => {
                         const canvas = document.createElement('canvas');
