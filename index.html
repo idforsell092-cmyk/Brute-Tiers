@@ -546,29 +546,7 @@
             } catch(e) {}
         }
 
-        function mergePlayers(cloudPlayers) {
-            if (!Array.isArray(cloudPlayers)) return;
-            if (!Array.isArray(appData.playersList)) appData.playersList = [];
-
-            const map = new Map();
-            // Load local first
-            appData.playersList.forEach(p => {
-                if (p && p.username) map.set(p.username.toLowerCase(), p);
-            });
-            // Overwrite with cloud if present
-            cloudPlayers.forEach(p => {
-                if (p && p.username) map.set(p.username.toLowerCase(), p);
-            });
-
-            appData.playersList = Array.from(map.values());
-        }
-
         async function fetchGlobalData() {
-            loadFromLocalStorage();
-            renderKitBar();
-            renderKitRepsManager();
-            renderLeaderboard();
-
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest?nocache=${Date.now()}`, { 
                     method: 'GET',
@@ -577,12 +555,12 @@
                 if (res.ok) {
                     const responseData = await res.json();
                     if (responseData && responseData.record) {
-                        const rec = responseData.record;
-                        if (rec.kitIcons) {
-                            appData.kitIcons = { ...appData.kitIcons, ...rec.kitIcons };
+                        const cloudRecord = responseData.record;
+                        if (Array.isArray(cloudRecord.playersList)) {
+                            appData.playersList = cloudRecord.playersList;
                         }
-                        if (Array.isArray(rec.playersList) && rec.playersList.length > 0) {
-                            mergePlayers(rec.playersList);
+                        if (cloudRecord.kitIcons) {
+                            appData.kitIcons = cloudRecord.kitIcons;
                         }
                         saveToLocalStorage();
                         renderKitBar();
@@ -591,7 +569,11 @@
                     }
                 }
             } catch (err) {
-                console.error("Cloud sync fail, using cache:", err);
+                console.error("Cloud fetch failed, using local cache:", err);
+                loadFromLocalStorage();
+                renderKitBar();
+                renderKitRepsManager();
+                renderLeaderboard();
             }
         }
 
@@ -609,7 +591,7 @@
                     body: JSON.stringify(appData)
                 });
             } catch (err) {
-                console.error("Network save fail:", err);
+                console.error("Cloud save failed:", err);
             }
         }
 
@@ -913,7 +895,11 @@
         }
 
         buildTierInputs();
+        loadFromLocalStorage();
         fetchGlobalData();
+
+        // Background auto sync every 15 seconds to fetch new players for all visitors automatically
+        setInterval(fetchGlobalData, 15000);
     </script>
 </body>
 </html>
