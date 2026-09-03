@@ -546,17 +546,14 @@
             } catch(e) {}
         }
 
-        // Smart merge prevents any player from vanishing on refresh or network lag
         function mergePlayers(cloudPlayers) {
             if (!Array.isArray(cloudPlayers)) return;
             if (!Array.isArray(appData.playersList)) appData.playersList = [];
 
             const map = new Map();
-            // Load current local players first
             appData.playersList.forEach(p => {
                 if (p && p.username) map.set(p.username.toLowerCase(), p);
             });
-            // Merge cloud players into the map
             cloudPlayers.forEach(p => {
                 if (p && p.username) map.set(p.username.toLowerCase(), p);
             });
@@ -570,12 +567,14 @@
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest?nocache=${Date.now()}`, { 
                     method: 'GET',
-                    headers: { 'X-Master-Key': MASTER_KEY } 
+                    headers: { 
+                        'X-Master-Key': MASTER_KEY,
+                        'X-Bin-Meta': 'false'
+                    } 
                 });
                 if (res.ok) {
-                    const responseData = await res.json();
-                    if (responseData && responseData.record) {
-                        const cloudRecord = responseData.record;
+                    const cloudRecord = await res.json();
+                    if (cloudRecord) {
                         if (cloudRecord.kitIcons) {
                             appData.kitIcons = { ...appData.kitIcons, ...cloudRecord.kitIcons };
                         }
@@ -586,7 +585,7 @@
                     }
                 }
             } catch (err) {
-                console.error("Cloud fetch failed, keeping local cache:", err);
+                console.error("Cloud fetch sync error:", err);
             }
 
             renderKitBar();
@@ -599,14 +598,24 @@
             renderLeaderboard();
             
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+                const payload = {
+                    kitIcons: appData.kitIcons || {},
+                    playersList: appData.playersList || []
+                };
+
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json', 
-                        'X-Master-Key': MASTER_KEY
+                        'X-Master-Key': MASTER_KEY,
+                        'X-Bin-Meta': 'false'
                     },
-                    body: JSON.stringify(appData)
+                    body: JSON.stringify(payload)
                 });
+
+                if (!res.ok) {
+                    console.error("Cloud push failed status:", res.status);
+                }
             } catch (err) {
                 console.error("Cloud save failed:", err);
             }
@@ -914,8 +923,8 @@
         buildTierInputs();
         fetchGlobalData();
 
-        // Automatic background sync every 10 seconds so every visitor gets new updates live
-        setInterval(fetchGlobalData, 10000);
+        // 5-second background sync to propagate new players globally to all viewers
+        setInterval(fetchGlobalData, 5000);
     </script>
 </body>
 </html>
