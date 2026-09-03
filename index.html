@@ -11,7 +11,6 @@
             --bg-input: #1e293b;
             --accent: #3b82f6;
             --discord: #5865F2;
-            --discord-hover: #4752C4;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
@@ -88,10 +87,7 @@
             box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
-
+        .btn:active { transform: scale(0.95); }
         .btn-discord { background: var(--discord); }
         .btn-logout { background: #ef4444; display: none; }
 
@@ -99,7 +95,6 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            animation: elementPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
         }
 
         .search-box { flex: 1 1 200px; }
@@ -110,14 +105,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             color: white;
-            backdrop-filter: blur(4px);
             font-size: 0.9rem;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .search-box input:focus, .region-filter select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }
 
         .region-filter { flex: 0 0 130px; }
@@ -128,11 +116,10 @@
             border-radius: 12px;
             padding: 15px;
             display: none;
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-bottom: 20px;
         }
 
         .admin-panel.active { display: block; }
-        .form-section-title { margin: 12px 0 8px 0; font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
 
         input, select {
@@ -170,12 +157,6 @@
             border-radius: 10px;
             border: 1px solid var(--border);
             -webkit-overflow-scrolling: touch;
-            animation: elementPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards;
-        }
-
-        @keyframes elementPop {
-            0% { opacity: 0; transform: translateY(15px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .kit-pill {
@@ -185,41 +166,24 @@
             background: var(--bg-input);
             padding: 6px 12px;
             border-radius: 6px;
-            border: 1px solid transparent;
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             color: var(--text-muted);
             flex-shrink: 0;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .kit-pill:hover {
-            transform: translateY(-2px) scale(1.05);
-            color: #ffffff;
+            transition: all 0.2s ease;
         }
 
         .kit-pill.active {
             border-color: var(--accent);
             background: rgba(59, 130, 246, 0.25);
             color: #ffffff;
-            transform: scale(1.06);
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
         .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
 
-        .leaderboard { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .leaderboard.switching {
-            opacity: 0;
-            transform: translateY(8px) scale(0.99);
-        }
+        .leaderboard { display: flex; flex-direction: column; gap: 10px; }
 
         .player-card {
             border-radius: 10px;
@@ -232,86 +196,20 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             overflow: hidden;
-            contain: content;
             cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
-            animation: cardFadePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-            animation-delay: calc(var(--card-index, 0) * 0.04s);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .player-card:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
             border-color: var(--accent);
         }
 
-        .player-card:active {
-            transform: scale(0.98);
-        }
+        .player-card.rank-card-1 { background: linear-gradient(90deg, #d97706 0%, #b45309 100%) !important; border: 1px solid #fef08a !important; }
+        .player-card.rank-card-2 { background: linear-gradient(90deg, #475569 0%, #64748b 100%) !important; border: 1px solid #cbd5e1 !important; }
+        .player-card.rank-card-3 { background: linear-gradient(90deg, #ea580c 0%, #c2410c 100%) !important; border: 1px solid #ffedd5 !important; }
 
-        @keyframes cardFadePop {
-            0% { opacity: 0; transform: translateY(18px) scale(0.94); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .player-card.rank-card-1::after,
-        .player-card.rank-card-2::after,
-        .player-card.rank-card-3::after {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -150%;
-            width: 50%;
-            height: 220%;
-            background: linear-gradient(
-                115deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.65) 45%,
-                rgba(255, 255, 255, 0.95) 50%,
-                rgba(255, 255, 255, 0.65) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(25deg);
-            animation: brightShineSweep 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes brightShineSweep {
-            0% { left: -150%; }
-            35% { left: 160%; }
-            100% { left: 160%; }
-        }
-
-        .player-card.rank-card-1 {
-            background: linear-gradient(90deg, #d97706 0%, #b45309 100%) !important;
-            border: 1px solid #fef08a !important;
-            color: #ffffff !important;
-        }
-        .player-card.rank-card-1 .player-info p { color: #fef3c7 !important; }
-
-        .player-card.rank-card-2 {
-            background: linear-gradient(90deg, #475569 0%, #64748b 100%) !important;
-            border: 1px solid #cbd5e1 !important;
-            color: #ffffff !important;
-        }
-        .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
-
-        .player-card.rank-card-3 {
-            background: linear-gradient(90deg, #ea580c 0%, #c2410c 100%) !important;
-            border: 1px solid #ffedd5 !important;
-            color: #ffffff !important;
-        }
-        .player-card.rank-card-3 .player-info p { color: #ffedd5 !important; }
-
-        .crown-overlay {
-            position: absolute;
-            top: 2px;
-            left: 8px;
-            font-size: 1rem;
-            z-index: 5;
-            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .crown-overlay { position: absolute; top: 2px; left: 8px; font-size: 1rem; z-index: 5; }
 
         .mctiers-badge-wrapper {
             display: flex;
@@ -323,7 +221,6 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.15);
             flex-shrink: 0;
-            z-index: 2;
         }
 
         .rank-number-box {
@@ -352,17 +249,12 @@
             height: 38px;
             object-fit: contain;
             image-rendering: pixelated;
-            transition: transform 0.25s ease;
             border-radius: 4px;
         }
 
-        .player-card:hover .head-avatar-img {
-            transform: scale(1.15);
-        }
-
-        .player-info { flex: 1 1 150px; min-width: 140px; z-index: 2; }
-        .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+        .player-info { flex: 1 1 150px; min-width: 140px; }
+        .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; }
+        .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
         .region-badge {
             padding: 3px 8px;
@@ -372,11 +264,9 @@
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid #22c55e;
             color: #86efac;
-            flex-shrink: 0;
-            z-index: 2;
         }
 
-        .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 200px; z-index: 2; }
+        .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 200px; }
 
         .badge {
             background: rgba(15, 23, 42, 0.7);
@@ -389,11 +279,6 @@
             align-items: center;
             gap: 4px;
             color: var(--tier-color, #38bdf8);
-            transition: transform 0.2s ease;
-        }
-
-        .badge:hover {
-            transform: scale(1.1);
         }
 
         .badge img { width: 14px; height: 14px; object-fit: contain; }
@@ -409,42 +294,23 @@
         .badge.tier-LT4 { --tier-color: #10b981; }
         .badge.tier-LT5 { --tier-color: #00ff66; }
 
-        .actions { display: flex; gap: 4px; margin-left: auto; z-index: 2; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; transition: transform 0.15s ease; }
-        .btn-sm:hover { transform: scale(1.1); }
+        .actions { display: flex; gap: 4px; margin-left: auto; }
+        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
         .btn-edit { background: #3b82f6; }
         .btn-delete { background: #ef4444; }
 
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 999; display: none;
+            align-items: center; justify-content: center; padding: 15px;
             backdrop-filter: blur(4px);
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
-            background: #1e293b;
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            position: relative;
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: #1e293b; border: 1px solid var(--accent);
+            border-radius: 12px; width: 100%; max-width: 400px; padding: 20px; position: relative;
         }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s ease; }
-        .modal-close:hover { transform: scale(1.2) rotate(90deg); }
+        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; object-fit: cover; }
         .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -482,7 +348,7 @@
     <div class="kit-bar" id="kitBar"></div>
 
     <div class="admin-panel" id="adminPanel">
-        <h2>Admin Management Panel</h2>
+        <h2 style="margin-bottom:10px;">Admin Management Panel</h2>
         <form id="playerForm">
             <input type="hidden" id="editIndex">
             <div class="form-grid">
@@ -533,9 +399,8 @@
                 const local = localStorage.getItem('brute_tiers_data');
                 if (local) {
                     const parsed = JSON.parse(local);
-                    if (parsed && typeof parsed === 'object') {
+                    if (parsed && Array.isArray(parsed.playersList)) {
                         appData = parsed;
-                        if (!appData.playersList) appData.playersList = [];
                         if (!appData.kitIcons) appData.kitIcons = {};
                     }
                 }
@@ -557,29 +422,22 @@
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest?nocache=${Date.now()}`, { 
                     method: 'GET',
-                    headers: { 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Access-Key': MASTER_KEY
-                    } 
+                    headers: { 'X-Master-Key': MASTER_KEY } 
                 });
                 if (res.ok) {
                     const responseData = await res.json();
-                    if (responseData && responseData.record) {
-                        const rec = responseData.record;
-                        if (Array.isArray(rec.playersList)) {
-                            appData = rec;
-                            if (!appData.kitIcons) appData.kitIcons = {};
-                            saveToLocalStorage();
-                        }
+                    if (responseData && responseData.record && Array.isArray(responseData.record.playersList)) {
+                        appData = responseData.record;
+                        if (!appData.kitIcons) appData.kitIcons = {};
+                        saveToLocalStorage();
+                        renderKitBar();
+                        renderKitRepsManager();
+                        renderLeaderboard();
                     }
                 }
             } catch (err) {
                 console.error("Cloud fetch failed:", err);
             }
-
-            renderKitBar();
-            renderKitRepsManager();
-            renderLeaderboard();
         }
 
         async function saveGlobalData() {
@@ -591,8 +449,7 @@
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json', 
-                        'X-Master-Key': MASTER_KEY,
-                        'X-Access-Key': MASTER_KEY
+                        'X-Master-Key': MASTER_KEY
                     },
                     body: JSON.stringify(appData)
                 });
@@ -644,16 +501,9 @@
         }
 
         function selectCategory(cat) { 
-            if (selectedCategory === cat) return;
             selectedCategory = cat; 
             renderKitBar(); 
-            
-            const lb = document.getElementById('leaderboard');
-            lb.classList.add('switching');
-            setTimeout(() => {
-                renderLeaderboard();
-                lb.classList.remove('switching');
-            }, 180);
+            renderLeaderboard();
         }
 
         function renderLeaderboard() {
@@ -677,7 +527,7 @@
 
             const container = document.getElementById('leaderboard');
             if (displayList.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); animation: cardFadePop 0.3s ease;">No players found.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No players found.</div>`;
                 return;
             }
 
@@ -691,7 +541,7 @@
                 const avatarImg = player.customSkin || `https://mc-heads.net/avatar/${player.username}/100`;
 
                 return `
-                    <div class="player-card ${rankClass}" style="--card-index: ${index};" onclick="openModal(${originalIndex})">
+                    <div class="player-card ${rankClass}" onclick="openModal(${originalIndex})">
                         ${crownIcon ? `<div class="crown-overlay">${crownIcon}</div>` : ''}
                         <div class="mctiers-badge-wrapper">
                             <div class="rank-number-box">${displayRank}.</div>
@@ -768,7 +618,7 @@
             `).join('');
         }
 
-        // Automatic Minecraft Head Cropping Logic Fix
+        // Fixed Auto Skin Head Crop Function
         function handleSkinUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -783,12 +633,10 @@
                     const ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = false;
 
-                    // Detect if uploaded image is a full 64x64 or 64x32 skin PNG or already cropped head
-                    if (img.width >= 64) {
-                        // Crop Head (base layer: x=8, y=8, w=8, h=8)
-                        ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
-                        // Overlay Helm/Hat layer (x=40, y=8, w=8, h=8)
-                        ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32);
+                    // Automatically crop Minecraft head box (x:8, y:8, w:8, h:8)
+                    if (img.width >= 32) {
+                        ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32); // Main Head Layer
+                        ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32); // Outer Hat Layer
                     } else {
                         ctx.drawImage(img, 0, 0, 32, 32);
                     }
@@ -804,7 +652,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = async e => {
+                reader.onload = e => {
                     const img = new Image();
                     img.onload = async () => {
                         const canvas = document.createElement('canvas');
