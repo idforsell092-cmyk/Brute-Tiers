@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>BRUTE TIERS - Global Leaderboard</title>
+    <title>BRUTE TIERS - Realtime Leaderboard</title>
+    <!-- Firebase SDKs for Universal Cross-Device Live Sync -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
             --bg-main: #0f172a;
@@ -88,9 +91,7 @@
             box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
+        .btn:active { transform: scale(0.95); }
 
         .btn-discord { background: var(--discord); }
         .btn-logout { background: #ef4444; display: none; }
@@ -244,9 +245,7 @@
             border-color: var(--accent);
         }
 
-        .player-card:active {
-            transform: scale(0.98);
-        }
+        .player-card:active { transform: scale(0.98); }
 
         @keyframes cardFadePop {
             0% { opacity: 0; transform: translateY(18px) scale(0.94); }
@@ -355,9 +354,7 @@
             border-radius: 4px;
         }
 
-        .player-card:hover .head-avatar-img {
-            transform: scale(1.15);
-        }
+        .player-card:hover .head-avatar-img { transform: scale(1.15); }
 
         .player-info { flex: 1 1 150px; min-width: 140px; z-index: 2; }
         .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
@@ -509,7 +506,24 @@
         </div>
     </div>
         <script>
-        const PRIMARY_STORE_URL = "https://keyvalue.imkey.store/api/v1/store/brutetiers_global_db_v1";
+        // Configured directly with your Firebase Web App credentials
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
+            authDomain: "brute-tiers.firebaseapp.com",
+            databaseURL: "https://brute-tiers-default-rtdb.firebaseio.com",
+            projectId: "brute-tiers",
+            storageBucket: "brute-tiers.firebasestorage.app",
+            messagingSenderId: "35511970184",
+            appId: "1:35511970184:web:6f796e44d8567bdfe8f23d",
+            measurementId: "G-CVENNS4GJ6"
+        };
+
+        // Initialize Firebase Websocket Service
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+        const globalRef = db.ref("brutetiers_data");
 
         const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
@@ -523,86 +537,29 @@
 
         let appData = { kitIcons: {}, playersList: [] };
 
-        function loadFromLocalStorage() {
-            try {
-                const local = localStorage.getItem('brute_tiers_data');
-                if (local) {
-                    const parsed = JSON.parse(local);
-                    if (parsed && Array.isArray(parsed.playersList)) {
-                        appData = parsed;
-                        if (!appData.kitIcons) appData.kitIcons = {};
-                    }
-                }
-            } catch(e) {}
-        }
-
-        function saveToLocalStorage() {
-            try { 
-                localStorage.setItem('brute_tiers_data', JSON.stringify(appData)); 
-            } catch(e) {}
-        }
-
-        function mergePlayers(cloudPlayers) {
-            if (!Array.isArray(cloudPlayers)) return;
-            if (!Array.isArray(appData.playersList)) appData.playersList = [];
-
-            const map = new Map();
-            appData.playersList.forEach(p => {
-                if (p && p.username) map.set(p.username.toLowerCase(), p);
-            });
-            cloudPlayers.forEach(p => {
-                if (p && p.username) map.set(p.username.toLowerCase(), p);
-            });
-
-            appData.playersList = Array.from(map.values());
-        }
-
-        async function fetchGlobalData() {
-            loadFromLocalStorage();
-
-            try {
-                const res = await fetch(`https://api.myjson.online/v1/records/4831caed-eb58-45ba-8b89-21cb8b7db2d3`, {
-                    method: 'GET'
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    const cloudRecord = data.jsonData || data.data || data;
-                    if (cloudRecord) {
-                        if (cloudRecord.kitIcons) {
-                            appData.kitIcons = { ...appData.kitIcons, ...cloudRecord.kitIcons };
-                        }
-                        if (Array.isArray(cloudRecord.playersList)) {
-                            mergePlayers(cloudRecord.playersList);
-                        }
-                        saveToLocalStorage();
-                    }
-                }
-            } catch (err) {
-                console.error("Global endpoint sync:", err);
+        // Realtime Websocket Listener: Executes instantly for every single user globally when updates are published
+        globalRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                appData = {
+                    kitIcons: data.kitIcons || {},
+                    playersList: Array.isArray(data.playersList) ? data.playersList : []
+                };
             }
-
             renderKitBar();
             renderKitRepsManager();
             renderLeaderboard();
-        }
+        });
 
         async function saveGlobalData() {
-            saveToLocalStorage();
             renderLeaderboard();
-            
             try {
-                const payload = {
+                await globalRef.set({
                     kitIcons: appData.kitIcons || {},
                     playersList: appData.playersList || []
-                };
-
-                await fetch(`https://api.myjson.online/v1/records/4831caed-eb58-45ba-8b89-21cb8b7db2d3`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ jsonData: payload })
                 });
             } catch (err) {
-                console.error("Global write error:", err);
+                console.error("Firebase Sync Error:", err);
             }
         }
 
@@ -906,10 +863,6 @@
         }
 
         buildTierInputs();
-        fetchGlobalData();
-
-        // High-frequency auto-polling to pull updates for all active visitors continuously
-        setInterval(fetchGlobalData, 3000);
     </script>
 </body>
 </html>
