@@ -372,7 +372,6 @@
         .player-info h3 { font-size: 1.1rem; font-weight: 800; word-break: break-word; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         .player-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 
-        /* Region Badges Styling */
         .region-badge {
             padding: 3px 8px;
             border-radius: 4px;
@@ -409,16 +408,16 @@
         .badge:hover { transform: scale(1.1); }
         .badge img { width: 14px; height: 14px; object-fit: contain; }
 
-        /* Updated colors aligned with HT1-LT5 order */
-        .badge.tier-HT1 { --tier-color: #dc2626; }
-        .badge.tier-LT1 { --tier-color: #ef4444; }
-        .badge.tier-HT2 { --tier-color: #ea580c; }
-        .badge.tier-LT2 { --tier-color: #f97316; }
-        .badge.tier-HT3 { --tier-color: #d97706; }
-        .badge.tier-LT3 { --tier-color: #f59e0b; }
-        .badge.tier-HT4 { --tier-color: #ca8a04; }
-        .badge.tier-LT4 { --tier-color: #eab308; }
-        .badge.tier-HT5 { --tier-color: #65a30d; }
+        /* Outline border colors adjusted strictly for HT1->LT1->HT2->LT2->HT3->LT3->HT4->LT4->HT5->LT5 hierarchy */
+        .badge.tier-HT1 { --tier-color: #ef4444; }
+        .badge.tier-LT1 { --tier-color: #f87171; }
+        .badge.tier-HT2 { --tier-color: #f97316; }
+        .badge.tier-LT2 { --tier-color: #fb923c; }
+        .badge.tier-HT3 { --tier-color: #f59e0b; }
+        .badge.tier-LT3 { --tier-color: #fbbf24; }
+        .badge.tier-HT4 { --tier-color: #eab308; }
+        .badge.tier-LT4 { --tier-color: #fde047; }
+        .badge.tier-HT5 { --tier-color: #84cc16; }
         .badge.tier-LT5 { --tier-color: #22c55e; }
 
         .actions { display: flex; gap: 4px; margin-left: auto; z-index: 2; }
@@ -523,7 +522,8 @@
             </div>
             <div class="modal-stats-grid" id="modalStatsGrid"></div>
         </div>
-            <script>
+    </div>
+        <script>
         // Configured directly with your Firebase Web App credentials
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
@@ -545,13 +545,13 @@
         const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         
-        // Exact Tier Order from Screenshot: HT1 -> LT1 -> HT2 -> LT2 -> HT3 -> LT3 -> HT4 -> LT4 -> HT5 -> LT5
+        // Tier List Array ordered according to image ranking
         const TIERS = ['NA', 'HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'LT4', 'HT5', 'LT5'];
         const ADMIN_PASS = "98909890";
         let isAdminLoggedIn = false;
         let selectedCategory = 'Overall';
 
-        // Order Mapping: Lower number = Higher rank position
+        // Sorting mapping: Lower index number = Better Rank
         const TIER_ORDER = { 
             'HT1': 1, 
             'LT1': 2, 
@@ -566,7 +566,7 @@
             'NA': 99 
         };
 
-        // Points Allocation strictly aligned with the new rank hierarchy
+        // Points values recalculated strictly based on ranking order
         const TIER_SCORES = { 
             'HT1': 100, 
             'LT1': 90, 
@@ -916,6 +916,3 @@
     </script>
 </body>
 </html>
-
-    </div>
-    
