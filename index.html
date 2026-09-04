@@ -385,7 +385,6 @@
             z-index: 2;
         }
 
-        /* Specific style for NA or empty region */
         .region-badge.region-na {
             border: 1px solid #ef4444 !important;
             color: #fca5a5 !important;
@@ -410,16 +409,17 @@
         .badge:hover { transform: scale(1.1); }
         .badge img { width: 14px; height: 14px; object-fit: contain; }
 
-        .badge.tier-HT1 { --tier-color: #ef4444; }
-        .badge.tier-HT2 { --tier-color: #f97316; }
-        .badge.tier-HT3 { --tier-color: #f59e0b; }
-        .badge.tier-HT4 { --tier-color: #eab308; }
-        .badge.tier-HT5 { --tier-color: #facc15; }
-        .badge.tier-LT1 { --tier-color: #a3e635; }
-        .badge.tier-LT2 { --tier-color: #84cc16; }
-        .badge.tier-LT3 { --tier-color: #22c55e; }
-        .badge.tier-LT4 { --tier-color: #10b981; }
-        .badge.tier-LT5 { --tier-color: #00ff66; }
+        /* Updated colors aligned with HT1-LT5 order */
+        .badge.tier-HT1 { --tier-color: #dc2626; }
+        .badge.tier-LT1 { --tier-color: #ef4444; }
+        .badge.tier-HT2 { --tier-color: #ea580c; }
+        .badge.tier-LT2 { --tier-color: #f97316; }
+        .badge.tier-HT3 { --tier-color: #d97706; }
+        .badge.tier-LT3 { --tier-color: #f59e0b; }
+        .badge.tier-HT4 { --tier-color: #ca8a04; }
+        .badge.tier-LT4 { --tier-color: #eab308; }
+        .badge.tier-HT5 { --tier-color: #65a30d; }
+        .badge.tier-LT5 { --tier-color: #22c55e; }
 
         .actions { display: flex; gap: 4px; margin-left: auto; z-index: 2; }
         .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; transition: transform 0.15s ease; }
@@ -523,8 +523,7 @@
             </div>
             <div class="modal-stats-grid" id="modalStatsGrid"></div>
         </div>
-    </div>
-        <script>
+            <script>
         // Configured directly with your Firebase Web App credentials
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
@@ -537,7 +536,6 @@
             measurementId: "G-CVENNS4GJ6"
         };
 
-        // Initialize Firebase Websocket Service
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -546,17 +544,45 @@
 
         const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
-        const TIERS = ['NA', 'HT1', 'HT2', 'HT3', 'HT4', 'HT5', 'LT1', 'LT2', 'LT3', 'LT4', 'LT5'];
+        
+        // Exact Tier Order from Screenshot: HT1 -> LT1 -> HT2 -> LT2 -> HT3 -> LT3 -> HT4 -> LT4 -> HT5 -> LT5
+        const TIERS = ['NA', 'HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'LT4', 'HT5', 'LT5'];
         const ADMIN_PASS = "98909890";
         let isAdminLoggedIn = false;
         let selectedCategory = 'Overall';
 
-        const TIER_ORDER = { 'HT1': 1, 'HT2': 2, 'HT3': 3, 'HT4': 4, 'HT5': 5, 'LT1': 6, 'LT2': 7, 'LT3': 8, 'LT4': 9, 'LT5': 10, 'NA': 99 };
-        const TIER_SCORES = { 'HT1': 125, 'HT2': 112, 'HT3': 100, 'HT4': 88, 'HT5': 75, 'LT1': 62, 'LT2': 50, 'LT3': 38, 'LT4': 25, 'LT5': 12, 'NA': 0 };
+        // Order Mapping: Lower number = Higher rank position
+        const TIER_ORDER = { 
+            'HT1': 1, 
+            'LT1': 2, 
+            'HT2': 3, 
+            'LT2': 4, 
+            'HT3': 5, 
+            'LT3': 6, 
+            'HT4': 7, 
+            'LT4': 8, 
+            'HT5': 9, 
+            'LT5': 10, 
+            'NA': 99 
+        };
+
+        // Points Allocation strictly aligned with the new rank hierarchy
+        const TIER_SCORES = { 
+            'HT1': 100, 
+            'LT1': 90, 
+            'HT2': 80, 
+            'LT2': 70, 
+            'HT3': 60, 
+            'LT3': 50, 
+            'HT4': 40, 
+            'LT4': 30, 
+            'HT5': 20, 
+            'LT5': 10, 
+            'NA': 0 
+        };
 
         let appData = { kitIcons: {}, playersList: [] };
 
-        // Realtime Websocket Listener: Executes instantly for every single user globally when updates are published
         globalRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -671,7 +697,6 @@
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const avatarImg = player.customSkin || `https://mc-heads.net/avatar/${player.username}/100`;
 
-                // Region class logic: Red for NA or empty, Green for any specified region
                 const rawRegion = (player.region || '').trim().toUpperCase();
                 const isNaRegion = !rawRegion || rawRegion === 'NA';
                 const regionDisplay = isNaRegion ? 'NA' : rawRegion;
@@ -891,3 +916,6 @@
     </script>
 </body>
 </html>
+
+    </div>
+    
