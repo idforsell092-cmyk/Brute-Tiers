@@ -293,7 +293,6 @@
             100% { left: 160%; }
         }
 
-        /* Top 3 Card Background Themes exactly like Image 10 */
         .player-card.rank-card-1 {
             background: linear-gradient(90deg, #d97706 0%, #b45309 100%) !important;
             border: 1px solid #fef08a !important;
@@ -324,12 +323,12 @@
             animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Standard Rectangular Badge Wrapper matching Image 10 */
+        /* Larger Badge Wrapper for Bada Skin */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
-            height: 52px;
-            width: 135px;
+            height: 58px;
+            width: 145px;
             background: rgba(0, 0, 0, 0.45);
             border-radius: 6px;
             overflow: hidden;
@@ -350,22 +349,23 @@
         }
 
         .skin-holder {
-            width: 90px;
+            width: 100px;
             height: 100%;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
             overflow: hidden;
             background: rgba(0, 0, 0, 0.2);
         }
 
+        /* Larger Skin Image Dimensions */
         .head-avatar-img {
             width: 40px;
-            height: 50px;
-            object-fit: cover;
-            object-position: top center;
+            height: 56px;
+            object-fit: contain;
             image-rendering: pixelated;
             transition: transform 0.25s ease;
+            border-radius: 2px;
         }
 
         .player-card:hover .head-avatar-img { transform: scale(1.12); }
