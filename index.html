@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>BRUTE TIERS - Realtime Leaderboard</title>
+    <title>BRUTE TIERS - Festive Edition</title>
 
-    <!-- Discord & Open Graph Meta Tags for Embed Preview -->
-    <meta property="og:title" content="BRUTE TIERS - Rankings" />
-    <meta property="og:description" content="View Minecraft's best combat players or participate in the ranked community!" />
+    <!-- Discord & Open Graph Meta Tags -->
+    <meta property="og:title" content="BRUTE TIERS - Festive Rankings" />
+    <meta property="og:description" content="View Minecraft's best combat players in a magical Christmas celebration!" />
     <meta property="og:image" content="https://brute-tiers.vercel.app/logo.png" />
     <meta property="og:url" content="https://brute-tiers.vercel.app/" />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#3b82f6" />
-    
-    <!-- Big Image Card Style for Discord -->
+    <meta name="theme-color" content="#166534" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Firebase SDKs for Universal Cross-Device Live Sync -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.85);
-            --bg-input: #1e293b;
-            --accent: #3b82f6;
+            --bg-main: #062414;
+            --bg-card: rgba(15, 56, 34, 0.85);
+            --bg-input: #0f3822;
+            --accent: #22c55e;
             --discord: #5865F2;
-            --discord-hover: #4752C4;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --text-muted: #cbd5e1;
+            --border: #166534;
         }
 
         * {
@@ -43,11 +40,11 @@
         html, body {
             width: 100%;
             overflow-x: hidden;
-            background: #090d16;
+            background: #05190e;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%);
+            background: linear-gradient(135deg, #062414 0%, #0f3822 50%, #05190e 100%);
             background-attachment: fixed;
             color: var(--text-main);
             padding: 12px;
@@ -65,6 +62,8 @@
             justify-content: space-between;
             align-items: center;
             animation: headerPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            padding-top: 10px;
         }
 
         @keyframes headerPop {
@@ -78,11 +77,27 @@
             gap: 10px;
         }
 
-        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; color: #ffffff; }
-        .logo span { color: var(--accent); text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
+        .logo { 
+            font-size: 1.6rem; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            color: #ffffff; 
+            position: relative;
+        }
+        .logo span { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
+
+        /* Festive Santa Hat on Logo */
+        .logo::before {
+            content: '🎅';
+            position: absolute;
+            top: -18px;
+            left: -4px;
+            font-size: 1.1rem;
+            transform: rotate(-15deg);
+        }
 
         .btn {
-            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            background: linear-gradient(90deg, #166534 0%, #22c55e 100%);
             color: white;
             border: none;
             padding: 8px 14px;
@@ -94,13 +109,12 @@
             align-items: center;
             gap: 6px;
             font-size: 0.85rem;
-            will-change: transform;
             transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
         }
 
         .btn:hover {
             transform: translateY(-2px) scale(1.04);
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
         }
 
         .btn:active { transform: scale(0.95); }
@@ -129,8 +143,8 @@
         }
 
         .search-box input:focus, .region-filter select:focus, .platform-filter select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
         .region-filter, .platform-filter { flex: 0 0 120px; }
@@ -185,11 +199,6 @@
             animation: elementPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards;
         }
 
-        @keyframes elementPop {
-            0% { opacity: 0; transform: translateY(15px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
         .kit-pill {
             display: inline-flex;
             align-items: center;
@@ -212,11 +221,11 @@
         }
 
         .kit-pill.active {
-            border-color: var(--accent);
-            background: rgba(59, 130, 246, 0.25);
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.25);
             color: #ffffff;
             transform: scale(1.06);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
         }
 
         .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
@@ -225,12 +234,6 @@
             display: flex; 
             flex-direction: column; 
             gap: 10px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .leaderboard.switching {
-            opacity: 0;
-            transform: translateY(8px) scale(0.99);
         }
 
         .player-card {
@@ -242,9 +245,8 @@
             gap: 12px;
             position: relative;
             background: var(--bg-card);
-            border: 1px solid var(--border);
+            border: 2px dashed #166534;
             overflow: hidden;
-            contain: content;
             cursor: pointer;
             transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
             animation: cardFadePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -253,63 +255,33 @@
 
         .player-card:hover {
             transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-            border-color: var(--accent);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+            border-color: #22c55e;
         }
-
-        .player-card:active { transform: scale(0.98); }
 
         @keyframes cardFadePop {
             0% { opacity: 0; transform: translateY(18px) scale(0.94); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .player-card.rank-card-1::after,
-        .player-card.rank-card-2::after,
-        .player-card.rank-card-3::after {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -150%;
-            width: 50%;
-            height: 220%;
-            background: linear-gradient(
-                115deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.65) 45%,
-                rgba(255, 255, 255, 0.95) 50%,
-                rgba(255, 255, 255, 0.65) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(25deg);
-            animation: brightShineSweep 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes brightShineSweep {
-            0% { left: -150%; }
-            35% { left: 160%; }
-            100% { left: 160%; }
-        }
-
+        /* Festive Top 3 Card Gradients */
         .player-card.rank-card-1 {
             background: linear-gradient(90deg, #d97706 0%, #b45309 100%) !important;
-            border: 1px solid #fef08a !important;
+            border: 2px solid #fef08a !important;
             color: #ffffff !important;
         }
         .player-card.rank-card-1 .player-info p { color: #fef3c7 !important; }
 
         .player-card.rank-card-2 {
             background: linear-gradient(90deg, #475569 0%, #64748b 100%) !important;
-            border: 1px solid #cbd5e1 !important;
+            border: 2px solid #cbd5e1 !important;
             color: #ffffff !important;
         }
         .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
 
         .player-card.rank-card-3 {
             background: linear-gradient(90deg, #ea580c 0%, #c2410c 100%) !important;
-            border: 1px solid #ffedd5 !important;
+            border: 2px solid #ffedd5 !important;
             color: #ffffff !important;
         }
         .player-card.rank-card-3 .player-info p { color: #ffedd5 !important; }
@@ -320,10 +292,9 @@
             left: 8px;
             font-size: 1rem;
             z-index: 5;
-            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Larger Badge Wrapper for Bada Skin */
+        /* Badge Wrapper & Large Skin */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
@@ -358,7 +329,6 @@
             background: rgba(0, 0, 0, 0.2);
         }
 
-        /* Larger Skin Image Dimensions */
         .head-avatar-img {
             width: 40px;
             height: 56px;
@@ -414,11 +384,7 @@
             align-items: center;
             gap: 4px;
             color: var(--tier-color, #38bdf8);
-            transition: transform 0.2s ease;
         }
-
-        .badge:hover { transform: scale(1.1); }
-        .badge img { width: 14px; height: 14px; object-fit: contain; }
 
         .badge.tier-HT1 { --tier-color: #ef4444; }
         .badge.tier-LT1 { --tier-color: #f87171; }
@@ -432,9 +398,8 @@
         .badge.tier-LT5 { --tier-color: #22c55e; }
 
         .actions { display: flex; gap: 4px; margin-left: auto; z-index: 2; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; transition: transform 0.15s ease; }
-        .btn-sm:hover { transform: scale(1.1); }
-        .btn-edit { background: #3b82f6; }
+        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
+        .btn-edit { background: #166534; }
         .btn-delete { background: #ef4444; }
 
         .modal-overlay {
@@ -450,23 +415,16 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
-            background: #1e293b;
-            border: 1px solid var(--accent);
+            background: #0f3822;
+            border: 1px solid #22c55e;
             border-radius: 12px;
             width: 100%;
             max-width: 400px;
             padding: 20px;
             position: relative;
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s ease; }
-        .modal-close:hover { transform: scale(1.2) rotate(90deg); }
+        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; object-fit: cover; }
         .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -656,13 +614,7 @@
             if (selectedCategory === cat) return;
             selectedCategory = cat; 
             renderKitBar(); 
-            
-            const lb = document.getElementById('leaderboard');
-            lb.classList.add('switching');
-            setTimeout(() => {
-                renderLeaderboard();
-                lb.classList.remove('switching');
-            }, 180);
+            renderLeaderboard();
         }
 
         function renderLeaderboard() {
@@ -692,7 +644,7 @@
 
             const container = document.getElementById('leaderboard');
             if (displayList.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); animation: cardFadePop 0.3s ease;">No players found.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No players found.</div>`;
                 return;
             }
 
