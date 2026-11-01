@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>BRUTE TIERS - Festive Edition</title>
 
-    <!-- Discord & Open Graph Meta Tags -->
     <meta property="og:title" content="BRUTE TIERS - Festive Rankings" />
     <meta property="og:description" content="View Minecraft's best combat players in a festive Christmas edition!" />
     <meta property="og:image" content="https://brute-tiers.vercel.app/logo.png" />
@@ -14,21 +13,15 @@
     <meta name="theme-color" content="#166534" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
             --bg-main: #0a2316;
-            --bg-card-default: linear-gradient(90deg, #ffe4e6 0%, #fecdd3 100%);
-            --bg-card-top1: linear-gradient(90deg, #fbbf24 0%, #d97706 100%);
-            --bg-card-top2: linear-gradient(90deg, #94a3b8 0%, #64748b 100%);
-            --bg-card-top3: linear-gradient(90deg, #fb923c 0%, #ea580c 100%);
             --bg-input: #113824;
             --accent: #22c55e;
             --discord: #5865F2;
             --text-dark: #0f172a;
-            --text-muted: #334155;
             --border: #166534;
         }
 
@@ -255,7 +248,7 @@
             gap: 12px;
         }
 
-        /* Player Cards - Default Rose Pink Banner */
+        /* Default Player Card Banner: Rose Pink Theme */
         .player-card {
             border-radius: 10px;
             padding: 8px 12px;
@@ -264,510 +257,7 @@
             align-items: center;
             gap: 10px;
             position: relative;
-            background: var(--bg-card-default) !important;
-            border: 3px solid transparent;
-            border-image: repeating-linear-gradient(45deg, #ef4444, #ef4444 10px, #ffffff 10px, #ffffff 20px) 1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            color: var(--text-dark);
-            contain: content;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .player-card:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Animated Shine Effect on Top 3 Cards */
-        .player-card.rank-card-1::after,
-        .player-card.rank-card-2::after,
-        .player-card.rank-card-3::after {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -150%;
-            width: 50%;
-            height: 220%;
-            background: linear-gradient(
-                115deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.5) 45%,
-                rgba(255, 255, 255, 0.8) 50%,
-                rgba(255, 255, 255, 0.5) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(25deg);
-            animation: cardShineSweep 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes cardShineSweep {
-            0% { left: -150%; }
-            35% { left: 160%; }
-            100% { left: 160%; }
-        }
-
-        /* 1st Golden Banner with Shine */
-        .player-card.rank-card-1 {
-            background: var(--bg-card-top1) !important;
-            color: #000000 !important;
-        }
-
-        /* 2nd Silver Banner with Shine */
-        .player-card.rank-card-2 {
-            background: var(--bg-card-top2) !important;
-            color: #ffffff !important;
-        }
-        .player-card.rank-card-2 .player-info h3 { color: #ffffff !important; }
-        .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
-
-        /* 3rd Light Orange Banner with Shine */
-        .player-card.rank-card-3 {
-            background: var(--bg-card-top3) !important;
-            color: #ffffff !important;
-        }
-        .player-card.rank-card-3 .player-info h3 { color: #ffffff !important; }
-        .player-card.rank-card-3 .player-info p { color: #fff7ed !important; }
-
-        .festive-rank-badge {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 900;
-            position: relative;
-        }
-
-        .festive-rank-badge.rank-1::before { content: '🟡'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge.rank-2::before { content: '🔔'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge.rank-3::before { content: '⭐'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge span { position: relative; z-index: 2; color: #000; font-size: 1rem; }
-
-        .mctiers-badge-wrapper {
-            display: flex;
-            align-items: center;
-            height: 54px;
-            width: 140px;
-            background: rgba(15, 23, 42, 0.15);
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
-
-        .rank-number-box {
-            width: 40px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: var(--text-dark);
-        }
-
-        .skin-holder {
-            width: 95px;
-            height: 100%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 0 4px;
-        }
-
-        /* Fixed Player Head/Skin Sides Cut-off Issue */
-        .head-avatar-img {
-            width: 100%;
-            height: 52px;
-            object-fit: contain;
-            object-position: top center;
-            image-rendering: pixelated;
-        }
-
-        .player-info { flex: 1 1 140px; min-width: 130px; }
-        .player-info h3 { font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-        .player-info p { font-size: 0.82rem; color: #334155; font-weight: 700; }
-
-        .region-badge, .platform-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #22c55e;
-            color: #86efac;
-            flex-shrink: 0;
-        }
-
-        .region-badge.region-na {
-            border: 1px solid #ef4444 !important;
-            color: #fca5a5 !important;
-        }
-
-        .platform-badge {
-            border: 1px solid #3b82f6;
-            color: #93c5fd;
-        }
-
-        .platform-badge.pojav {
-            border: 1px solid #a855f7;
-            color: #e9d5ff;
-        }
-
-        .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 180px; }
-
-        .badge {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid var(--tier-color, #38bdf8);
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--tier-color, #38bdf8);
-        }
-
-        .badge img { width: 14px; height: 14px; object-fit: contain; }
-
-        .badge.tier-HT1 { --tier-color: #ef4444; }
-        .badge.tier-LT1 { --tier-color: #f87171; }
-        .badge.tier-HT2 { --tier-color: #f97316; }
-        .badge.tier-LT2 { --tier-color: #fb923c; }
-        .badge.tier-HT3 { --tier-color: #f59e0b; }
-        .badge.tier-LT3 { --tier-color: #fbbf24; }
-        .badge.tier-HT4 { --tier-color: #eab308; }
-        .badge.tier-LT4 { --tier-color: #fde047; }
-        .badge.tier-HT5 { --tier-color: #84cc16; }
-        .badge.tier-LT5 { --tier-color: #22c55e; }
-
-        .actions { display: flex; gap: 4px; margin-left: auto; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
-        .btn-edit { background: #166534; }
-        .btn-delete { background: #ef4444; }
-
-        footer {
-            text-align: center;
-            padding: 20px 10px;
-            margin-top: 30px;
-            background: rgba(15, 56, 34, 0.7);
-            border-radius: 12px;
-            border: 1px solid #166534;
-        }
-
-        .christmas-footer-graphic {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .christmas-footer-text {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #86efac;
-            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-card {
-            background: #0f3822;
-            border: 1px solidAapke saare specific updates code me apply kar diye gaye hain:
-
-### Applied Changes:
-1. **Skin Cut Fix**: `.mctiers-badge-wrapper` aur `.skin-holder` ki width (150px) adjust kar di gayi hai aur `.head-avatar-img` me `object-fit: contain` fix kiya gaya hai jisse skin dono sides se cut na ho.
-2. **Discord Button Text**: Button par wapas **Discord** text set kar diya gaya hai (aur top par cute Santa hat accent retained hai).
-3. **Card Banner Colors & Shine**:
-   - **1st Rank**: Golden Bright Gradient + Continuous Animated Shine effect.
-   - **2nd Rank**: Silver Metallic Gradient + Animated Shine effect.
-   - **3rd Rank**: Light Orange Gradient + Animated Shine effect.
-   - **4th & Lower Ranks**: Rose Pink Gradient Theme set kar diya gaya hai.
-
-Niche complete updated code **2 parts** me hai:
-
----
-
-### Part 1: Complete HTML, Meta Tags & Updated Banner CSS
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>BRUTE TIERS - Festive Edition</title>
-
-    <!-- Discord & Open Graph Meta Tags -->
-    <meta property="og:title" content="BRUTE TIERS - Festive Rankings" />
-    <meta property="og:description" content="View Minecraft's best combat players in a festive Christmas edition!" />
-    <meta property="og:image" content="[https://brute-tiers.vercel.app/logo.png](https://brute-tiers.vercel.app/logo.png)" />
-    <meta property="og:url" content="[https://brute-tiers.vercel.app/](https://brute-tiers.vercel.app/)" />
-    <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#166534" />
-    <meta name="twitter:card" content="summary_large_image" />
-
-    <!-- Firebase SDKs -->
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)"></script>
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)"></script>
-    <style>
-        :root {
-            --bg-main: #0a2316;
-            --bg-input: #113824;
-            --accent: #22c55e;
-            --discord: #5865F2;
-            --text-dark: #0f172a;
-            --border: #166534;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            overflow-x: hidden;
-            background: #06190e;
-        }
-
-        body {
-            background: radial-gradient(circle at top, #144229 0%, #082113 70%, #030d07 100%);
-            background-attachment: fixed;
-            color: #ffffff;
-            padding: 12px;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .snowfall-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            background-image: radial-gradient(4px 4px at 100px 50px, #fff, rgba(0,0,0,0)), 
-                              radial-gradient(3px 3px at 200px 150px, #fff, rgba(0,0,0,0)), 
-                              radial-gradient(4px 4px at 300px 250px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
-                              radial-gradient(3px 3px at 400px 350px, rgba(255,255,255,0.9), rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 500px 500px;
-            opacity: 0.35;
-            z-index: 1;
-        }
-
-        header, .search-filter-bar, .kit-bar, .leaderboard, .admin-panel, footer {
-            width: 100%;
-            max-width: 1050px;
-            margin: 0 auto 15px auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .christmas-title-banner {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .christmas-title-text {
-            font-size: 2.8rem;
-            font-weight: 900;
-            color: #e2e8f0;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.8), 0 0 20px rgba(34, 197, 94, 0.4);
-            display: inline-block;
-            position: relative;
-        }
-
-        .christmas-title-text::before {
-            content: '🎅';
-            position: absolute;
-            top: -24px;
-            left: -20px;
-            font-size: 2.2rem;
-            transform: rotate(-20deg);
-        }
-
-        .christmas-title-text::after {
-            content: '🔔 🍬 🔔';
-            display: block;
-            font-size: 1rem;
-            letter-spacing: 6px;
-            margin-top: -5px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo { font-size: 1.4rem; font-weight: 800; color: #ffffff; letter-spacing: 1px; }
-        .logo span { color: #ef4444; }
-
-        .header-btns {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn {
-            background: linear-gradient(90deg, #15803d 0%, #22c55e 100%);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            position: relative;
-        }
-
-        /* Santa hat mark on Discord Button */
-        .btn-discord { 
-            background: var(--discord); 
-            padding-left: 28px;
-        }
-
-        .btn-discord::before {
-            content: '🎅';
-            position: absolute;
-            left: 6px;
-            top: -6px;
-            font-size: 1rem;
-        }
-
-        .btn-logout { background: #ef4444; display: none; }
-
-        .search-filter-bar {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .search-box { flex: 1 1 200px; }
-        .search-box input, .region-filter select, .platform-filter select {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(15, 56, 34, 0.85);
-            border: 1px solid #166534;
-            border-radius: 8px;
-            color: white;
-            backdrop-filter: blur(4px);
-            font-size: 0.9rem;
-        }
-
-        .region-filter, .platform-filter { flex: 0 0 120px; }
-
-        .admin-panel {
-            background: rgba(15, 56, 34, 0.95);
-            border: 1px solid #22c55e;
-            border-radius: 12px;
-            padding: 15px;
-            display: none;
-        }
-
-        .admin-panel.active { display: block; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            background: var(--bg-input);
-            border: 1px solid #166534;
-            border-radius: 6px;
-            color: white;
-            outline: none;
-        }
-
-        .tier-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-bottom: 10px; }
-        .representatives-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-bottom: 15px; }
-
-        .rep-card-input {
-            background: var(--bg-input);
-            border: 1px solid #166534;
-            padding: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .rep-icon-preview { width: 32px; height: 32px; border-radius: 4px; object-fit: contain; }
-
-        .kit-bar {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            gap: 8px;
-            background: rgba(15, 56, 34, 0.85);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #166534;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .kit-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(6, 36, 20, 0.8);
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: #cbd5e1;
-            flex-shrink: 0;
-        }
-
-        .kit-pill.active {
-            border-color: #22c55e;
-            background: rgba(34, 197, 94, 0.25);
-            color: #ffffff;
-        }
-
-        .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
-
-        .leaderboard { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px;
-        }
-
-        /* Base Player Card with Candy Cane Border & Rose Pink Theme (For 4th+ Place) */
-        .player-card {
-            border-radius: 10px;
-            padding: 8px 12px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            background: linear-gradient(90deg, #f472b6 0%, #fb7185 100%) !important; /* Rose Pink Banner */
+            background: linear-gradient(90deg, #f472b6 0%, #fb7185 100%) !important;
             border: 3px solid transparent;
             border-image: repeating-linear-gradient(45deg, #ef4444, #ef4444 10px, #ffffff 10px, #ffffff 20px) 1;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
@@ -812,24 +302,27 @@ Niche complete updated code **2 parts** me hai:
             100% { left: 160%; }
         }
 
-        /* Top 3 Banners Color Customization */
-        /* Rank 1: Golden Banner with Shine */
+        /* 1st Rank: Golden Banner with Shine */
         .player-card.rank-card-1 {
             background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
             border-image: repeating-linear-gradient(45deg, #fef08a, #fef08a 10px, #ffffff 10px, #ffffff 20px) 1;
         }
 
-        /* Rank 2: Silver Banner with Shine */
+        /* 2nd Rank: Silver Banner with Shine */
         .player-card.rank-card-2 {
             background: linear-gradient(90deg, #e2e8f0 0%, #94a3b8 50%, #64748b 100%) !important;
             border-image: repeating-linear-gradient(45deg, #cbd5e1, #cbd5e1 10px, #ffffff 10px, #ffffff 20px) 1;
         }
+        .player-card.rank-card-2 .player-info h3 { color: #ffffff !important; }
+        .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
 
-        /* Rank 3: Light Orange Banner with Shine */
+        /* 3rd Rank: Light Orange Banner with Shine */
         .player-card.rank-card-3 {
             background: linear-gradient(90deg, #ffedd5 0%, #fb923c 50%, #f97316 100%) !important;
             border-image: repeating-linear-gradient(45deg, #ffedd5, #ffedd5 10px, #ffffff 10px, #ffffff 20px) 1;
         }
+        .player-card.rank-card-3 .player-info h3 { color: #ffffff !important; }
+        .player-card.rank-card-3 .player-info p { color: #fff7ed !important; }
 
         .festive-rank-badge {
             width: 42px;
@@ -847,7 +340,7 @@ Niche complete updated code **2 parts** me hai:
         .festive-rank-badge.rank-3::before { content: '⭐'; position: absolute; font-size: 2.2rem; z-index: 1; }
         .festive-rank-badge span { position: relative; z-index: 2; color: #000; font-size: 1rem; }
 
-        /* Badge Wrapper & Fixed Un-cut Skin Alignment */
+        /* Badge Wrapper & Uncut Skin Holder */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
@@ -883,7 +376,7 @@ Niche complete updated code **2 parts** me hai:
             background: rgba(0, 0, 0, 0.05);
         }
 
-        /* Skin Cut Issue Fix: object-fit contain */
+        /* Skin un-cut fix using contain */
         .head-avatar-img {
             width: 100%;
             height: 50px;
@@ -1016,8 +509,7 @@ Niche complete updated code **2 parts** me hai:
     <header>
         <div class="logo">BRUTE<span>TIERS</span></div>
         <div class="header-btns">
-            <!-- Button Changed back to Discord with Santa Hat -->
-            <a href="[https://discord.gg/BAjzj8qmmk](https://discord.gg/BAjzj8qmmk)" target="_blank" class="btn btn-discord">Discord</a>
+            <a href="https://discord.gg/BAjzj8qmmk" target="_blank" class="btn btn-discord">Discord</a>
             <button class="btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
             <button class="btn btn-logout" id="logoutBtn" onclick="logoutAdmin()">Logout</button>
         </div>
@@ -1095,7 +587,7 @@ Niche complete updated code **2 parts** me hai:
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
             authDomain: "brute-tiers.firebaseapp.com",
-            databaseURL: "[https://brute-tiers-default-rtdb.firebaseio.com](https://brute-tiers-default-rtdb.firebaseio.com)",
+            databaseURL: "https://brute-tiers-default-rtdb.firebaseio.com",
             projectId: "brute-tiers",
             storageBucket: "brute-tiers.firebasestorage.app",
             messagingSenderId: "35511970184",
@@ -1242,7 +734,7 @@ Niche complete updated code **2 parts** me hai:
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const festiveRankClass = displayRank <= 3 ? `festive-rank-badge rank-${displayRank}` : 'rank-number-box';
                 
-                const avatarImg = player.customSkin || `[https://mc-heads.net/body/$](https://mc-heads.net/body/$){player.username}/100`;
+                const avatarImg = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
                 const rawRegion = (player.region || '').trim().toUpperCase();
                 const isNaRegion = !rawRegion || rawRegion === 'NA';
@@ -1257,7 +749,7 @@ Niche complete updated code **2 parts** me hai:
                         <div class="mctiers-badge-wrapper">
                             <div class="${festiveRankClass}"><span>${displayRank}.</span></div>
                             <div class="skin-holder">
-                                <img class="head-avatar-img" src="${avatarImg}" loading="lazy" alt="skin" onerror="this.onerror=null; this.src='[https://mc-heads.net/body/Steve/100](https://mc-heads.net/body/Steve/100)';">
+                                <img class="head-avatar-img" src="${avatarImg}" loading="lazy" alt="skin" onerror="this.onerror=null; this.src='https://mc-heads.net/body/Steve/100';">
                             </div>
                         </div>
                         <div class="player-info">
@@ -1293,7 +785,7 @@ Niche complete updated code **2 parts** me hai:
             document.getElementById('modalUsername').textContent = player.username;
             const pts = calculatePoints(player.tiers);
             document.getElementById('modalTitle').textContent = `${player.customTitle || getDefaultTitle(pts)} • (${pts} Points) • [${player.platform || 'PC'}]`;
-            document.getElementById('modalAvatar').src = player.customSkin || `[https://mc-heads.net/body/$](https://mc-heads.net/body/$){player.username}/100`;
+            document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
             document.getElementById('modalStatsGrid').innerHTML = KITS.map(kit => `
                 <div class="modal-stat-box">
