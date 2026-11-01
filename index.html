@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>BRUTE TIERS - Festive Edition</title>
 
+    <!-- Updated Discord & Open Graph Meta Tags with your new logo -->
     <meta property="og:title" content="BRUTE TIERS - Festive Rankings" />
     <meta property="og:description" content="View Minecraft's best combat players in a festive Christmas edition!" />
     <meta property="og:image" content="https://brute-tiers.vercel.app/logo.png" />
@@ -248,7 +249,6 @@
             gap: 12px;
         }
 
-        /* Player Card with Lime Glowing Outline */
         .player-card {
             border-radius: 10px;
             padding: 8px 12px;
@@ -272,7 +272,6 @@
             box-shadow: 0 0 18px rgba(34, 197, 94, 0.8), inset 0 0 8px rgba(34, 197, 94, 0.5);
         }
 
-        /* Shine Sweep Animation for Top 3 Cards */
         .player-card.rank-card-1::after,
         .player-card.rank-card-2::after,
         .player-card.rank-card-3::after {
@@ -302,14 +301,12 @@
             100% { left: 160%; }
         }
 
-        /* Rank 1: Golden Banner */
         .player-card.rank-card-1 {
             background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
             border-color: #fef08a !important;
             box-shadow: 0 0 12px rgba(254, 240, 138, 0.6);
         }
 
-        /* Rank 2: Silver Banner */
         .player-card.rank-card-2 {
             background: linear-gradient(90deg, #e2e8f0 0%, #94a3b8 50%, #64748b 100%) !important;
             border-color: #ffffff !important;
@@ -318,7 +315,6 @@
         .player-card.rank-card-2 .player-info h3 { color: #ffffff !important; }
         .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
 
-        /* Rank 3: Light Orange Banner */
         .player-card.rank-card-3 {
             background: linear-gradient(90deg, #ffedd5 0%, #fb923c 50%, #f97316 100%) !important;
             border-color: #ffedd5 !important;
@@ -888,7 +884,7 @@
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
             const username = document.getElementById('username').value.trim();
             const platform = document.getElementById('platform').value;
-            const customTitle = document.getElementById('customTitle').value.trim();
+            let customTitle = document.getElementById('customTitle').value.trim();
             const region = document.getElementById('region').value.trim() || 'NA';
             const customSkin = document.getElementById('customSkinBase64').value;
 
