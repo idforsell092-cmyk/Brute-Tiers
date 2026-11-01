@@ -357,7 +357,6 @@
             background: rgba(0, 0, 0, 0.2);
         }
 
-        /* Adjusted for Bust/Upper Body Skin view */
         .head-avatar-img {
             width: 32px;
             height: 44px;
@@ -703,8 +702,8 @@
                 const crownIcon = displayRank === 1 ? '👑' : displayRank === 2 ? '🥈' : displayRank === 3 ? '🥉' : '';
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 
-                // Using Bust / Upper Body View endpoint instead of head-only
-                const avatarImg = player.customSkin || `https://mc-heads.net/bust/${player.username}/100`;
+                // Using mc-heads body render URL. onerror will fallback to Steve if non-premium/invalid.
+                const avatarImg = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
                 const rawRegion = (player.region || '').trim().toUpperCase();
                 const isNaRegion = !rawRegion || rawRegion === 'NA';
@@ -720,7 +719,7 @@
                         <div class="mctiers-badge-wrapper">
                             <div class="rank-number-box">${displayRank}.</div>
                             <div class="skin-holder">
-                                <img class="head-avatar-img" src="${avatarImg}" loading="lazy" alt="bust">
+                                <img class="head-avatar-img" src="${avatarImg}" loading="lazy" alt="skin" onerror="this.src='https://mc-heads.net/body/Steve/100'">
                             </div>
                         </div>
                         <div class="player-info">
@@ -756,7 +755,7 @@
             document.getElementById('modalUsername').textContent = player.username;
             const pts = calculatePoints(player.tiers);
             document.getElementById('modalTitle').textContent = `${player.customTitle || getDefaultTitle(pts)} • (${pts} Points) • [${player.platform || 'PC'}]`;
-            document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/bust/${player.username}/100`;
+            document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
             document.getElementById('modalStatsGrid').innerHTML = KITS.map(kit => `
                 <div class="modal-stat-box">
@@ -932,4 +931,3 @@
     </script>
 </body>
 </html>
-
