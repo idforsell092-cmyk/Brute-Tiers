@@ -235,7 +235,7 @@
 
         .player-card {
             border-radius: 10px;
-            padding: 10px;
+            padding: 8px 12px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -323,49 +323,68 @@
             animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Updated Badge Wrapper for Bada Skin Rendering */
+        /* Slanted Badge Wrapper to match Image 2 */
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
-            height: 58px;
+            height: 56px;
             width: 145px;
-            background: rgba(0, 0, 0, 0.45);
+            background: transparent;
             border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow: visible;
             flex-shrink: 0;
             z-index: 2;
+            position: relative;
         }
 
+        /* Slanted Rank Box (#1, #2, #3...) */
         .rank-number-box {
-            width: 45px;
+            width: 50px;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 900;
             color: #ffffff;
+            background: #1e293b;
+            transform: skewX(-12deg);
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            margin-right: -8px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.4);
+            z-index: 3;
         }
+
+        .rank-number-box span {
+            transform: skewX(12deg);
+        }
+
+        .rank-card-1 .rank-number-box { background: #eab308; color: #000; }
+        .rank-card-2 .rank-number-box { background: #94a3b8; color: #000; }
+        .rank-card-3 .rank-number-box { background: #ea580c; color: #fff; }
 
         .skin-holder {
-            width: 100px;
+            width: 95px;
             height: 100%;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Larger Skin Image Dimensions */
+        /* Skin Pose Alignment */
         .head-avatar-img {
-            width: 40px;
-            height: 56px;
-            object-fit: contain;
+            width: 46px;
+            height: 54px;
+            object-fit: cover;
+            object-position: top center;
             image-rendering: pixelated;
             transition: transform 0.25s ease;
-            border-radius: 2px;
         }
 
         .player-card:hover .head-avatar-img { transform: scale(1.12); }
@@ -704,7 +723,6 @@
                 const crownIcon = displayRank === 1 ? '👑' : displayRank === 2 ? '🥈' : displayRank === 3 ? '🥉' : '';
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 
-                // Direct full/half body URL with automatic fallback to Steve for non-premium accounts
                 const avatarImg = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
                 const rawRegion = (player.region || '').trim().toUpperCase();
@@ -719,7 +737,7 @@
                     <div class="player-card ${rankClass}" style="--card-index: ${index};" onclick="openModal(${originalIndex})">
                         ${crownIcon ? `<div class="crown-overlay">${crownIcon}</div>` : ''}
                         <div class="mctiers-badge-wrapper">
-                            <div class="rank-number-box">${displayRank}.</div>
+                            <div class="rank-number-box"><span>${displayRank}.</span></div>
                             <div class="skin-holder">
                                 <img class="head-avatar-img" src="${avatarImg}" loading="lazy" alt="skin" onerror="this.onerror=null; this.src='https://mc-heads.net/body/Steve/100';">
                             </div>
