@@ -62,7 +62,7 @@
             z-index: 1;
         }
 
-        header, .search-filter-bar, .kit-bar, .leaderboard, .admin-panel, footer {
+        header, .search-filter-bar, .kit-bar, .podium-container, .leaderboard, .admin-panel, footer {
             width: 100%;
             max-width: 1050px;
             margin: 0 auto 15px auto;
@@ -170,6 +170,94 @@
         }
 
         .region-filter, .platform-filter { flex: 0 0 120px; }
+
+        /* Top 3 Podium Styles */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            margin: 25px auto;
+            padding: 15px;
+            flex-wrap: wrap;
+        }
+
+        .podium-card {
+            background: rgba(15, 56, 34, 0.85);
+            border: 2px solid #22c55e;
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+        }
+
+        .podium-card:hover { transform: translateY(-5px); }
+
+        .podium-card.rank-1 {
+            order: 2;
+            width: 220px;
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%);
+            border-color: #fbbf24;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);
+            z-index: 3;
+        }
+
+        .podium-card.rank-2 {
+            order: 1;
+            width: 190px;
+            background: linear-gradient(180deg, rgba(148, 163, 184, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%);
+            border-color: #cbd5e1;
+            box-shadow: 0 0 20px rgba(203, 213, 225, 0.3);
+            z-index: 2;
+        }
+
+        .podium-card.rank-3 {
+            order: 3;
+            width: 190px;
+            background: linear-gradient(180deg, rgba(249, 115, 22, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%);
+            border-color: #fb923c;
+            box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);
+            z-index: 1;
+        }
+
+        .podium-crown {
+            font-size: 2rem;
+            position: absolute;
+            top: -22px;
+        }
+
+        .podium-avatar-box {
+            width: 80px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .podium-avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .podium-card.rank-1 .podium-avatar-box { width: 95px; height: 110px; }
+
+        .podium-info h3 { font-size: 1rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
+        .podium-info p { font-size: 0.75rem; color: #cbd5e1; font-weight: 700; margin-bottom: 6px; }
+        .podium-points { font-size: 0.8rem; font-weight: 900; color: #86efac; background: rgba(34, 197, 94, 0.2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
 
         .admin-panel {
             background: rgba(15, 56, 34, 0.95);
@@ -537,6 +625,9 @@
 
     <div class="kit-bar" id="kitBar"></div>
 
+    <!-- Top 3 Podium Showcase Section -->
+    <div class="podium-container" id="podiumContainer"></div>
+
     <div class="admin-panel" id="adminPanel">
         <h2>Admin Management Panel</h2>
         <form id="playerForm">
@@ -549,7 +640,6 @@
                         <option value="Pojav">Pojav</option>
                     </select>
                 </div>
-                <div><label>Title (Optional)</label><input type="text" id="customTitle" placeholder="Leave empty for auto rank title"></div>
                 <div><label>Region</label><input type="text" id="region"></div>
                 <div><label>Skin PNG Upload</label><input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)"><input type="hidden" id="customSkinBase64"></div>
             </div>
@@ -578,8 +668,8 @@
             </div>
             <div class="modal-stats-grid" id="modalStatsGrid"></div>
         </div>
-    </div>
-        <script>
+                </div>
+                    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
             authDomain: "brute-tiers.firebaseapp.com",
@@ -627,10 +717,12 @@
             }
             renderKitBar();
             renderKitRepsManager();
+            renderPodium();
             renderLeaderboard();
         });
 
         async function saveGlobalData() {
+            renderPodium();
             renderLeaderboard();
             try {
                 await globalRef.set({
@@ -671,7 +763,6 @@
             return total;
         }
 
-        // Automatic Dynamic Rank Title Function based on Position
         function getDefaultTitleByRank(displayRank) {
             if (displayRank === 1) return 'Combat GrandMaster';
             if (displayRank === 2) return 'Combat GrandExpert';
@@ -695,7 +786,55 @@
             if (selectedCategory === cat) return;
             selectedCategory = cat; 
             renderKitBar(); 
+            renderPodium();
             renderLeaderboard();
+        }
+
+        // Render Top 3 Podium Section
+        function renderPodium() {
+            const podiumContainer = document.getElementById('podiumContainer');
+            if (!appData.playersList || appData.playersList.length === 0 || selectedCategory !== 'Overall') {
+                podiumContainer.style.display = 'none';
+                return;
+            }
+            podiumContainer.style.display = 'flex';
+
+            let sortedList = [...appData.playersList].sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            const top3 = sortedList.slice(0, 3);
+
+            if (top3.length === 0) {
+                podiumContainer.innerHTML = '';
+                return;
+            }
+
+            // Re-order for visual display: 2nd, 1st, 3rd
+            let displayOrder = [];
+            if (top3[1]) displayOrder.push({ player: top3[1], rank: 2 });
+            if (top3[0]) displayOrder.push({ player: top3[0], rank: 1 });
+            if (top3[2]) displayOrder.push({ player: top3[2], rank: 3 });
+
+            podiumContainer.innerHTML = displayOrder.map(item => {
+                const p = item.player;
+                const rank = item.rank;
+                const originalIndex = appData.playersList.indexOf(p);
+                const pts = calculatePoints(p.tiers);
+                const title = getDefaultTitleByRank(rank);
+                const avatarImg = p.customSkin || `https://mc-heads.net/body/${p.username}/100`;
+
+                return `
+                    <div class="podium-card rank-${rank}" onclick="openModal(${originalIndex})">
+                        ${rank === 1 ? `<div class="podium-crown">👑</div>` : ''}
+                        <div class="podium-avatar-box">
+                            <img src="${avatarImg}" alt="${p.username}" onerror="this.onerror=null; this.src='https://mc-heads.net/body/Steve/100';">
+                        </div>
+                        <div class="podium-info">
+                            <h3>#${rank} ${p.username}</h3>
+                            <p>${title}</p>
+                            <span class="podium-points">${pts} Points</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderLeaderboard() {
@@ -733,7 +872,6 @@
                 const originalIndex = appData.playersList.indexOf(player);
                 const points = calculatePoints(player.tiers);
                 const displayRank = index + 1;
-                // Position ke mutabiq dynamic title set kiya gaya hai (customTitle clear karke)
                 const title = getDefaultTitleByRank(displayRank);
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const festiveRankClass = displayRank <= 3 ? `festive-rank-badge rank-${displayRank}` : 'rank-number-box';
@@ -871,6 +1009,7 @@
                         appData.kitIcons[category] = canvas.toDataURL('image/png');
                         renderKitBar();
                         renderKitRepsManager();
+                        renderPodium();
                         renderLeaderboard();
                         await saveGlobalData();
                     };
