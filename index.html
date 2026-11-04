@@ -258,8 +258,7 @@
         .podium-info h3 { font-size: 1rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
         .podium-info p { font-size: 0.75rem; color: #cbd5e1; font-weight: 700; margin-bottom: 6px; }
         .podium-points { font-size: 0.8rem; font-weight: 900; color: #86efac; background: rgba(34, 197, 94, 0.2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
-
-        /* Festive Strip Divider */
+                /* Festive Strip Divider */
         .podium-divider-strip {
             height: 8px;
             background: linear-gradient(90deg, transparent, #22c55e, #fbbf24, #22c55e, transparent);
@@ -708,6 +707,7 @@
         }
         const db = firebase.database();
         const globalRef = db.ref("brutetiers_data");
+        const rootRef = db.ref(); // Fallback to check root database nodes
 
         const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
@@ -730,28 +730,60 @@
         let appData = { kitIcons: {}, playersList: [] };
         let isDataLoaded = false;
 
+        // Listen to primary path & automatic scan fallback
         globalRef.on('value', (snapshot) => {
             const data = snapshot.val();
-            isDataLoaded = true;
-            if (data) {
+            if (data && (data.playersList || data.kitIcons)) {
+                isDataLoaded = true;
                 appData = {
                     kitIcons: data.kitIcons || {},
                     playersList: Array.isArray(data.playersList) ? data.playersList : []
                 };
+                renderAll();
+            } else {
+                rootRef.once('value', (rootSnapshot) => {
+                    isDataLoaded = true;
+                    const rootVal = rootSnapshot.val() || {};
+                    let recoveredList = [];
+
+                    if (Array.isArray(rootVal.playersList)) {
+                        recoveredList = rootVal.playersList;
+                    } else if (Array.isArray(rootVal)) {
+                        recoveredList = rootVal;
+                    } else {
+                        for (let key in rootVal) {
+                            if (rootVal[key] && Array.isArray(rootVal[key].playersList)) {
+                                recoveredList = rootVal[key].playersList;
+                                break;
+                            } else if (Array.isArray(rootVal[key])) {
+                                recoveredList = rootVal[key];
+                                break;
+                            }
+                        }
+                    }
+
+                    appData = {
+                        kitIcons: rootVal.kitIcons || (rootVal.brutetiers_data ? rootVal.brutetiers_data.kitIcons : {}) || {},
+                        playersList: recoveredList
+                    };
+                    renderAll();
+                });
             }
+        }, (error) => {
+            console.error("Firebase Read Error:", error);
+            isDataLoaded = true;
+            renderAll();
+        });
+
+        function renderAll() {
             renderKitBar();
             renderKitRepsManager();
             renderPodium();
             renderLeaderboard();
-        }, (error) => {
-            console.error("Firebase Read Error:", error);
-            isDataLoaded = true;
-            renderLeaderboard();
-        });
+        }
 
         async function saveGlobalData() {
-            renderPodium();
-            renderLeaderboard();
+            renderAll();
             try {
                 await globalRef.set({
                     kitIcons: appData.kitIcons || {},
@@ -800,8 +832,7 @@
             if (displayRank >= 51 && displayRank <= 100) return 'Experienced';
             return 'Rookie';
         }
-
-        function renderKitBar() {
+                    function renderKitBar() {
             document.getElementById('kitBar').innerHTML = ALL_CATEGORIES.map(cat => `
                 <div class="kit-pill ${cat === selectedCategory ? 'active' : ''}" onclick="selectCategory('${cat}')">
                     ${appData.kitIcons && appData.kitIcons[cat] ? `<img src="${appData.kitIcons[cat]}">` : ''}
@@ -877,7 +908,7 @@
             }
 
             if (!appData.playersList || appData.playersList.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; color:#cbd5e1; font-weight:700;">No players added yet. Use Admin panel to add players!</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:#cbd5e1; font-weight:700;">No players found in database. Use Admin panel to add players!</div>`;
                 return;
             }
 
@@ -886,6 +917,7 @@
             const selectedPlatform = document.getElementById('filterPlatform')?.value || 'ALL';
 
             let displayList = appData.playersList.filter(p => {
+                if (!p || !p.username) return false;
                 const matchesName = p.username.toLowerCase().includes(searchQuery);
                 const pRegion = (p.region || 'NA').trim().toUpperCase();
                 const pPlatform = (p.platform || 'PC').trim();
@@ -1047,10 +1079,7 @@
                         ctx.drawImage(img, 0, 0, 24, 24);
                         if (!appData.kitIcons) appData.kitIcons = {};
                         appData.kitIcons[category] = canvas.toDataURL('image/png');
-                        renderKitBar();
-                        renderKitRepsManager();
-                        renderPodium();
-                        renderLeaderboard();
+                        renderAll();
                         await saveGlobalData();
                     };
                     img.src = e.target.result;
@@ -1120,4 +1149,25 @@
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
             document.getElementById('platform').value = player.platform || 'PC';
-            document.getElementById('region').value = player.r
+            document.getElementById('region').value = player.region || 'NA';
+            document.getElementById('customSkinBase64').value = player.customSkin || '';
+
+            KITS.forEach(kit => {
+                document.getElementById(`tier-${kit}`).value = (player.tiers && player.tiers[kit]) ? player.tiers[kit] : 'NA';
+            });
+
+            if (!document.getElementById('adminPanel').classList.contains('active')) toggleAdmin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deletePlayer(index) {
+            if (confirm('Delete player?')) {
+                appData.playersList.splice(index, 1);
+                await saveGlobalData();
+            }
+        }
+
+        buildTierInputs();
+    </script>
+</body>
+</html>
