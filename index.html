@@ -248,7 +248,6 @@
             gap: 12px;
         }
 
-        /* Normal Player Card Banner: White Gradient Theme with Lime Glow */
         .player-card {
             border-radius: 10px;
             padding: 8px 12px;
@@ -672,8 +671,15 @@
             return total;
         }
 
-        function getDefaultTitle(pts) {
-            return pts >= 500 ? 'Combat GrandExpert' : pts >= 300 ? 'Combat Expert' : pts >= 100 ? 'Combat Specialist' : 'Rookie';
+        // Updated Default Title by Rank Position
+        function getDefaultTitleByRank(displayRank) {
+            if (displayRank === 1) return 'Combat GrandMaster';
+            if (displayRank === 2) return 'Combat GrandExpert';
+            if (displayRank === 3) return 'Combat Expert';
+            if (displayRank >= 4 && displayRank <= 10) return 'Combat Specialist';
+            if (displayRank >= 11 && displayRank <= 50) return 'Combat Cadet';
+            if (displayRank >= 51 && displayRank <= 100) return 'Experienced';
+            return 'Rookie';
         }
 
         function renderKitBar() {
@@ -726,8 +732,8 @@
             container.innerHTML = displayList.map((player, index) => {
                 const originalIndex = appData.playersList.indexOf(player);
                 const points = calculatePoints(player.tiers);
-                const title = player.customTitle || getDefaultTitle(points);
                 const displayRank = index + 1;
+                const title = player.customTitle || getDefaultTitleByRank(displayRank);
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const festiveRankClass = displayRank <= 3 ? `festive-rank-badge rank-${displayRank}` : 'rank-number-box';
                 
@@ -781,7 +787,8 @@
 
             document.getElementById('modalUsername').textContent = player.username;
             const pts = calculatePoints(player.tiers);
-            document.getElementById('modalTitle').textContent = `${player.customTitle || getDefaultTitle(pts)} • (${pts} Points) • [${player.platform || 'PC'}]`;
+            const displayRank = appData.playersList.indexOf(player) + 1;
+            document.getElementById('modalTitle').textContent = `${player.customTitle || getDefaultTitleByRank(displayRank)} • (${pts} Points) • [${player.platform || 'PC'}]`;
             document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
             document.getElementById('modalStatsGrid').innerHTML = KITS.map(kit => `
