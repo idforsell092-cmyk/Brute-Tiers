@@ -62,7 +62,7 @@
             z-index: 1;
         }
 
-        header, .search-filter-bar, .podium-container, .kit-bar, .leaderboard, .admin-panel, footer {
+        header, .search-filter-bar, .podium-container, .podium-divider-strip, .kit-bar, .leaderboard, .admin-panel, footer {
             width: 100%;
             max-width: 1050px;
             margin: 0 auto 15px auto;
@@ -177,7 +177,7 @@
             justify-content: center;
             align-items: flex-end;
             gap: 15px;
-            margin: 20px auto;
+            margin: 20px auto 10px auto;
             padding: 10px;
             flex-wrap: wrap;
         }
@@ -258,6 +258,16 @@
         .podium-info h3 { font-size: 1rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
         .podium-info p { font-size: 0.75rem; color: #cbd5e1; font-weight: 700; margin-bottom: 6px; }
         .podium-points { font-size: 0.8rem; font-weight: 900; color: #86efac; background: rgba(34, 197, 94, 0.2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
+
+        /* Festive Strip Divider */
+        .podium-divider-strip {
+            height: 8px;
+            background: linear-gradient(90deg, transparent, #22c55e, #fbbf24, #22c55e, transparent);
+            border-radius: 4px;
+            margin: 10px auto 15px auto;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+            opacity: 0.85;
+        }
 
         .admin-panel {
             background: rgba(15, 56, 34, 0.95);
@@ -577,7 +587,18 @@
 
         .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .modal-avatar { width: 50px; height: 50px; border-radius: 8px; image-rendering: pixelated; object-fit: cover; }
+        
+        /* Fixed Modal Avatar Clipping */
+        .modal-avatar { 
+            width: 60px; 
+            height: 70px; 
+            border-radius: 6px; 
+            image-rendering: pixelated; 
+            object-fit: contain; 
+            background: rgba(0,0,0,0.2); 
+            padding: 2px;
+        }
+
         .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .modal-stat-box { background: var(--bg-input); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.8rem; }
     </style>
@@ -626,7 +647,10 @@
     <!-- Top 3 Podium Showcase Section -->
     <div class="podium-container" id="podiumContainer"></div>
 
-    <!-- Kit Bar moved below Podium section -->
+    <!-- Festive Divider Strip placed between Podium and Kit Bar -->
+    <div class="podium-divider-strip" id="podiumDivider"></div>
+
+    <!-- Kit Bar -->
     <div class="kit-bar" id="kitBar"></div>
 
     <div class="admin-panel" id="adminPanel">
@@ -793,17 +817,22 @@
 
         function renderPodium() {
             const podiumContainer = document.getElementById('podiumContainer');
+            const dividerStrip = document.getElementById('podiumDivider');
+            
             if (!appData.playersList || appData.playersList.length === 0 || selectedCategory !== 'Overall') {
                 podiumContainer.style.display = 'none';
+                dividerStrip.style.display = 'none';
                 return;
             }
             podiumContainer.style.display = 'flex';
+            dividerStrip.style.display = 'block';
 
             let sortedList = [...appData.playersList].sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
             const top3 = sortedList.slice(0, 3);
 
             if (top3.length === 0) {
                 podiumContainer.innerHTML = '';
+                dividerStrip.style.display = 'none';
                 return;
             }
 
@@ -1097,7 +1126,4 @@
             }
         }
 
-        buildTierInputs();
-    </script>
-</body>
-</html>
+        buildTierInp
