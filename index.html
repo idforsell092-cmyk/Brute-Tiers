@@ -62,7 +62,7 @@
             z-index: 1;
         }
 
-        header, .search-filter-bar, .kit-bar, .podium-container, .leaderboard, .admin-panel, footer {
+        header, .search-filter-bar, .podium-container, .kit-bar, .leaderboard, .admin-panel, footer {
             width: 100%;
             max-width: 1050px;
             margin: 0 auto 15px auto;
@@ -171,14 +171,14 @@
 
         .region-filter, .platform-filter { flex: 0 0 120px; }
 
-        /* Top 3 Podium Styles */
+        /* Podium Styles */
         .podium-container {
             display: flex;
             justify-content: center;
             align-items: flex-end;
             gap: 15px;
-            margin: 25px auto;
-            padding: 15px;
+            margin: 20px auto;
+            padding: 10px;
             flex-wrap: wrap;
         }
 
@@ -623,10 +623,11 @@
         </div>
     </div>
 
-    <div class="kit-bar" id="kitBar"></div>
-
     <!-- Top 3 Podium Showcase Section -->
     <div class="podium-container" id="podiumContainer"></div>
+
+    <!-- Kit Bar moved below Podium section -->
+    <div class="kit-bar" id="kitBar"></div>
 
     <div class="admin-panel" id="adminPanel">
         <h2>Admin Management Panel</h2>
@@ -668,8 +669,8 @@
             </div>
             <div class="modal-stats-grid" id="modalStatsGrid"></div>
         </div>
-                </div>
-                    <script>
+    </div>
+        <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
             authDomain: "brute-tiers.firebaseapp.com",
@@ -790,7 +791,6 @@
             renderLeaderboard();
         }
 
-        // Render Top 3 Podium Section
         function renderPodium() {
             const podiumContainer = document.getElementById('podiumContainer');
             if (!appData.playersList || appData.playersList.length === 0 || selectedCategory !== 'Overall') {
@@ -807,7 +807,6 @@
                 return;
             }
 
-            // Re-order for visual display: 2nd, 1st, 3rd
             let displayOrder = [];
             if (top3[1]) displayOrder.push({ player: top3[1], rank: 2 });
             if (top3[0]) displayOrder.push({ player: top3[0], rank: 1 });
