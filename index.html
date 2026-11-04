@@ -549,7 +549,7 @@
                         <option value="Pojav">Pojav</option>
                     </select>
                 </div>
-                <div><label>Title</label><input type="text" id="customTitle"></div>
+                <div><label>Title (Optional)</label><input type="text" id="customTitle" placeholder="Leave empty for auto rank title"></div>
                 <div><label>Region</label><input type="text" id="region"></div>
                 <div><label>Skin PNG Upload</label><input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)"><input type="hidden" id="customSkinBase64"></div>
             </div>
@@ -671,7 +671,7 @@
             return total;
         }
 
-        // Updated Default Title by Rank Position
+        // Automatic Dynamic Rank Title Function based on Position
         function getDefaultTitleByRank(displayRank) {
             if (displayRank === 1) return 'Combat GrandMaster';
             if (displayRank === 2) return 'Combat GrandExpert';
@@ -733,7 +733,8 @@
                 const originalIndex = appData.playersList.indexOf(player);
                 const points = calculatePoints(player.tiers);
                 const displayRank = index + 1;
-                const title = player.customTitle || getDefaultTitleByRank(displayRank);
+                // Position ke mutabiq dynamic title set kiya gaya hai (customTitle clear karke)
+                const title = getDefaultTitleByRank(displayRank);
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
                 const festiveRankClass = displayRank <= 3 ? `festive-rank-badge rank-${displayRank}` : 'rank-number-box';
                 
@@ -788,7 +789,7 @@
             document.getElementById('modalUsername').textContent = player.username;
             const pts = calculatePoints(player.tiers);
             const displayRank = appData.playersList.indexOf(player) + 1;
-            document.getElementById('modalTitle').textContent = `${player.customTitle || getDefaultTitleByRank(displayRank)} • (${pts} Points) • [${player.platform || 'PC'}]`;
+            document.getElementById('modalTitle').textContent = `${getDefaultTitleByRank(displayRank)} • (${pts} Points) • [${player.platform || 'PC'}]`;
             document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
             document.getElementById('modalStatsGrid').innerHTML = KITS.map(kit => `
@@ -891,7 +892,6 @@
             const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
             const username = document.getElementById('username').value.trim();
             const platform = document.getElementById('platform').value;
-            let customTitle = document.getElementById('customTitle').value.trim();
             const region = document.getElementById('region').value.trim() || 'NA';
             const customSkin = document.getElementById('customSkinBase64').value;
 
@@ -905,8 +905,7 @@
 
             const playerData = { 
                 username, 
-                platform,
-                customTitle, 
+                platform, 
                 region, 
                 customSkin: customSkin || existingSkin, 
                 tiers 
@@ -942,7 +941,6 @@
             document.getElementById('editIndex').value = index;
             document.getElementById('username').value = player.username;
             document.getElementById('platform').value = player.platform || 'PC';
-            document.getElementById('customTitle').value = player.customTitle || '';
             document.getElementById('region').value = player.region || 'NA';
             document.getElementById('customSkinBase64').value = player.customSkin || '';
 
