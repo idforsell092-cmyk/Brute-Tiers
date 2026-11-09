@@ -258,345 +258,6 @@
         .podium-info h3 { font-size: 1rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
         .podium-info p { font-size: 0.75rem; color: #cbd5e1; font-weight: 700; margin-bottom: 6px; }
         .podium-points { font-size: 0.8rem; font-weight: 900; color: #86efac; background: rgba(34, 197, 94, 0.2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
-                /* Festive Strip Divider */
-        .podium-divider-strip {
-            height: 8px;
-            background: linear-gradient(90deg, transparent, #22c55e, #fbbf24, #22c55e, transparent);
-            border-radius: 4px;
-            margin: 10px auto 15px auto;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
-            opacity: 0.85;
-        }
-
-        .admin-panel {
-            background: rgba(15, 56, 34, 0.95);
-            border: 1px solid #22c55e;
-            border-radius: 12px;
-            padding: 15px;
-            display: none;
-        }
-
-        .admin-panel.active { display: block; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            background: var(--bg-input);
-            border: 1px solid #166534;
-            border-radius: 6px;
-            color: white;
-            outline: none;
-        }
-
-        .tier-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-bottom: 10px; }
-        .representatives-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-bottom: 15px; }
-
-        .rep-card-input {
-            background: var(--bg-input);
-            border: 1px solid #166534;
-            padding: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .rep-icon-preview { width: 32px; height: 32px; border-radius: 4px; object-fit: contain; }
-
-        .kit-bar {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            gap: 8px;
-            background: rgba(15, 56, 34, 0.85);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #166534;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .kit-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(6, 36, 20, 0.8);
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: #cbd5e1;
-            flex-shrink: 0;
-        }
-
-        .kit-pill.active {
-            border-color: #22c55e;
-            background: rgba(34, 197, 94, 0.25);
-            color: #ffffff;
-        }
-
-        .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
-
-        .leaderboard { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px;
-        }
-
-        .player-card {
-            border-radius: 10px;
-            padding: 8px 12px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            background: linear-gradient(90deg, #ffffff 0%, #e2e8f0 100%) !important;
-            border: 2px solid #22c55e !important;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), inset 0 0 5px rgba(34, 197, 94, 0.3);
-            color: var(--text-dark);
-            contain: content;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            overflow: hidden;
-        }
-
-        .player-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 18px rgba(34, 197, 94, 0.8), inset 0 0 8px rgba(34, 197, 94, 0.5);
-        }
-
-        .player-card.rank-card-1::after,
-        .player-card.rank-card-2::after,
-        .player-card.rank-card-3::after {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -150%;
-            width: 50%;
-            height: 220%;
-            background: linear-gradient(
-                115deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.6) 45%,
-                rgba(255, 255, 255, 0.9) 50%,
-                rgba(255, 255, 255, 0.6) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(25deg);
-            animation: cardShineSweep 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes cardShineSweep {
-            0% { left: -150%; }
-            35% { left: 160%; }
-            100% { left: 160%; }
-        }
-
-        .player-card.rank-card-1 {
-            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
-            border-color: #fef08a !important;
-            box-shadow: 0 0 12px rgba(254, 240, 138, 0.6);
-        }
-
-        .player-card.rank-card-2 {
-            background: linear-gradient(90deg, #e2e8f0 0%, #94a3b8 50%, #64748b 100%) !important;
-            border-color: #ffffff !important;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-        }
-        .player-card.rank-card-2 .player-info h3 { color: #ffffff !important; }
-        .player-card.rank-card-2 .player-info p { color: #f1f5f9 !important; }
-
-        .player-card.rank-card-3 {
-            background: linear-gradient(90deg, #ffedd5 0%, #fb923c 50%, #f97316 100%) !important;
-            border-color: #ffedd5 !important;
-            box-shadow: 0 0 12px rgba(255, 237, 213, 0.6);
-        }
-        .player-card.rank-card-3 .player-info h3 { color: #ffffff !important; }
-        .player-card.rank-card-3 .player-info p { color: #fff7ed !important; }
-
-        .festive-rank-badge {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 900;
-            position: relative;
-        }
-
-        .festive-rank-badge.rank-1::before { content: '🟡'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge.rank-2::before { content: '🔔'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge.rank-3::before { content: '⭐'; position: absolute; font-size: 2.2rem; z-index: 1; }
-        .festive-rank-badge span { position: relative; z-index: 2; color: #000; font-size: 1rem; }
-
-        .mctiers-badge-wrapper {
-            display: flex;
-            align-items: center;
-            height: 54px;
-            width: 150px;
-            background: rgba(15, 23, 42, 0.2);
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            flex-shrink: 0;
-            padding: 0 2px;
-        }
-
-        .rank-number-box {
-            width: 38px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: var(--text-dark);
-            flex-shrink: 0;
-        }
-
-        .skin-holder {
-            width: 108px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .head-avatar-img {
-            width: 100%;
-            height: 50px;
-            object-fit: contain;
-            image-rendering: pixelated;
-        }
-
-        .player-info { flex: 1 1 140px; min-width: 130px; }
-        .player-info h3 { font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-        .player-info p { font-size: 0.82rem; color: #334155; font-weight: 700; }
-
-        .region-badge, .platform-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #22c55e;
-            color: #86efac;
-            flex-shrink: 0;
-        }
-
-        .region-badge.region-na {
-            border: 1px solid #ef4444 !important;
-            color: #fca5a5 !important;
-        }
-
-        .platform-badge {
-            border: 1px solid #3b82f6;
-            color: #93c5fd;
-        }
-
-        .platform-badge.pojav {
-            border: 1px solid #a855f7;
-            color: #e9d5ff;
-        }
-
-        .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 180px; }
-
-        .badge {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid var(--tier-color, #38bdf8);
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--tier-color, #38bdf8);
-        }
-
-        .badge img { width: 14px; height: 14px; object-fit: contain; }
-
-        .badge.tier-HT1 { --tier-color: #ef4444; }
-        .badge.tier-LT1 { --tier-color: #f87171; }
-        .badge.tier-HT2 { --tier-color: #f97316; }
-        .badge.tier-LT2 { --tier-color: #fb923c; }
-        .badge.tier-HT3 { --tier-color: #f59e0b; }
-        .badge.tier-LT3 { --tier-color: #fbbf24; }
-        .badge.tier-HT4 { --tier-color: #eab308; }
-        .badge.tier-LT4 { --tier-color: #fde047; }
-        .badge.tier-HT5 { --tier-color: #84cc16; }
-        .badge.tier-LT5 { --tier-color: #22c55e; }
-
-        .actions { display: flex; gap: 4px; margin-left: auto; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
-        .btn-edit { background: #166534; }
-        .btn-delete { background: #ef4444; }
-
-        footer {
-            text-align: center;
-            padding: 20px 10px;
-            margin-top: 30px;
-            background: rgba(15, 56, 34, 0.7);
-            border-radius: 12px;
-            border: 1px solid #166534;
-        }
-
-        .christmas-footer-graphic {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .christmas-footer-text {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #86efac;
-            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-card {
-            background: #0f3822;
-            border: 1px solid #22c55e;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            position: relative;
-            color: white;
-        }
-
-        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
-        .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .modal-avatar { 
-            width: 60px; 
-            height: 70px; 
-            border-radius: 6px; 
-            image-rendering: pixelated; 
-            object-fit: contain; 
-            background: rgba(0,0,0,0.2); 
-            padding: 2px;
-        }
-        .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .modal-stat-box { background: var(--bg-input); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -651,6 +312,24 @@
 
     <div class="admin-panel" id="adminPanel">
         <h2>Admin Management Panel</h2>
+        
+        <!-- Add Gamemode Sub-Section -->
+        <div style="background: rgba(6, 36, 20, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #22c55e;">
+            <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: #86efac;">➕ Add New Gamemode</h3>
+            <form id="gamemodeForm" onsubmit="addNewGamemode(event)" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <div style="flex: 1 1 150px;">
+                    <input type="text" id="newGamemodeName" placeholder="Gamemode Name (e.g. Cart)" required>
+                </div>
+                <div style="flex: 1 1 180px;">
+                    <input type="file" id="newGamemodeIcon" accept="image/*" required onchange="handleNewGamemodeIcon(event)">
+                    <input type="hidden" id="newGamemodeIconBase64">
+                </div>
+                <div>
+                    <button type="submit" class="btn" style="padding: 9px 16px;">Add Gamemode</button>
+                </div>
+            </form>
+        </div>
+
         <form id="playerForm">
             <input type="hidden" id="editIndex">
             <div class="form-grid">
@@ -690,6 +369,45 @@
             <div class="modal-stats-grid" id="modalStatsGrid"></div>
         </div>
     </div>
+        <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #0f3822;
+            border: 1px solid #22c55e;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            position: relative;
+            color: white;
+        }
+
+        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+        .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .modal-avatar { 
+            width: 60px; 
+            height: 70px; 
+            border-radius: 6px; 
+            image-rendering: pixelated; 
+            object-fit: contain; 
+            background: rgba(0,0,0,0.2); 
+            padding: 2px;
+        }
+        .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .modal-stat-box { background: var(--bg-input); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.8rem; }
+    </style>
+</head>
         <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC9AWX1TEymQXn20Ech-ZZVXQsRwS35kzY",
@@ -707,10 +425,10 @@
         }
         const db = firebase.database();
         const globalRef = db.ref("brutetiers_data");
-        const rootRef = db.ref(); // Fallback to check root database nodes
+        const rootRef = db.ref();
 
-        const ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
-        const KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
+        let ALL_CATEGORIES = ['Overall', 'Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
+        let KITS = ['Sword', 'Axe', 'NethPot', 'DiaPot', 'UHC', 'Smp', 'Lifesteal', 'Mace', 'Crystal'];
         
         const TIERS = ['NA', 'HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'LT4', 'HT5', 'LT5'];
         const ADMIN_PASS = "98909890";
@@ -730,7 +448,6 @@
         let appData = { kitIcons: {}, playersList: [] };
         let isDataLoaded = false;
 
-        // Listen to primary path & automatic scan fallback
         globalRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && (data.playersList || data.kitIcons)) {
@@ -739,6 +456,10 @@
                     kitIcons: data.kitIcons || {},
                     playersList: Array.isArray(data.playersList) ? data.playersList : []
                 };
+                if (Array.isArray(data.customCategories)) {
+                    ALL_CATEGORIES = ['Overall', ...data.customCategories];
+                    KITS = [...data.customCategories];
+                }
                 renderAll();
             } else {
                 rootRef.once('value', (rootSnapshot) => {
@@ -762,6 +483,11 @@
                         }
                     }
 
+                    if (rootVal.customCategories && Array.isArray(rootVal.customCategories)) {
+                        ALL_CATEGORIES = ['Overall', ...rootVal.customCategories];
+                        KITS = [...rootVal.customCategories];
+                    }
+
                     appData = {
                         kitIcons: rootVal.kitIcons || (rootVal.brutetiers_data ? rootVal.brutetiers_data.kitIcons : {}) || {},
                         playersList: recoveredList
@@ -778,6 +504,7 @@
         function renderAll() {
             renderKitBar();
             renderKitRepsManager();
+            buildTierInputs();
             renderPodium();
             renderLeaderboard();
         }
@@ -785,9 +512,11 @@
         async function saveGlobalData() {
             renderAll();
             try {
+                const customCats = ALL_CATEGORIES.filter(c => c !== 'Overall');
                 await globalRef.set({
                     kitIcons: appData.kitIcons || {},
-                    playersList: appData.playersList || []
+                    playersList: appData.playersList || [],
+                    customCategories: customCats
                 });
             } catch (err) {
                 console.error("Firebase Sync Error:", err);
@@ -832,7 +561,8 @@
             if (displayRank >= 51 && displayRank <= 100) return 'Experienced';
             return 'Rookie';
         }
-                    function renderKitBar() {
+
+        function renderKitBar() {
             document.getElementById('kitBar').innerHTML = ALL_CATEGORIES.map(cat => `
                 <div class="kit-pill ${cat === selectedCategory ? 'active' : ''}" onclick="selectCategory('${cat}')">
                     ${appData.kitIcons && appData.kitIcons[cat] ? `<img src="${appData.kitIcons[cat]}">` : ''}
@@ -1015,7 +745,9 @@
         function closeModal() { document.getElementById('statsModal').classList.remove('active'); }
 
         function buildTierInputs() {
-            document.getElementById('tierInputsContainer').innerHTML = KITS.map(kit => `
+            const container = document.getElementById('tierInputsContainer');
+            if (!container) return;
+            container.innerHTML = KITS.map(kit => `
                 <div>
                     <label style="font-size:0.75rem;">${kit}</label>
                     <select id="tier-${kit}">
@@ -1026,7 +758,9 @@
         }
 
         function renderKitRepsManager() {
-            document.getElementById('representativesManager').innerHTML = ALL_CATEGORIES.map(cat => `
+            const container = document.getElementById('representativesManager');
+            if (!container) return;
+            container.innerHTML = ALL_CATEGORIES.map(cat => `
                 <div class="rep-card-input">
                     <img src="${(appData.kitIcons && appData.kitIcons[cat]) || ''}" class="rep-icon-preview">
                     <div style="flex:1;">
@@ -1035,6 +769,56 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function handleNewGamemodeIcon(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 24;
+                    canvas.height = 24;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 24, 24);
+                    document.getElementById('newGamemodeIconBase64').value = canvas.toDataURL('image/png');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function addNewGamemode(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            const nameInput = document.getElementById('newGamemodeName');
+            const iconBase64 = document.getElementById('newGamemodeIconBase64').value;
+            const gmName = nameInput.value.trim();
+
+            if (!gmName) return;
+
+            if (ALL_CATEGORIES.includes(gmName)) {
+                alert("Gamemode already exists!");
+                return;
+            }
+
+            ALL_CATEGORIES.push(gmName);
+            KITS.push(gmName);
+
+            if (!appData.kitIcons) appData.kitIcons = {};
+            if (iconBase64) {
+                appData.kitIcons[gmName] = iconBase64;
+            }
+
+            nameInput.value = '';
+            document.getElementById('newGamemodeIcon').value = '';
+            document.getElementById('newGamemodeIconBase64').value = '';
+
+            await saveGlobalData();
+            alert(`Gamemode "${gmName}" added successfully!`);
         }
 
         function handleSkinUpload(event) {
@@ -1058,116 +842,4 @@
                         ctx.drawImage(img, 0, 0, 32, 32);
                     }
                     
-                    document.getElementById('customSkinBase64').value = canvas.toDataURL('image/png');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handleKitIconUpload(category, event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const img = new Image();
-                    img.onload = async () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 24;
-                        canvas.height = 24;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, 24, 24);
-                        if (!appData.kitIcons) appData.kitIcons = {};
-                        appData.kitIcons[category] = canvas.toDataURL('image/png');
-                        renderAll();
-                        await saveGlobalData();
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('playerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!isAdminLoggedIn) return;
-
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = "Publishing Globally...";
-
-            const editIndexVal = document.getElementById('editIndex').value;
-            const editIndex = editIndexVal !== "" ? parseInt(editIndexVal) : null;
-            const username = document.getElementById('username').value.trim();
-            const platform = document.getElementById('platform').value;
-            const region = document.getElementById('region').value.trim() || 'NA';
-            const customSkin = document.getElementById('customSkinBase64').value;
-
-            const tiers = {};
-            KITS.forEach(kit => tiers[kit] = document.getElementById(`tier-${kit}`).value);
-
-            let existingSkin = '';
-            if (editIndex !== null && appData.playersList[editIndex]) {
-                existingSkin = appData.playersList[editIndex].customSkin || '';
-            }
-
-            const playerData = { 
-                username, 
-                platform, 
-                region, 
-                customSkin: customSkin || existingSkin, 
-                tiers 
-            };
-
-            if (!appData.playersList) appData.playersList = [];
-
-            if (editIndex !== null && editIndex >= 0 && editIndex < appData.playersList.length) {
-                appData.playersList[editIndex] = playerData;
-            } else {
-                const existingIdx = appData.playersList.findIndex(p => p.username.toLowerCase() === username.toLowerCase());
-                if (existingIdx !== -1) {
-                    appData.playersList[existingIdx] = playerData;
-                } else {
-                    appData.playersList.push(playerData);
-                }
-            }
-
-            document.getElementById('playerForm').reset();
-            document.getElementById('editIndex').value = '';
-            document.getElementById('customSkinBase64').value = '';
-
-            await saveGlobalData();
-
-            saveBtn.disabled = false;
-            saveBtn.textContent = "Save Player";
-            toggleAdmin();
-        });
-
-        function editPlayer(index) {
-            const player = appData.playersList[index];
-            if (!player) return;
-            document.getElementById('editIndex').value = index;
-            document.getElementById('username').value = player.username;
-            document.getElementById('platform').value = player.platform || 'PC';
-            document.getElementById('region').value = player.region || 'NA';
-            document.getElementById('customSkinBase64').value = player.customSkin || '';
-
-            KITS.forEach(kit => {
-                document.getElementById(`tier-${kit}`).value = (player.tiers && player.tiers[kit]) ? player.tiers[kit] : 'NA';
-            });
-
-            if (!document.getElementById('adminPanel').classList.contains('active')) toggleAdmin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function deletePlayer(index) {
-            if (confirm('Delete player?')) {
-                appData.playersList.splice(index, 1);
-                await saveGlobalData();
-            }
-        }
-
-        buildTierInputs();
-    </script>
-</body>
-</html>
+              
