@@ -36,7 +36,7 @@
         html, body {
             width: 100%;
             overflow-x: hidden;
-            background: #06190e;
+            background: #030d07;
         }
 
         body {
@@ -53,9 +53,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             background-image: radial-gradient(4px 4px at 100px 50px, #fff, rgba(0,0,0,0)), 
-                              radial-gradient(3px 3px at 200px 150px, #fff, rgba(0,0,0,0)), 
-                              radial-gradient(4px 4px at 300px 250px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
-                              radial-gradient(3px 3px at 400px 350px, rgba(255,255,255,0.9), rgba(0,0,0,0));
+                              radial-gradient(3px 3px at 200px 150px, #fff, rgba(0,0,0,0));
             background-repeat: repeat;
             background-size: 500px 500px;
             opacity: 0.35;
@@ -180,11 +178,11 @@
 
         .region-filter, .platform-filter { flex: 0 0 130px; position: relative; }
 
-        /* Solid Opaque Background Dropdown Menus to fix transparency issue */
+        /* Solid Opaque Background Dropdown Menus to fix transparency */
         .android-dropdown-menu {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(2, 8, 4, 0.92);
             z-index: 999999;
             display: none;
             align-items: center;
@@ -193,14 +191,14 @@
         }
         .android-dropdown-menu.active { display: flex; }
         .android-dropdown-card {
-            background: #06190e;
+            background: #082113;
             border: 2px solid #22c55e;
             border-radius: 16px;
             width: 100%;
             max-width: 340px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.95);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.95);
             padding: 10px 0;
             display: flex;
             flex-direction: column;
@@ -223,7 +221,7 @@
             color: #f1f5f9;
             transition: background 0.15s;
         }
-        .android-dropdown-option:hover { background: rgba(34, 197, 94, 0.2); }
+        .android-dropdown-option:hover { background: rgba(34, 197, 94, 0.25); }
         .android-dropdown-option.selected { color: #86efac; font-weight: 700; }
         .android-radio-circle {
             width: 20px; height: 20px;
@@ -345,7 +343,6 @@
         .christmas-footer-graphic { font-size: 2.2rem; margin-bottom: 10px; }
         .christmas-footer-text { font-size: 1rem; font-weight: 800; color: #86efac; text-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
 
-        /* Modal & Custom Dialog Styles */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
         .modal-overlay.active { display: flex; }
         .modal-card { background: #0f3822; border: 2px solid #22c55e; border-radius: 16px; width: 100%; max-width: 440px; padding: 25px; position: relative; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
