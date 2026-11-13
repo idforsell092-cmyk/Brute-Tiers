@@ -68,7 +68,6 @@
             z-index: 2;
         }
 
-        /* Podium Container with controlled z-index so it never overlaps dropdowns */
         .podium-container, .podium-divider-strip {
             width: 100%;
             max-width: 1050px;
@@ -189,7 +188,6 @@
 
         .region-filter, .platform-filter { flex: 0 0 130px; position: relative; }
 
-        /* Maximum Z-Index Dropdown Menus to stay strictly on top */
         .android-dropdown-menu {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -549,9 +547,10 @@
             'LT3': 6, 'HT4': 7, 'LT4': 8, 'HT5': 9, 'LT5': 10, 'NA': 99 
         };
 
+        // User requested Official Tier Points Scale
         const TIER_SCORES = { 
-            'HT1': 100, 'LT1': 90, 'HT2': 80, 'LT2': 70, 'HT3': 60, 
-            'LT3': 50, 'HT4': 40, 'LT4': 30, 'HT5': 20, 'LT5': 10, 'NA': 0 
+            'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10, 
+            'LT3': 6, 'HT4': 4, 'LT4': 3, 'HT5': 2, 'LT5': 1, 'NA': 0 
         };
 
         let appData = { kitIcons: {}, playersList: [] };
@@ -736,6 +735,12 @@
             return total;
         }
 
+        function calculateCategoryPoints(player, category) {
+            if (!player || !player.tiers) return 0;
+            const tier = player.tiers[category] || 'NA';
+            return TIER_SCORES[tier] || 0;
+        }
+
         function getDefaultTitleByRank(displayRank) {
             if (displayRank === 1) return 'Combat GrandMaster';
             if (displayRank === 2) return 'Combat GrandExpert';
@@ -767,7 +772,7 @@
             const podiumContainer = document.getElementById('podiumContainer');
             const dividerStrip = document.getElementById('podiumDivider');
             
-            if (!appData.playersList || appData.playersList.length === 0 || selectedCategory !== 'Overall') {
+            if (!appData.playersList || appData.playersList.length === 0) {
                 podiumContainer.style.display = 'none';
                 dividerStrip.style.display = 'none';
                 return;
@@ -775,7 +780,19 @@
             podiumContainer.style.display = 'flex';
             dividerStrip.style.display = 'block';
 
-            let sortedList = [...appData.playersList].sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            let sortedList = [...appData.playersList];
+            if (selectedCategory === 'Overall') {
+                sortedList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
+            } else {
+                sortedList = sortedList.filter(p => p.tiers && p.tiers[selectedCategory] && p.tiers[selectedCategory] !== 'NA');
+                sortedList.sort((a, b) => {
+                    const scoreA = calculateCategoryPoints(a, selectedCategory);
+                    const scoreB = calculateCategoryPoints(b, selectedCategory);
+                    if (scoreB !== scoreA) return scoreB - scoreA;
+                    return (TIER_ORDER[a.tiers[selectedCategory]] || 99) - (TIER_ORDER[b.tiers[selectedCategory]] || 99);
+                });
+            }
+
             const top3 = sortedList.slice(0, 3);
 
             if (top3.length === 0) {
@@ -793,7 +810,7 @@
                 const p = item.player;
                 const rank = item.rank;
                 const originalIndex = appData.playersList.indexOf(p);
-                const pts = calculatePoints(p.tiers);
+                const pts = selectedCategory === 'Overall' ? calculatePoints(p.tiers) : calculateCategoryPoints(p, selectedCategory);
                 const title = getDefaultTitleByRank(rank);
                 const avatarImg = p.customSkin || `https://mc-heads.net/body/${p.username}/100`;
 
@@ -844,7 +861,12 @@
                 displayList.sort((a, b) => calculatePoints(b.tiers) - calculatePoints(a.tiers));
             } else {
                 displayList = displayList.filter(p => p.tiers && p.tiers[selectedCategory] && p.tiers[selectedCategory] !== 'NA');
-                displayList.sort((a, b) => (TIER_ORDER[a.tiers[selectedCategory]] || 99) - (TIER_ORDER[b.tiers[selectedCategory]] || 99));
+                displayList.sort((a, b) => {
+                    const scoreA = calculateCategoryPoints(a, selectedCategory);
+                    const scoreB = calculateCategoryPoints(b, selectedCategory);
+                    if (scoreB !== scoreA) return scoreB - scoreA;
+                    return (TIER_ORDER[a.tiers[selectedCategory]] || 99) - (TIER_ORDER[b.tiers[selectedCategory]] || 99);
+                });
             }
 
             if (displayList.length === 0) {
@@ -854,7 +876,7 @@
 
             container.innerHTML = displayList.map((player, index) => {
                 const originalIndex = appData.playersList.indexOf(player);
-                const points = calculatePoints(player.tiers);
+                const points = selectedCategory === 'Overall' ? calculatePoints(player.tiers) : calculateCategoryPoints(player, selectedCategory);
                 const displayRank = index + 1;
                 const title = getDefaultTitleByRank(displayRank);
                 const rankClass = displayRank <= 3 ? `rank-card-${displayRank}` : '';
