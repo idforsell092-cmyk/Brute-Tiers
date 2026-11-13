@@ -352,11 +352,11 @@
     <style>
         .player-card {
             border-radius: 10px;
-            padding: 8px 12px;
+            padding: 10px 14px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             position: relative;
             background: linear-gradient(90deg, #ffffff 0%, #e2e8f0 100%) !important;
             border: 2px solid #22c55e !important;
@@ -443,8 +443,8 @@
         .mctiers-badge-wrapper {
             display: flex;
             align-items: center;
-            height: 54px;
-            width: 150px;
+            height: 58px;
+            width: 155px;
             background: rgba(15, 23, 42, 0.2);
             border-radius: 6px;
             overflow: hidden;
@@ -466,7 +466,7 @@
         }
 
         .skin-holder {
-            width: 108px;
+            width: 112px;
             height: 100%;
             display: flex;
             align-items: center;
@@ -477,19 +477,19 @@
 
         .head-avatar-img {
             width: 100%;
-            height: 50px;
+            height: 54px;
             object-fit: contain;
             image-rendering: pixelated;
         }
 
-        .player-info { flex: 1 1 140px; min-width: 130px; }
-        .player-info h3 { font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-        .player-info p { font-size: 0.82rem; color: #334155; font-weight: 700; }
+        .player-info { flex: 1 1 150px; min-width: 130px; }
+        .player-info h3 { font-size: 1.15rem; font-weight: 800; color: #0f172a; }
+        .player-info p { font-size: 0.85rem; color: #334155; font-weight: 700; }
 
         .region-badge, .platform-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-weight: 800;
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid #22c55e;
@@ -512,22 +512,24 @@
             color: #e9d5ff;
         }
 
-        .tier-badges { display: flex; flex-wrap: wrap; gap: 4px; flex: 2 1 180px; }
+        .tier-badges { display: flex; flex-wrap: wrap; gap: 6px; flex: 2 1 200px; }
 
+        /* Larger and clearer badges */
         .badge {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid var(--tier-color, #38bdf8);
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid var(--tier-color, #38bdf8);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 800;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             color: var(--tier-color, #38bdf8);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
-        .badge img { width: 14px; height: 14px; object-fit: contain; }
+        .badge img { width: 18px; height: 18px; object-fit: contain; }
 
         .badge.tier-HT1 { --tier-color: #ef4444; }
         .badge.tier-LT1 { --tier-color: #f87171; }
@@ -541,7 +543,7 @@
         .badge.tier-LT5 { --tier-color: #22c55e; }
 
         .actions { display: flex; gap: 4px; margin-left: auto; }
-        .btn-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
         .btn-edit { background: #166534; }
         .btn-delete { background: #ef4444; }
 
@@ -566,6 +568,7 @@
             text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
+        /* Enlarged & Better Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -574,34 +577,49 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            backdrop-filter: blur(4px);
+            padding: 20px;
+            backdrop-filter: blur(6px);
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
             background: #0f3822;
-            border: 1px solid #22c55e;
-            border-radius: 12px;
+            border: 2px solid #22c55e;
+            border-radius: 16px;
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
+            max-width: 440px;
+            padding: 25px;
             position: relative;
             color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
 
-        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
-        .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .modal-close { position: absolute; top: 12px; right: 15px; background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; }
+        .modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .modal-avatar { 
-            width: 60px; 
-            height: 70px; 
-            border-radius: 6px; 
+            width: 75px; 
+            height: 85px; 
+            border-radius: 8px; 
             image-rendering: pixelated; 
             object-fit: contain; 
-            background: rgba(0,0,0,0.2); 
-            padding: 2px;
+            background: rgba(0,0,0,0.3); 
+            padding: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .modal-stat-box { background: var(--bg-input); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.8rem; }
+        .modal-header h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+        .modal-header p { font-size: 0.9rem; color: #cbd5e1; font-weight: 700; }
+
+        .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .modal-stat-box { 
+            background: var(--bg-input); 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: 1px solid #166534;
+        }
     </style>
 </head>
 <body>
@@ -635,12 +653,6 @@
         <div class="region-filter">
             <select id="filterRegion" onchange="renderLeaderboard()">
                 <option value="ALL">All Regions</option>
-                <option value="IND">IND</option>
-                <option value="NA">NA</option>
-                <option value="EU">EU</option>
-                <option value="ASIA">ASIA</option>
-                <option value="PAK">PAK</option>
-                <option value="NEP">NEP</option>
             </select>
         </div>
     </div>
@@ -684,7 +696,7 @@
                         <option value="Pojav">Pojav</option>
                     </select>
                 </div>
-                <div><label>Region</label><input type="text" id="region"></div>
+                <div><label>Region</label><input type="text" id="region" placeholder="e.g. IND, NA, SG"></div>
                 <div><label>Skin PNG Upload</label><input type="file" id="skinFileInput" accept="image/*" onchange="handleSkinUpload(event)"><input type="hidden" id="customSkinBase64"></div>
             </div>
             <div class="tier-inputs" id="tierInputsContainer"></div>
@@ -807,11 +819,39 @@
         });
 
         function renderAll() {
+            updateRegionDropdown();
             renderKitBar();
             renderKitRepsManager();
             buildTierInputs();
             renderPodium();
             renderLeaderboard();
+        }
+
+        // Dynamically populate region filter based on player data
+        function updateRegionDropdown() {
+            const regionSelect = document.getElementById('filterRegion');
+            if (!regionSelect) return;
+            
+            const currentSelected = regionSelect.value;
+            let regionsSet = new Set();
+            
+            if (appData.playersList) {
+                appData.playersList.forEach(p => {
+                    if (p && p.region) {
+                        regionsSet.add(p.region.trim().toUpperCase());
+                    }
+                });
+            }
+
+            let optionsHtml = `<option value="ALL">All Regions</option>`;
+            Array.from(regionsSet).sort().forEach(reg => {
+                optionsHtml += `<option value="${reg}">${reg}</option>`;
+            });
+
+            regionSelect.innerHTML = optionsHtml;
+            if (regionsSet.has(currentSelected) || currentSelected === 'ALL') {
+                regionSelect.value = currentSelected;
+            }
         }
 
         async function saveGlobalData() {
@@ -986,14 +1026,12 @@
                 const avatarImg = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
                 const rawRegion = (player.region || '').trim().toUpperCase();
-                const isNaRegion = !rawRegion || rawRegion === 'NA';
-                const regionDisplay = isNaRegion ? 'NA' : rawRegion;
-                const regionClass = isNaRegion ? 'region-badge region-na' : 'region-badge';
+                const regionDisplay = rawRegion || 'NA';
+                const regionClass = regionDisplay === 'NA' ? 'region-badge region-na' : 'region-badge';
 
                 const platformDisplay = (player.platform || 'PC').trim();
                 const platformClass = platformDisplay.toLowerCase() === 'pojav' ? 'platform-badge pojav' : 'platform-badge';
 
-                // Determine which tier badges to show based on selectedCategory
                 let visibleTiersHtml = '';
                 if (selectedCategory === 'Overall') {
                     visibleTiersHtml = KITS.map(kit => {
@@ -1052,7 +1090,6 @@
             document.getElementById('modalTitle').textContent = `${getDefaultTitleByRank(displayRank)} • (${pts} Points) • [${player.platform || 'PC'}]`;
             document.getElementById('modalAvatar').src = player.customSkin || `https://mc-heads.net/body/${player.username}/100`;
 
-            // If a specific category is selected, show only that category in modal. If Overall, show all.
             let modalKitsToDisplay = (selectedCategory === 'Overall') ? KITS : [selectedCategory];
 
             document.getElementById('modalStatsGrid').innerHTML = modalKitsToDisplay.map(kit => `
