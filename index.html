@@ -60,7 +60,7 @@
             z-index: 1;
         }
 
-        header, .search-filter-bar, .podium-container, .podium-divider-strip, .kit-bar, .leaderboard, .admin-panel, footer {
+        header, .search-filter-bar, .kit-bar, .leaderboard, .admin-panel, footer {
             width: 100%;
             max-width: 1050px;
             margin: 0 auto 15px auto;
@@ -68,10 +68,20 @@
             z-index: 2;
         }
 
+        /* Podium Container with controlled z-index so it never overlaps dropdowns */
+        .podium-container, .podium-divider-strip {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto 15px auto;
+            position: relative;
+            z-index: 5;
+        }
+
         .christmas-title-banner {
             text-align: center;
             margin-bottom: 20px;
             position: relative;
+            z-index: 2;
         }
 
         .christmas-title-text {
@@ -141,6 +151,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            z-index: 10;
         }
 
         .search-box { flex: 1 1 200px; }
@@ -178,12 +189,12 @@
 
         .region-filter, .platform-filter { flex: 0 0 130px; position: relative; }
 
-        /* Solid Opaque Background Dropdown Menus to fix transparency */
+        /* Maximum Z-Index Dropdown Menus to stay strictly on top */
         .android-dropdown-menu {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 8, 4, 0.92);
-            z-index: 999999;
+            background: rgba(2, 8, 4, 0.95);
+            z-index: 99999999;
             display: none;
             align-items: center;
             justify-content: center;
@@ -198,10 +209,12 @@
             max-width: 340px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.95);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.98);
             padding: 10px 0;
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 100000000;
         }
         .android-dropdown-title {
             padding: 12px 20px;
@@ -244,12 +257,12 @@
         .podium-card {
             background: rgba(15, 56, 34, 0.85); border: 2px solid #22c55e; border-radius: 16px; padding: 15px;
             display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: transform 0.2s ease; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: transform 0.2s ease; cursor: pointer; z-index: 5;
         }
         .podium-card:hover { transform: translateY(-5px); }
-        .podium-card.rank-1 { order: 2; width: 220px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #fbbf24; z-index: 3; }
-        .podium-card.rank-2 { order: 1; width: 190px; background: linear-gradient(180deg, rgba(148, 163, 184, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #cbd5e1; z-index: 2; }
-        .podium-card.rank-3 { order: 3; width: 190px; background: linear-gradient(180deg, rgba(249, 115, 22, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #fb923c; z-index: 1; }
+        .podium-card.rank-1 { order: 2; width: 220px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #fbbf24; z-index: 7; }
+        .podium-card.rank-2 { order: 1; width: 190px; background: linear-gradient(180deg, rgba(148, 163, 184, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #cbd5e1; z-index: 6; }
+        .podium-card.rank-3 { order: 3; width: 190px; background: linear-gradient(180deg, rgba(249, 115, 22, 0.25) 0%, rgba(15, 56, 34, 0.9) 100%); border-color: #fb923c; z-index: 5; }
         .podium-crown { font-size: 2rem; position: absolute; top: -22px; }
         .podium-avatar-box {
             width: 80px; height: 90px; display: flex; align-items: center; justify-content: center;
@@ -263,10 +276,10 @@
 
         .podium-divider-strip {
             height: 8px; background: linear-gradient(90deg, transparent, #22c55e, #fbbf24, #22c55e, transparent);
-            border-radius: 4px; margin: 10px auto 15px auto; box-shadow: 0 0 10px rgba(34, 197, 94, 0.6); opacity: 0.85;
+            border-radius: 4px; margin: 10px auto 15px auto; box-shadow: 0 0 10px rgba(34, 197, 94, 0.6); opacity: 0.85; z-index: 5;
         }
 
-        .admin-panel { background: rgba(15, 56, 34, 0.95); border: 1px solid #22c55e; border-radius: 12px; padding: 15px; display: none; }
+        .admin-panel { background: rgba(15, 56, 34, 0.95); border: 1px solid #22c55e; border-radius: 12px; padding: 15px; display: none; z-index: 10; }
         .admin-panel.active { display: block; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 8px; background: var(--bg-input); border: 1px solid #166534; border-radius: 6px; color: white; outline: none; }
@@ -277,7 +290,7 @@
 
         .kit-bar {
             display: flex; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; gap: 8px;
-            background: rgba(15, 56, 34, 0.85); padding: 10px; border-radius: 10px; border: 1px solid #166534; -webkit-overflow-scrolling: touch;
+            background: rgba(15, 56, 34, 0.85); padding: 10px; border-radius: 10px; border: 1px solid #166534; -webkit-overflow-scrolling: touch; z-index: 5;
         }
         .kit-pill {
             display: inline-flex; align-items: center; gap: 6px; background: rgba(6, 36, 20, 0.8);
@@ -286,12 +299,12 @@
         .kit-pill.active { border-color: #22c55e; background: rgba(34, 197, 94, 0.25); color: #ffffff; }
         .kit-pill img { width: 18px; height: 18px; object-fit: contain; }
 
-        .leaderboard { display: flex; flex-direction: column; gap: 12px; }
+        .leaderboard { display: flex; flex-direction: column; gap: 12px; z-index: 5; }
 
         .player-card {
             border-radius: 10px; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; position: relative;
             background: linear-gradient(90deg, #ffffff 0%, #e2e8f0 100%) !important; border: 2px solid #22c55e !important;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), inset 0 0 5px rgba(34, 197, 94, 0.3); color: var(--text-dark); cursor: pointer; transition: transform 0.2s ease; overflow: hidden;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), inset 0 0 5px rgba(34, 197, 94, 0.3); color: var(--text-dark); cursor: pointer; transition: transform 0.2s ease; overflow: hidden; z-index: 5;
         }
         .player-card:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(34, 197, 94, 0.8); }
         .player-card.rank-card-1 { background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important; border-color: #fef08a !important; }
@@ -339,11 +352,11 @@
         .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
         .btn-edit { background: #166534; } .btn-delete { background: #ef4444; }
 
-        footer { text-align: center; padding: 20px 10px; margin-top: 30px; background: rgba(15, 56, 34, 0.7); border-radius: 12px; border: 1px solid #166534; }
+        footer { text-align: center; padding: 20px 10px; margin-top: 30px; background: rgba(15, 56, 34, 0.7); border-radius: 12px; border: 1px solid #166534; z-index: 5; }
         .christmas-footer-graphic { font-size: 2.2rem; margin-bottom: 10px; }
         .christmas-footer-text { font-size: 1rem; font-weight: 800; color: #86efac; text-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
         .modal-overlay.active { display: flex; }
         .modal-card { background: #0f3822; border: 2px solid #22c55e; border-radius: 16px; width: 100%; max-width: 440px; padding: 25px; position: relative; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
         .modal-close { position: absolute; top: 12px; right: 15px; background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; }
@@ -356,7 +369,7 @@
         .modal-stat-kit { display: flex; align-items: center; gap: 6px; }
         .modal-stat-kit img { width: 18px; height: 18px; object-fit: contain; }
 
-        .custom-dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .custom-dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999999; display: none; align-items: center; justify-content: center; padding: 20px; }
         .custom-dialog-overlay.active { display: flex; }
         .custom-dialog-card { background: #0f2c1c; border: 2px solid #22c55e; border-radius: 16px; width: 100%; max-width: 320px; padding: 20px; text-align: center; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.9); }
         .custom-dialog-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: #86efac; }
