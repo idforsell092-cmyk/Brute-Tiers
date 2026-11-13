@@ -180,12 +180,12 @@
 
         .region-filter, .platform-filter { flex: 0 0 130px; position: relative; }
 
-        /* Fixed High Z-Index Android Dropdown Menus */
+        /* Solid Opaque Background Dropdown Menus to fix transparency issue */
         .android-dropdown-menu {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
-            z-index: 99999;
+            z-index: 999999;
             display: none;
             align-items: center;
             justify-content: center;
@@ -193,14 +193,14 @@
         }
         .android-dropdown-menu.active { display: flex; }
         .android-dropdown-card {
-            background: #0f2c1c;
+            background: #06190e;
             border: 2px solid #22c55e;
             border-radius: 16px;
             width: 100%;
             max-width: 340px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.95);
             padding: 10px 0;
             display: flex;
             flex-direction: column;
@@ -223,7 +223,7 @@
             color: #f1f5f9;
             transition: background 0.15s;
         }
-        .android-dropdown-option:hover { background: rgba(34, 197, 94, 0.15); }
+        .android-dropdown-option:hover { background: rgba(34, 197, 94, 0.2); }
         .android-dropdown-option.selected { color: #86efac; font-weight: 700; }
         .android-radio-circle {
             width: 20px; height: 20px;
@@ -345,7 +345,7 @@
         .christmas-footer-graphic { font-size: 2.2rem; margin-bottom: 10px; }
         .christmas-footer-text { font-size: 1rem; font-weight: 800; color: #86efac; text-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
 
-        /* Modal Styles */
+        /* Modal & Custom Dialog Styles */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
         .modal-overlay.active { display: flex; }
         .modal-card { background: #0f3822; border: 2px solid #22c55e; border-radius: 16px; width: 100%; max-width: 440px; padding: 25px; position: relative; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
@@ -359,16 +359,16 @@
         .modal-stat-kit { display: flex; align-items: center; gap: 6px; }
         .modal-stat-kit img { width: 18px; height: 18px; object-fit: contain; }
 
-        /* Custom Android Confirm / Alert Dialog */
         .custom-dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999999; display: none; align-items: center; justify-content: center; padding: 20px; }
         .custom-dialog-overlay.active { display: flex; }
-        .custom-dialog-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; width: 100%; max-width: 320px; padding: 20px; text-align: center; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.9); }
-        .custom-dialog-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: #f8fafc; }
-        .custom-dialog-card p { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 20px; }
+        .custom-dialog-card { background: #0f2c1c; border: 2px solid #22c55e; border-radius: 16px; width: 100%; max-width: 320px; padding: 20px; text-align: center; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.9); }
+        .custom-dialog-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: #86efac; }
+        .custom-dialog-card p { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; }
+        .custom-dialog-input { width: 100%; padding: 10px; background: #113824; border: 1px solid #166534; border-radius: 8px; color: white; margin-bottom: 15px; outline: none; text-align: center; font-size: 1rem; }
         .custom-dialog-btns { display: flex; gap: 10px; justify-content: center; }
         .custom-dialog-btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.9rem; flex: 1; }
-        .custom-dialog-btn.cancel { background: #334155; color: #fff; }
-        .custom-dialog-btn.confirm { background: #ef4444; color: #fff; }
+        .custom-dialog-btn.cancel { background: #166534; color: #fff; }
+        .custom-dialog-btn.confirm { background: #22c55e; color: #000; }
     </style>
 </head>
 <body>
@@ -480,14 +480,27 @@
         </div>
     </div>
 
-    <!-- Custom Confirm Dialog -->
+    <!-- Custom Admin Password Dialog -->
+    <div class="custom-dialog-overlay" id="customPasswordDialog">
+        <div class="custom-dialog-card" onclick="event.stopPropagation()">
+            <h3>Admin Access</h3>
+            <p>Enter Admin Password:</p>
+            <input type="password" id="adminPasswordInput" class="custom-dialog-input" placeholder="Password">
+            <div class="custom-dialog-btns">
+                <button class="custom-dialog-btn cancel" onclick="closePasswordDialog(false)">Cancel</button>
+                <button class="custom-dialog-btn confirm" onclick="closePasswordDialog(true)">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm / Alert Dialog -->
     <div class="custom-dialog-overlay" id="customDialog">
-        <div class="custom-dialog-card">
+        <div class="custom-dialog-card" onclick="event.stopPropagation()">
             <h3 id="dialogTitle">Confirm Action</h3>
             <p id="dialogMessage">Are you sure?</p>
             <div class="custom-dialog-btns">
                 <button class="custom-dialog-btn cancel" onclick="closeCustomDialog(false)">Cancel</button>
-                <button class="custom-dialog-btn confirm" id="dialogConfirmBtn" onclick="closeCustomDialog(true)">Delete</button>
+                <button class="custom-dialog-btn confirm" id="dialogConfirmBtn" onclick="closeCustomDialog(true)">Confirm</button>
             </div>
         </div>
     </div>
@@ -676,12 +689,24 @@
             if (isAdminLoggedIn) {
                 document.getElementById('adminPanel').classList.toggle('active');
             } else {
-                if (prompt("Admin Password:") === ADMIN_PASS) {
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('customPasswordDialog').classList.add('active');
+                setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
+            }
+        }
+
+        function closePasswordDialog(success) {
+            const passInput = document.getElementById('adminPasswordInput').value;
+            document.getElementById('customPasswordDialog').classList.remove('active');
+            if (success) {
+                if (passInput === ADMIN_PASS) {
                     isAdminLoggedIn = true;
                     document.getElementById('adminPanel').classList.add('active');
                     document.getElementById('adminToggleBtn').textContent = "⚙ Panel";
                     document.getElementById('logoutBtn').style.display = "inline-block";
                     renderLeaderboard();
+                } else {
+                    showCustomDialog("Access Denied", "Incorrect Admin Password!", () => {});
                 }
             }
         }
@@ -856,7 +881,7 @@
                 }
 
                 return `
-                    <div class="player-card ${rankClass}" onclick="openModal(${originalIndex})">
+                    <div class="player-card ${rankClass}" style="--card-index: ${index};" onclick="openModal(${originalIndex})">
                         <div class="mctiers-badge-wrapper">
                             <div class="${festiveRankClass}"><span>${displayRank}.</span></div>
                             <div class="skin-holder">
@@ -987,7 +1012,7 @@
             if (!gmName) return;
 
             if (ALL_CATEGORIES.includes(gmName)) {
-                alert("Gamemode already exists!");
+                showCustomDialog("Notice", "Gamemode already exists!", () => {});
                 return;
             }
 
@@ -1004,7 +1029,7 @@
             document.getElementById('newGamemodeIconBase64').value = '';
 
             await saveGlobalData();
-            alert(`Gamemode "${gmName}" added successfully!`);
+            showCustomDialog("Success", `Gamemode "${gmName}" added successfully!`, () => {});
         }
 
         function handleSkinUpload(event) {
